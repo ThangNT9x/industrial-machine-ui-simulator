@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/IndustrialMachineSimulator.Core/IndustrialMachineSimulator.Core.csproj" />
+  <Project Path="src/IndustrialMachineSimulator.Infrastructure/IndustrialMachineSimulator.Infrastructure.csproj" />
+  <Project Path="src/IndustrialMachineSimulator.UI/IndustrialMachineSimulator.UI.csproj" />
+</Solution>
