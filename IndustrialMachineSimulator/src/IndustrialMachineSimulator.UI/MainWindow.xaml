@@ -3,10 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:IndustrialMachineSimulator.UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Industrial Machine Simulator"
+        Height="450"
+        Width="800" WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Industrial Machine Simulator"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Margin="0,0,0,20"/>
 
+            <TextBlock Text="Current State:" FontSize="14"/>
+            <TextBlock Text="{Binding StatusText}"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,20"/>
+
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Initialize"
+                        Command="{Binding InitializeCommand}"
+                        Width="120"
+                        Margin="0,0,10,0"/>
+                <Button Content="Start"
+                        Command="{Binding StartCommand}"
+                        Width="120"
+                        Margin="0,0,10,0"/>
+                <Button Content="Stop"
+                        Command="{Binding StopCommand}"
+                        Width="120"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

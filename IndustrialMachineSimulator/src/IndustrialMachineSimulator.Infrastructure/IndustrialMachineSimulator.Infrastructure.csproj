@@ -10,4 +10,9 @@
     <ProjectReference Include="..\IndustrialMachineSimulator.Core\IndustrialMachineSimulator.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>

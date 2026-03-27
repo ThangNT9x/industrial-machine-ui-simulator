@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace IndustrialMachineSimulator.Core.Entities;
 
-namespace IndustrialMachineSimulator.Core.Entities
+public enum MachineState
 {
-    internal class MachineState
-    {
-    }
+    Offline,
+    Standby,
+    Initializing,
+    Ready,
+    Running,
+    Stopped,
+    Alarm
 }
