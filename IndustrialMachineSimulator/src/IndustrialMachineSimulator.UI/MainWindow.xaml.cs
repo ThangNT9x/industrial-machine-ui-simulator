@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using IndustrialMachineSimulator.UI.ViewModels;
+using IndustrialMachineSimulator.UI.Controls;
 
 namespace IndustrialMachineSimulator.UI;
 
