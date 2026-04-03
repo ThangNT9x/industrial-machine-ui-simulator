@@ -35,7 +35,8 @@
                     <ColumnDefinition Width="1.05*"></ColumnDefinition>
                     <ColumnDefinition Width="150"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                
+
+               
                 <!--Man hinh vision ben trai -->
                 <Border Grid.Column="0" Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10">
                     <Grid>
@@ -72,7 +73,7 @@
                                                VerticalAlignment="Center"
                                                FontWeight="Bold">
                                         </Label>
-                                        <Label Content="0" Foreground="green" FontFamily="Arial" 
+                                        <Label Content="{Binding PcbOkCount}" Foreground="green" FontFamily="Arial" 
                                               FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
                                               VerticalAlignment="Center" ></Label>
                                     </Grid>
@@ -82,7 +83,7 @@
                                                VerticalAlignment="Center"
                                                FontWeight="Bold">
                                         </Label>
-                                        <Label Content="0" Foreground="green" FontFamily="Arial" 
+                                        <Label Content="{Binding PbaOkCount}" Foreground="green" FontFamily="Arial" 
                                               FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
                                               VerticalAlignment="Center" ></Label>
                                     </Grid>
@@ -92,7 +93,7 @@
                                                VerticalAlignment="Center"
                                                FontWeight="Bold">
                                         </Label>
-                                        <Label Content="0" Foreground="Red" FontFamily="Arial" 
+                                        <Label Content="{Binding PbaNgCount}" Foreground="Red" FontFamily="Arial" 
                                                FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
                                                VerticalAlignment="Center" ></Label>
                                     </Grid>
@@ -473,245 +474,11 @@
                 </Border>
 
             </Grid>
-            <Grid Grid.Row="0"  Background="#0066FF" Height="auto" VerticalAlignment="Top">
-                <!-- Chia grid thanh bar top -->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*">
-
-                    </ColumnDefinition>
-                    <ColumnDefinition Width="auto">
-
-                    </ColumnDefinition>
-                    <ColumnDefinition Width="auto">
-
-                    </ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="SM_S928_ROUTER_LASER_SIMULATOR" 
-                           FontSize="25" FontFamily="Arial" Foreground="White"
-           />
-                <!-- chia vi tri nut button login va exit -->
-                <StackPanel Grid.Column="1" Orientation='Horizontal' VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEA8C;" FontSize="24" Foreground="LightGray" 
-                               VerticalAlignment="Center" Margin="0,0,12,0"/>
-
-
-                    <Label Content="Operator" Foreground="White" 
-                           VerticalAlignment="Center" FontSize="25" 
-                           FontFamily="Arial"/>
-                    <Button Content="LOGIN" 
-                            Width="100"
-                            Height="35"
-                            Background="blue"
-                            FontFamily="Arial"
-                            FontSize="25"
-                            BorderBrush="blue"
-           
-                            Foreground="WhiteSmoke"
-                            Margin="0,0,12,0"
-                            >
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border  Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="1"
-                                        CornerRadius="10"
-                                       >
-                                    <ContentPresenter HorizontalAlignment="Center"
-                                      VerticalAlignment="Center">
-                                    </ContentPresenter>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </StackPanel>
-                <!-- Nut Exit-->
-                <Button Grid.Column="2" Width="50" Height="35" Background="#0066FF">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7E8;" 
-                                FontSize="25"
-                                Foreground="White">
-                    </TextBlock>
-                </Button>
-            </Grid >
-
-            <!-- Chia man hinh grid 2-->
-            <Grid Grid.Row="1" Height="auto" Background="White">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <!-- Nut nhan RUN -->
-                <Button Grid.Column="0" Width="120" Height="120" Background="blue" BorderBrush="blue"></Button>
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,5,0,0">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF5B0;" 
-                               FontSize="80" Foreground="White"
-                               Margin="0,0,20,0"
-                               ></TextBlock>
-                    <TextBlock FontFamily="Arial" FontSize="25" Text="RUN" Foreground="White"
-                               TextAlignment="Center"></TextBlock>
-                </StackPanel>
-                <!--Tiep tuc chia nho grid so 2 -->
-                <Grid Grid.Column="1">
-                    <Grid.ColumnDefinitions>
-
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition Height="58"></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <!--Icon mau xanh trang thai Host va Laser-->
-                    <TextBlock Grid.Column="0" Grid.Row="1"
-                               FontFamily="Segoe MDL2 Assets" Text="&#xECCB;"
-                               FontSize="50" Foreground="#00FF00"
-                               Margin="0,0,35,0"
-                               TextAlignment="Right"></TextBlock>
-
-                    <TextBlock Grid.Column="1" Grid.Row="1"
-                               FontFamily="Segoe MDL2 Assets" Text="&#xECCB;"
-                               FontSize="50" Foreground="#00FF00"
-                               Margin="0,0,35,0"
-                               TextAlignment="Right"></TextBlock>
-                    <Label Grid.Column="0" Grid.Row="1" Content="Host" 
-                           FontFamily="Arial" HorizontalAlignment="Left" 
-                           VerticalAlignment="Center" FontSize="28"
-                           FontWeight="Bold"
-                           Margin="35,0"></Label>
-                    <Label Grid.Column="1" Grid.Row="1" Content="Laser" 
-                           FontFamily="Arial" HorizontalAlignment="Left" 
-                           VerticalAlignment="Center" FontSize="28"
-                           FontWeight="Bold"
-                           Margin="35,0"></Label>
-
-
-                    <Label  Grid.Column="0" Grid.Row="2" Content="EQP ID" 
-                            FontFamily="Arial" HorizontalAlignment="Left" 
-                            VerticalAlignment="Center" FontSize="20"
-                    
-                            Margin="35,0"></Label>
-
-                    <Label Grid.Column="1" Grid.Row="2" Content="LASER ROUTER 01" 
-                            FontFamily="Arial" HorizontalAlignment="Right" 
-                            VerticalAlignment="Center" FontSize="23"
-                            FontWeight="Bold"
-                            Margin="35,0"></Label>
-
-                    <Label Grid.Column="0" Grid.Row="0"  Content="Status" 
-                                FontFamily="Arial" HorizontalAlignment="Left" 
-                                 VerticalAlignment="Center" FontSize="20"
-                                 Margin="35,0"></Label>
-                    <!--Chia khung bang Status-->
-                    <Border Grid.Column="0" Grid.Row="0"
-                            BorderThickness="1"
-                            BorderBrush="#D9D9D9"
-                            CornerRadius="4">
-
-                    </Border>
-                    <Border Grid.Column="0" Grid.Row="1" 
-                            BorderThickness="1"
-                            BorderBrush="#D9D9D9"
-                            CornerRadius="4">
-
-                    </Border>
-                    <Border Grid.Column="0" Grid.Row="2" 
-                           
-                           
-                            BorderThickness="1"
-                            BorderBrush="#D9D9D9"
-                            CornerRadius="4"
-                            >
-
-                    </Border>
-                    <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                    <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                    <Border Grid.Column="1" Grid.Row="2" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                </Grid>
-                <Grid Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition Height="58"></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <!-- Trang thai nhiet do va thoi gian Laser Power-->
-                    <Label Grid.Column="0" Grid.Row="1" Content="Laser Time" 
-                       FontFamily="Arial" HorizontalAlignment="Left" 
-                       VerticalAlignment="Center" FontSize="28"
-                       FontWeight="Bold"
-                       Margin="35,0"></Label>
-                    <Label Grid.Column="1" Grid.Row="1" Content="Temperature" 
-                       FontFamily="Arial" HorizontalAlignment="Left" 
-                       VerticalAlignment="Center" FontSize="28"
-                       FontWeight="Bold"
-                       Margin="35,0"></Label>
-                    <Label Grid.Column="0" Grid.Row="1" Content="0" 
-                        FontFamily="Arial" HorizontalAlignment="Right" 
-                        VerticalAlignment="Center" FontSize="28"
-                        FontWeight="Bold"
-                        Margin="35,0"></Label>
-                    <Label Grid.Column="1" Grid.Row="1" Content="0" 
-                        FontFamily="Arial" HorizontalAlignment="Right" 
-                        VerticalAlignment="Center" FontSize="28"
-                        FontWeight="Bold"
-                        Margin="35,0"></Label>
-
-                    <Label  Grid.Column="0" Grid.Row="2" Content="Line" 
-                        FontFamily="Arial" HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" FontSize="20"
-    
-                        Margin="35,0"></Label>
-
-                    <Label Grid.Column="0" Grid.Row="2" Content="TEST" 
-                        FontFamily="Arial" HorizontalAlignment="Right" 
-                        VerticalAlignment="Center" FontSize="23"
-                        FontWeight="Bold"
-                        Margin="35,0"></Label>
-                    <Label  Grid.Column="1" Grid.Row="2" Content="OS Version" 
-                        FontFamily="Arial" HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" FontSize="20"
-    
-                        Margin="35,0"></Label>
-
-                    <Label Grid.Column="1" Grid.Row="2" Content="0.0.1" 
-                        FontFamily="Arial" HorizontalAlignment="Right" 
-                        VerticalAlignment="Center" FontSize="23"
-                        FontWeight="Bold"
-                        Margin="35,0"></Label>
-                    <!--Chia khung bang trang thai // cai nay chac can lam lai cho dep-->
-                    <Border Grid.Column="0" Grid.Row="0"
-                        BorderThickness="1"
-                        BorderBrush="#D9D9D9"
-                        CornerRadius="4">
-
-                    </Border>
-                    <Border Grid.Column="0" Grid.Row="1" 
-                        BorderThickness="1"
-                        BorderBrush="#D9D9D9"
-                        CornerRadius="4">
-
-                    </Border>
-                    <Border Grid.Column="0" Grid.Row="2" 
-           
-           
-                            BorderThickness="1"
-                            BorderBrush="#D9D9D9"
-                            CornerRadius="4"
-                            >
-
-                    </Border>
-                    <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                    <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                    <Border Grid.Column="1" Grid.Row="2" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                </Grid>
-            </Grid>
+            <!--Thanh menu bar top-->
+            <controls:TopHeaderBar Grid.Row="0"></controls:TopHeaderBar>
+            
+           <!--Thanh Status Summary Bar-->
+            <controls:StatusSummaryBar Grid.Row="1"></controls:StatusSummaryBar>
             
             
             <controls:BottomNavigationBar Grid.Row="3"> </controls:BottomNavigationBar>

@@ -1,0 +1,206 @@
+﻿<UserControl x:Class="IndustrialMachineSimulator.UI.Controls.StatusSummaryBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IndustrialMachineSimulator.UI.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="120" d:DesignWidth="1920">
+    <Grid>
+        <!-- Chia man hinh grid 2-->
+        <Grid  Height="auto" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <!-- Nut nhan RUN -->
+            <Button Grid.Column="0" Width="120" Height="120" Background="blue" BorderBrush="blue"></Button>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,5,0,0">
+                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF5B0;" 
+                    FontSize="80" Foreground="White"
+                    Margin="0,0,20,0"
+                    ></TextBlock>
+                <TextBlock FontFamily="Arial" FontSize="25" Text="RUN" Foreground="White"
+                    TextAlignment="Center"></TextBlock>
+            </StackPanel>
+            <!--Tiep tuc chia nho grid so 2 -->
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="58"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <!--Icon mau xanh trang thai Host va Laser-->
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                    FontFamily="Segoe MDL2 Assets" Text="&#xECCB;"
+                    FontSize="50" Foreground="#00FF00"
+                    Margin="0,0,35,0"
+                    TextAlignment="Right"></TextBlock>
+
+                <TextBlock Grid.Column="1" Grid.Row="1"
+                    FontFamily="Segoe MDL2 Assets" Text="&#xECCB;"
+                    FontSize="50" Foreground="#00FF00"
+                    Margin="0,0,35,0"
+                    TextAlignment="Right"></TextBlock>
+                <Label Grid.Column="0" Grid.Row="1" Content="Host" 
+                FontFamily="Arial" HorizontalAlignment="Left" 
+                VerticalAlignment="Center" FontSize="28"
+                FontWeight="Bold"
+                Margin="35,0"></Label>
+                <!--binding du lieu status cua Host-->
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                           Text="{Binding HostStatusText}"
+                           FontFamily="Arial" FontSize="12"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                          
+                           ></TextBlock>
+                <Label Grid.Column="1" Grid.Row="1" Content="Laser" 
+                FontFamily="Arial" HorizontalAlignment="Left" 
+                VerticalAlignment="Center" FontSize="28"
+                FontWeight="Bold"
+                Margin="35,0"></Label>
+                <!--binding du lieu status cua Laser-->
+                <TextBlock Grid.Column="1" Grid.Row="1"
+                            Text="{Binding LaserStatusText}"
+                            FontFamily="Arial" FontSize="12"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            
+                            ></TextBlock>
+
+
+                <Label  Grid.Column="0" Grid.Row="2" Content="EQP ID" 
+                 FontFamily="Arial" HorizontalAlignment="Left" 
+                 VerticalAlignment="Center" FontSize="20"
+         
+                 Margin="35,0"></Label>
+
+                <Label Grid.Column="1" Grid.Row="2" Content="{Binding EqpId}"
+                 FontFamily="Arial" HorizontalAlignment="Right" 
+                 VerticalAlignment="Center" FontSize="23"
+                 FontWeight="Bold"
+                 Margin="35,0"></Label>
+
+                <Label Grid.Column="0" Grid.Row="0"  Content="Status" 
+                     FontFamily="Arial" HorizontalAlignment="Left" 
+                      VerticalAlignment="Center" FontSize="20"
+                      Margin="35,0"></Label>
+                <!--Chia khung bang Status-->
+                <Border Grid.Column="0" Grid.Row="0"
+                 BorderThickness="1"
+                 BorderBrush="#D9D9D9"
+                 CornerRadius="4">
+
+                </Border>
+                <Border Grid.Column="0" Grid.Row="1" 
+                 BorderThickness="1"
+                 BorderBrush="#D9D9D9"
+                 CornerRadius="4">
+
+                </Border>
+                <Border Grid.Column="0" Grid.Row="2" 
+                
+                
+                 BorderThickness="1"
+                 BorderBrush="#D9D9D9"
+                 CornerRadius="4"
+                 >
+
+                </Border>
+                <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
+                <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
+                <Border Grid.Column="1" Grid.Row="2" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="58"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <!-- Trang thai nhiet do va thoi gian Laser Power-->
+                <Label Grid.Column="0" Grid.Row="1" Content="Laser Time" 
+            FontFamily="Arial" HorizontalAlignment="Left" 
+            VerticalAlignment="Center" FontSize="28"
+            FontWeight="Bold"
+            Margin="35,0"></Label>
+                <Label Grid.Column="1" Grid.Row="1" Content="Temperature" 
+            FontFamily="Arial" HorizontalAlignment="Left" 
+            VerticalAlignment="Center" FontSize="28"
+            FontWeight="Bold"
+            Margin="35,0"></Label>
+                <Label Grid.Column="0" Grid.Row="1" Content="0" 
+             FontFamily="Arial" HorizontalAlignment="Right" 
+             VerticalAlignment="Center" FontSize="28"
+             FontWeight="Bold"
+             Margin="35,0"></Label>
+                <Label Grid.Column="1" Grid.Row="1" Content="0" 
+             FontFamily="Arial" HorizontalAlignment="Right" 
+             VerticalAlignment="Center" FontSize="28"
+             FontWeight="Bold"
+             Margin="35,0"></Label>
+
+                <Label  Grid.Column="0" Grid.Row="2" Content="Line" 
+             FontFamily="Arial" HorizontalAlignment="Left" 
+             VerticalAlignment="Center" FontSize="20"
+    
+             Margin="35,0"></Label>
+
+                <Label Grid.Column="0" Grid.Row="2" Content="{Binding LineName}" 
+             FontFamily="Arial" HorizontalAlignment="Right" 
+             VerticalAlignment="Center" FontSize="23"
+             FontWeight="Bold"
+             Margin="35,0"></Label>
+                <Label  Grid.Column="1" Grid.Row="2" Content="OS Version" 
+             FontFamily="Arial" HorizontalAlignment="Left" 
+             VerticalAlignment="Center" FontSize="20"
+    
+             Margin="35,0"></Label>
+
+                <Label Grid.Column="1" Grid.Row="2" Content="{Binding OsVersion}" 
+             FontFamily="Arial" HorizontalAlignment="Right" 
+             VerticalAlignment="Center" FontSize="23"
+             FontWeight="Bold"
+             Margin="35,0"></Label>
+                <!--Chia khung bang trang thai // cai nay chac can lam lai cho dep-->
+                <Border Grid.Column="0" Grid.Row="0"
+             BorderThickness="1"
+             BorderBrush="#D9D9D9"
+             CornerRadius="4">
+
+                </Border>
+                <Border Grid.Column="0" Grid.Row="1" 
+             BorderThickness="1"
+             BorderBrush="#D9D9D9"
+             CornerRadius="4">
+
+                </Border>
+                <Border Grid.Column="0" Grid.Row="2" 
+
+
+                 BorderThickness="1"
+                 BorderBrush="#D9D9D9"
+                 CornerRadius="4"
+                 >
+
+                </Border>
+                <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
+                <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
+                <Border Grid.Column="1" Grid.Row="2" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

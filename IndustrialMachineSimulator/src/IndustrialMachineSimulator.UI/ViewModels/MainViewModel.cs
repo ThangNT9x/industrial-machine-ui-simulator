@@ -24,6 +24,19 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand StartCommand { get; }
     public ICommand StopCommand { get; }
 
+    public string OperatorName { get; set; } = "Operator";
+    public string EqpId { get; set; } = "Laser Router 01";
+    public string LineName { get; set; } = "TEST";
+    public string OsVersion { get; set; } = "0.0.1";
+    public int PcbOkCount { get; set; } = 0;
+    public int PbaOkCount { get; set; } = 0;
+    public int PbaNgCount { get; set; } = 0;
+
+    public string LaserTimeText { get; set; } = "0";
+    public string TemperatureText { get; set; } = "0";
+    public string HostStatusText {  get; set; } = "Connected";
+    public string LaserStatusText { get; set;  } = "Ready";
+
     public MainViewModel(MachineController machineController)
     {
         _machineController = machineController;
