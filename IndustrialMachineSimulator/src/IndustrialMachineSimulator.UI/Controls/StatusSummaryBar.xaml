@@ -10,8 +10,7 @@
         <!-- Chia man hinh grid 2-->
         <Grid  Height="auto" Background="White">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="120"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <!-- Nut nhan RUN -->
@@ -27,179 +26,271 @@
             <!--Tiep tuc chia nho grid so 2 -->
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
-
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
-
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="25"></RowDefinition>
                     <RowDefinition></RowDefinition>
-                    <RowDefinition Height="58"></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
-                <!--Icon mau xanh trang thai Host va Laser-->
-                <TextBlock Grid.Column="0" Grid.Row="1"
-                    FontFamily="Segoe MDL2 Assets" Text="&#xECCB;"
-                    FontSize="50" Foreground="#00FF00"
-                    Margin="0,0,35,0"
-                    TextAlignment="Right"></TextBlock>
 
-                <TextBlock Grid.Column="1" Grid.Row="1"
-                    FontFamily="Segoe MDL2 Assets" Text="&#xECCB;"
-                    FontSize="50" Foreground="#00FF00"
+                <!--Ke khung boder-->
+                <Border Grid.Row="1"
+                        Grid.Column="0"
+                        Height="1"
+                        Background="#D9D9D9"
+                        VerticalAlignment="Bottom"
+                        Margin="10,0,10,0">
+
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="1"
+                        Height="1"
+                        Background="#D9D9D9"
+                        VerticalAlignment="Bottom"
+                        Margin="10,0,10,0">
+
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="2"
+                        Height="1"
+                        Background="#D9D9D9"
+                        VerticalAlignment="Bottom"
+                        Margin="10,0,10,0">
+
+                </Border>
+                <Border Grid.Row="1"
+                     Grid.Column="3"
+                     Height="1"
+                     Background="#D9D9D9"
+                     VerticalAlignment="Bottom"
+                     Margin="10,0,10,0">
+
+                </Border>
+
+                <Border Grid.Row="1"
+                      Grid.Column="0"
+                     Width="1"
+                     Background="#D9D9D9"
+                     HorizontalAlignment="Right"
+                       Margin="0,0,0,10" >
+                </Border>
+                <Border Grid.Row="2"
+                     Grid.Column="0"
+                    Width="1"
+                    Background="#D9D9D9"
+                    HorizontalAlignment="Right"
+                      Margin="0,0,0,10" >
+                </Border>
+
+                <Border Grid.Row="1"
+                      Grid.Column="1"
+                     Width="1"
+                     Background="#D9D9D9"
+                     HorizontalAlignment="Right"
+                       Margin="0,0,0,10" >
+                </Border>
+
+                <Border Grid.Row="2"
+                     Grid.Column="1"
+                    Width="1"
+                    Background="#D9D9D9"
+                    HorizontalAlignment="Right"
+                      Margin="0,0,0,10" >
+                </Border>
+                <Border Grid.Row="1"
+                      Grid.Column="2"
+                     Width="1"
+                     Background="#D9D9D9"
+                     HorizontalAlignment="Right"
+                       Margin="0,0,0,10" >
+                </Border>
+
+                <Border Grid.Row="2"
+                     Grid.Column="2"
+                    Width="1"
+                    Background="#D9D9D9"
+                    HorizontalAlignment="Right"
+                      Margin="0,0,0,10" >
+                </Border>
+
+                <!--Icon mau xanh trang thai Host -->
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                    FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                    FontSize="40" Foreground="#00FF00"
                     Margin="0,0,35,0"
+                    VerticalAlignment="Center"
                     TextAlignment="Right"></TextBlock>
-                <Label Grid.Column="0" Grid.Row="1" Content="Host" 
-                FontFamily="Arial" HorizontalAlignment="Left" 
-                VerticalAlignment="Center" FontSize="28"
-                FontWeight="Bold"
-                Margin="35,0"></Label>
-                <!--binding du lieu status cua Host-->
                 <TextBlock Grid.Column="0" Grid.Row="1"
                            Text="{Binding HostStatusText}"
                            FontFamily="Arial" FontSize="12"
                            VerticalAlignment="Center"
-                           HorizontalAlignment="Right"
-                          
-                           ></TextBlock>
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"></TextBlock>
+                <Label Grid.Column="0" Grid.Row="1" Content="Host" 
+                       FontFamily="Arial" HorizontalAlignment="Left" 
+                       VerticalAlignment="Center" FontSize="28"
+                       FontWeight="Bold"
+                       Margin="35,0"></Label>
+                <!--Icon mau xanh trang thai Diode -->
+                <TextBlock Grid.Column="0" Grid.Row="2"
+                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                  FontSize="40" Foreground="#00FF00"
+                  Margin="0,0,35,0"
+                  VerticalAlignment="Center"
+                  TextAlignment="Right"></TextBlock>
+                
+                <Label Grid.Column="0" Grid.Row="2" Content="Diode" 
+                     FontFamily="Arial" HorizontalAlignment="Left" 
+                     VerticalAlignment="Center" FontSize="28"
+                     FontWeight="Bold"
+                     Margin="35,0"></Label>
+
+                <!--Icon mau xanh trang thai Laser -->
+                <TextBlock Grid.Column="1" Grid.Row="1"
+                    FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                    FontSize="40" Foreground="#00FF00"
+                    Margin="0,0,35,0"
+                           VerticalAlignment="Center"
+                    TextAlignment="Right"></TextBlock>
+                             
                 <Label Grid.Column="1" Grid.Row="1" Content="Laser" 
-                FontFamily="Arial" HorizontalAlignment="Left" 
-                VerticalAlignment="Center" FontSize="28"
-                FontWeight="Bold"
-                Margin="35,0"></Label>
+                        FontFamily="Arial" HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" FontSize="28"
+                        FontWeight="Bold"
+                        Margin="35,0"></Label>
                 <!--binding du lieu status cua Laser-->
                 <TextBlock Grid.Column="1" Grid.Row="1"
                             Text="{Binding LaserStatusText}"
                             FontFamily="Arial" FontSize="12"
                             VerticalAlignment="Center"
-                            HorizontalAlignment="Right"
-                            
-                            ></TextBlock>
+                            HorizontalAlignment="Center"
+                            TextAlignment="Center"></TextBlock>
+                
+                <!--Icon mau xanh trang thai Pulsing -->
+                <TextBlock Grid.Column="1" Grid.Row="2"
+                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                  FontSize="40" Foreground="#00FF00"
+                  Margin="0,0,35,0"
+                  VerticalAlignment="Center"
+                  TextAlignment="Right"></TextBlock>
 
-
-                <Label  Grid.Column="0" Grid.Row="2" Content="EQP ID" 
-                 FontFamily="Arial" HorizontalAlignment="Left" 
-                 VerticalAlignment="Center" FontSize="20"
-         
-                 Margin="35,0"></Label>
-
-                <Label Grid.Column="1" Grid.Row="2" Content="{Binding EqpId}"
-                 FontFamily="Arial" HorizontalAlignment="Right" 
-                 VerticalAlignment="Center" FontSize="23"
-                 FontWeight="Bold"
-                 Margin="35,0"></Label>
-
-                <Label Grid.Column="0" Grid.Row="0"  Content="Status" 
+                <Label Grid.Column="1" Grid.Row="2" Content="Pulsing" 
                      FontFamily="Arial" HorizontalAlignment="Left" 
-                      VerticalAlignment="Center" FontSize="20"
-                      Margin="35,0"></Label>
-                <!--Chia khung bang Status-->
-                <Border Grid.Column="0" Grid.Row="0"
-                 BorderThickness="1"
-                 BorderBrush="#D9D9D9"
-                 CornerRadius="4">
-
-                </Border>
-                <Border Grid.Column="0" Grid.Row="1" 
-                 BorderThickness="1"
-                 BorderBrush="#D9D9D9"
-                 CornerRadius="4">
-
-                </Border>
-                <Border Grid.Column="0" Grid.Row="2" 
+                     VerticalAlignment="Center" FontSize="28"
+                     FontWeight="Bold"
+                     Margin="35,0"></Label>
+                <!--Icon mau xanh trang thai Laser -->
+                <TextBlock Grid.Column="1" Grid.Row="1"
+                    FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                    FontSize="40" Foreground="#00FF00"
+                    Margin="0,0,35,0"
+                           VerticalAlignment="Center"
+                    TextAlignment="Right"></TextBlock>
+                             
+                <Label Grid.Column="1" Grid.Row="1" Content="Laser" 
+                        FontFamily="Arial" HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" FontSize="28"
+                        FontWeight="Bold"
+                        Margin="35,0"></Label>
+                <!--binding du lieu status cua Laser-->
+                <TextBlock Grid.Column="1" Grid.Row="1"
+                            Text="{Binding LaserStatusText}"
+                            FontFamily="Arial" FontSize="12"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            TextAlignment="Center"></TextBlock>
                 
+                <!--Icon mau xanh trang thai Pulsing -->
+                <TextBlock Grid.Column="1" Grid.Row="2"
+                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                  FontSize="40" Foreground="#00FF00"
+                  Margin="0,0,35,0"
+                  VerticalAlignment="Center"
+                  TextAlignment="Right"></TextBlock>
+
+                <Label Grid.Column="1" Grid.Row="2" Content="Pulsing" 
+                     FontFamily="Arial" HorizontalAlignment="Left" 
+                     VerticalAlignment="Center" FontSize="28"
+                     FontWeight="Bold"
+                     Margin="35,0"></Label>
                 
-                 BorderThickness="1"
-                 BorderBrush="#D9D9D9"
-                 CornerRadius="4"
-                 >
+                <!--Icon mau xanh trang thai LaserTime -->
+ 
 
-                </Border>
-                <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                <Border Grid.Column="1" Grid.Row="2" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-            </Grid>
-            <Grid Grid.Column="2">
-                <Grid.ColumnDefinitions>
+                <Label Grid.Column="2" Grid.Row="1" Content="Laser Time" 
+                        FontFamily="Arial" HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" FontSize="28"
+                        FontWeight="Bold"
+                        Margin="35,0"></Label>
+                <!--binding du lieu status cua Laser-->
+                <TextBlock Grid.Column="3" Grid.Row="1"
+                            Text="2000 / 20000H (100 %)"
+                            FontFamily="Arial" FontSize="28"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                           FontWeight="Bold"
+                           Margin="35,0"
+                            TextAlignment="Center"></TextBlock>
 
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                <!--Icon mau xanh trang thai Front Door -->
+                <TextBlock Grid.Column="2" Grid.Row="2"
+                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                  FontSize="40" Foreground="#00FF00"
+                  Margin="0,0,35,0"
+                  VerticalAlignment="Center"
+                  TextAlignment="Right"></TextBlock>
 
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition Height="58"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <!-- Trang thai nhiet do va thoi gian Laser Power-->
-                <Label Grid.Column="0" Grid.Row="1" Content="Laser Time" 
-            FontFamily="Arial" HorizontalAlignment="Left" 
-            VerticalAlignment="Center" FontSize="28"
-            FontWeight="Bold"
-            Margin="35,0"></Label>
-                <Label Grid.Column="1" Grid.Row="1" Content="Temperature" 
-            FontFamily="Arial" HorizontalAlignment="Left" 
-            VerticalAlignment="Center" FontSize="28"
-            FontWeight="Bold"
-            Margin="35,0"></Label>
-                <Label Grid.Column="0" Grid.Row="1" Content="0" 
-             FontFamily="Arial" HorizontalAlignment="Right" 
-             VerticalAlignment="Center" FontSize="28"
-             FontWeight="Bold"
-             Margin="35,0"></Label>
-                <Label Grid.Column="1" Grid.Row="1" Content="0" 
-             FontFamily="Arial" HorizontalAlignment="Right" 
-             VerticalAlignment="Center" FontSize="28"
-             FontWeight="Bold"
-             Margin="35,0"></Label>
+                <Label Grid.Column="2" Grid.Row="2" Content="Front Door" 
+                     FontFamily="Arial" HorizontalAlignment="Left" 
+                     VerticalAlignment="Center" FontSize="28"
+                     FontWeight="Bold"
+                     Margin="35,0"></Label>
 
-                <Label  Grid.Column="0" Grid.Row="2" Content="Line" 
-             FontFamily="Arial" HorizontalAlignment="Left" 
-             VerticalAlignment="Center" FontSize="20"
-    
-             Margin="35,0"></Label>
+                <!--Icon mau xanh trang thai Rear Door -->
+                <TextBlock Grid.Column="3" Grid.Row="2"
+                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
+                  FontSize="40" Foreground="#00FF00"
+                  Margin="0,0,35,0"
+                  VerticalAlignment="Center"
+                  TextAlignment="Right"></TextBlock>
 
-                <Label Grid.Column="0" Grid.Row="2" Content="{Binding LineName}" 
-             FontFamily="Arial" HorizontalAlignment="Right" 
-             VerticalAlignment="Center" FontSize="23"
-             FontWeight="Bold"
-             Margin="35,0"></Label>
-                <Label  Grid.Column="1" Grid.Row="2" Content="OS Version" 
-             FontFamily="Arial" HorizontalAlignment="Left" 
-             VerticalAlignment="Center" FontSize="20"
-    
-             Margin="35,0"></Label>
-
-                <Label Grid.Column="1" Grid.Row="2" Content="{Binding OsVersion}" 
-             FontFamily="Arial" HorizontalAlignment="Right" 
-             VerticalAlignment="Center" FontSize="23"
-             FontWeight="Bold"
-             Margin="35,0"></Label>
-                <!--Chia khung bang trang thai // cai nay chac can lam lai cho dep-->
-                <Border Grid.Column="0" Grid.Row="0"
-             BorderThickness="1"
-             BorderBrush="#D9D9D9"
-             CornerRadius="4">
-
-                </Border>
-                <Border Grid.Column="0" Grid.Row="1" 
-             BorderThickness="1"
-             BorderBrush="#D9D9D9"
-             CornerRadius="4">
-
-                </Border>
-                <Border Grid.Column="0" Grid.Row="2" 
+                <Label Grid.Column="3" Grid.Row="2" Content="Rear Door" 
+                     FontFamily="Arial" HorizontalAlignment="Left" 
+                     VerticalAlignment="Center" FontSize="28"
+                     FontWeight="Bold"
+                     Margin="35,0"></Label>
+                
+                <!--OS Ver -->
+                <TextBlock Grid.Column="3"
+                           Grid.Row="0"
+                           FontFamily="Arial"
+                           FontSize="15"
+                           Text="Os Ver"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Bottom"
+                           TextAlignment="Center">
+                    
+                </TextBlock>
+                
+                <!--Version-->
+                <TextBlock Grid.Column="3"
+                           Grid.Row="0"
+                           FontFamily="Arial"
+                           FontSize="18"
+                           Text="{Binding OsVersion}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom"
+                           TextAlignment="Center"
+                           Margin="0,0,50,0">
+                    
+                </TextBlock>
+                
 
 
-                 BorderThickness="1"
-                 BorderBrush="#D9D9D9"
-                 CornerRadius="4"
-                 >
-
-                </Border>
-                <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
-                <Border Grid.Column="1" Grid.Row="2" BorderThickness="1" BorderBrush="#D9D9D9" CornerRadius="4"></Border>
             </Grid>
         </Grid>
     </Grid>
