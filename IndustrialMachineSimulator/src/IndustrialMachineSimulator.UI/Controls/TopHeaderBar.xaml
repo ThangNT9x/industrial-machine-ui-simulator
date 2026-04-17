@@ -29,7 +29,7 @@
                     VerticalAlignment="Center" Margin="0,0,12,0"/>
 
 
-                <Label Content="{Binding OperatorName}" Foreground="White" 
+                <Label Content="{Binding CurrentRoleText}" Foreground="White" 
                 VerticalAlignment="Center" FontSize="25" 
                 FontFamily="Arial"/>
                 <Button Content="LOGIN" 
@@ -42,19 +42,35 @@
 
                  Foreground="WhiteSmoke"
                  Margin="0,0,12,0"
+                 Command="{Binding LoginCommand}"
                  >
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border  Background="{TemplateBinding Background}"
+                            <Border x:Name="borderOutline"  Background="{TemplateBinding Background}"
                              BorderBrush="{TemplateBinding BorderBrush}"
                              BorderThickness="1"
                              CornerRadius="10"
                             >
                                 <ContentPresenter HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
+                                                  VerticalAlignment="Center">
                                 </ContentPresenter>
+
                             </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="borderOutline" Property="BorderBrush" Value="White"></Setter>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="borderOutline" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.96" ScaleY="0.96"></ScaleTransform>
+                                        </Setter.Value>
+                                        
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
+                        
                     </Button.Template>
                 </Button>
             </StackPanel>
@@ -68,3 +84,4 @@
         </Grid >
     </Grid>
 </UserControl>
+

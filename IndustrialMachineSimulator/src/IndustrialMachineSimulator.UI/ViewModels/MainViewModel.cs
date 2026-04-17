@@ -1,7 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 using IndustrialMachineSimulator.Core.Services;
+using System.Windows;
+using IndustrialMachineSimulator.UI;
 
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
@@ -19,18 +22,48 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    public enum UserRole
+    {
+        Operator,
+        Engineer,
+        Developer
+    }
+    private UserRole _currentRole=UserRole.Operator;
+    public UserRole CurrentRole
+    {
+        get => _currentRole;
+        set
+        {
+            _currentRole = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentRoleText));
+            ApplyRolePermissions();
+        }
+    }
 
     public ICommand InitializeCommand { get; }
     public ICommand StartCommand { get; }
     public ICommand StopCommand { get; }
+    public ICommand LoginCommand { get; }
+    public ICommand ShowHomeCommand { get;  }
+    public ICommand ShowMaintCommand { get; }
+    public ICommand ShowRecipeCommand { get; }
+    public ICommand ShowDatalogCommand { get; }
+    public ICommand ShowSetupCommand { get; }
+    public ICommand ShowAlarmsCommand { get; }
+    public ICommand ShowListCommand { get; }
+    public ICommand ShowQuickCommand { get; }
+    public ICommand ShowVisionCommand { get; }
+    public ICommand ShowErrorCommand { get; }
+    public ICommand ShowMESCommand { get; }
+    public ICommand ShowPowerCommand { get; }
 
-    public string OperatorName { get; set; } = "Operator";
+    public string CurrentRoleText => CurrentRole.ToString();
+    
     public string EqpId { get; set; } = "Laser Router 01";
     public string LineName { get; set; } = "TEST";
     public string OsVersion { get; set; } = "0.0.1";
-    public int PcbOkCount { get; set; } = 0;
-    public int PbaOkCount { get; set; } = 0;
-    public int PbaNgCount { get; set; } = 0;
+    
 
     public string LaserTimeText { get; set; } = "0";
     public string TemperatureText { get; set; } = "0";
@@ -58,7 +91,434 @@ public class MainViewModel : INotifyPropertyChanged
             await _machineController.StopAsync();
             StatusText = _machineController.Status.State.ToString();
         });
+
+        ShowHomeCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Home;
+            return Task.CompletedTask;
+        }
+        );
+        ShowMaintCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Maint;
+            return Task.CompletedTask;
+        }
+        );
+        ShowRecipeCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Recipe;
+            return Task.CompletedTask;
+        }
+        );
+        ShowDatalogCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Datalog;
+            return Task.CompletedTask;
+        }
+        );
+        ShowSetupCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Setup;
+            return Task.CompletedTask;
+        }
+        );
+        ShowAlarmsCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Alarms;
+            return Task.CompletedTask;
+        }
+        );
+        ShowListCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.List;
+            return Task.CompletedTask;
+        }
+        );
+        ShowQuickCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Quick;
+            return Task.CompletedTask;
+        }
+        );
+        ShowVisionCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Vision;
+            return Task.CompletedTask;
+        }
+        );
+        ShowErrorCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Error;
+            return Task.CompletedTask;
+        }
+        );
+        ShowMESCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Mes;
+            return Task.CompletedTask;
+        }
+        );
+        ShowPowerCommand = new RelayCommand(_ =>
+        {
+            CurrentPage = AppPage.Power;
+            return Task.CompletedTask;
+        }
+        );
+        LoginCommand = new RelayCommand (_ =>
+        {
+            var loginWindow=new LoginWindow(CurrentRole.ToString());
+            if(Application.Current.MainWindow!=null)
+            {
+                loginWindow.Owner = Application.Current.MainWindow;
+            }
+            bool? result = loginWindow.ShowDialog();
+            if(result == true)
+            {
+                if(loginWindow.IslogoutRequested)
+                {
+                    CurrentRole = UserRole.Operator;
+                }
+                else if(!string.IsNullOrEmpty(loginWindow.SelectedRole))
+                {
+                    if (loginWindow.SelectedRole == "Engineer")
+                    {
+                        CurrentRole = UserRole.Engineer;
+                    }
+                    else if (loginWindow.SelectedRole == "Developer")
+                    {
+                        CurrentRole = UserRole.Developer;
+                    }
+                }
+                
+            }
+            return Task.CompletedTask;
+        });
+        CurrentRole = UserRole.Operator;
+        ApplyRolePermissions();
     }
+
+
+    #region cac nut nhan
+
+    private int _pcbOkCount = 0;
+    public int PcbOkCount
+    {
+        get => _pcbOkCount;
+        set
+        {
+            _pcbOkCount = value;
+            OnPropertyChanged();
+        }
+    }
+    private int _pbaOkCount = 0;
+    public int PbaOkCount
+    {
+        get => _pbaOkCount;
+        set
+        {
+            _pbaOkCount = value;
+            OnPropertyChanged();
+        }
+    }
+    private int _pbaNgCount = 0;
+    public int PbaNgCount
+    {
+        get => _pbaNgCount;
+        set
+        {
+            _pbaNgCount = value;
+            OnPropertyChanged();
+        }
+    }
+    private bool _canStart = true;
+    public bool CanStart
+    {
+        get => _canStart;
+        set
+        {
+            _canStart = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canStop = true;
+    public bool CanStop
+    {
+        get => _canStop;
+        set
+        {
+            _canStop = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canCycleStop = true;
+    public bool CanCycleStop
+    {
+        get => _canCycleStop;
+        set
+        {
+            _canCycleStop= value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canInit = true;
+    public bool CanInit
+    {
+        get => _canInit;
+        set
+        {
+            _canInit = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canReset = true;
+    public bool CanReset
+    {
+        get => _canReset;
+        set
+        {
+            _canReset = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canHome = true;
+    public bool CanHome
+    {
+        get => _canHome;
+        set
+        {
+            _canHome = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canMaint = false;
+    public bool CanMaint
+    {
+        get => _canMaint;
+        set
+        {
+            _canMaint = value;
+            OnPropertyChanged();
+        }
+    }
+    private bool _canRecipe = false;
+    public bool CanRecipe
+    {
+        get => _canRecipe;
+        set
+        {
+            _canRecipe = value;
+            OnPropertyChanged();
+        }
+    }
+    private bool _canDatalog = true;
+    public bool CanDatalog
+    {
+        get => _canDatalog;
+        set
+        {
+            _canDatalog = value;
+            OnPropertyChanged();
+        }
+    }
+    private bool _canSetup = false;
+    public bool CanSetup
+    {
+        get => _canSetup;
+        set
+        {
+            _canSetup = value;
+            OnPropertyChanged();
+        }
+    }
+    private bool _canAlarms = true;
+    public bool CanAlarms
+    {
+        get => _canAlarms;
+        set
+        {
+            _canAlarms = value;
+            OnPropertyChanged();
+        }
+    }
+    private bool _canList = false;
+    public bool CanList
+    {
+        get => _canList;
+        set
+        {
+            _canList = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canQuick = true;
+    public bool CanQuick
+    {
+        get => _canQuick;
+        set
+        {
+            _canQuick = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canVision = false;
+    public bool CanVision
+    {
+        get => _canVision;
+        set
+        {
+            _canVision = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canError = true;
+    public bool CanError
+    {
+        get => _canError;
+        set
+        {
+            _canError = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canMes = false;
+    public bool CanMes
+    {
+        get => _canMes;
+        set
+        {
+            _canMes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _canPower = false;
+    public bool CanPower
+    {
+        get => _canPower;
+        set
+        {
+            _canPower = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public void ApplyRolePermissions()
+    {
+        switch (CurrentRole)
+        {
+            case UserRole.Operator:
+                CanStart = true;
+                CanStop = true;
+                CanCycleStop = true;
+                CanInit = false;
+                CanReset = false;
+
+                CanHome = true;
+                CanMaint = false;
+                CanRecipe = false;
+                CanDatalog = true;
+                CanSetup = false;
+                CanAlarms = true;
+                CanList = false;
+                CanQuick = true;
+                CanVision = false;
+                CanError = true;
+                CanMes = false;
+                CanPower = false;
+                break;
+            case UserRole.Engineer:
+                CanStart = true;
+                CanStop = true;
+                CanCycleStop = true;
+                CanInit = true;
+                CanReset = true;
+
+                CanHome = true;
+                CanMaint = true;
+                CanRecipe = true;
+                CanDatalog = true;
+                CanSetup = true;
+                CanAlarms = true;
+                CanList = true;
+                CanQuick = true;
+                CanVision = true;
+                CanError = true;
+                CanMes = true;
+                CanPower = true;
+                break;
+
+            case UserRole.Developer:
+                CanStart = true;
+                CanStop = true;
+                CanCycleStop = true;
+                CanInit = true;
+                CanReset = true;
+
+                CanHome = true;
+                CanMaint = true;
+                CanRecipe = true;
+                CanDatalog = true;
+                CanSetup = true;
+                CanAlarms = true;
+                CanList = true;
+                CanQuick = true;
+                CanVision = true;
+                CanError = true;
+                CanMes = true;
+                CanPower = true;
+                break;
+        }
+    }
+    #endregion
+
+  
+
+    private AppPage _currentPage= AppPage.Home;
+    public AppPage CurrentPage
+    {
+        get => _currentPage;
+        set
+        {
+            _currentPage=value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsHomePage));
+            OnPropertyChanged(nameof(IsMaintPage));
+            OnPropertyChanged(nameof(IsRecipePage));
+            OnPropertyChanged(nameof(IsDatalogPage));
+            OnPropertyChanged(nameof(IsSetupPage));
+            OnPropertyChanged(nameof(IsAlarmsPage));
+            OnPropertyChanged(nameof(IsListPage));
+            OnPropertyChanged(nameof(IsQuickPage));
+            OnPropertyChanged(nameof(IsVisionPage));
+            OnPropertyChanged(nameof(IsErrorPage));
+            OnPropertyChanged(nameof(IsMESPage));
+            OnPropertyChanged(nameof(IsPowerPage));
+
+        }
+    }
+    public bool IsHomePage=>CurrentPage==AppPage.Home;
+    public bool IsMaintPage => CurrentPage == AppPage.Maint;
+    public bool IsRecipePage => CurrentPage == AppPage.Recipe;
+    public bool IsDatalogPage => CurrentPage == AppPage.Datalog;
+    public bool IsSetupPage => CurrentPage == AppPage.Setup;
+    public bool IsAlarmsPage => CurrentPage == AppPage.Alarms;
+
+    public bool IsListPage => CurrentPage == AppPage.List;
+    public bool IsQuickPage => CurrentPage == AppPage.Quick;
+    public bool IsVisionPage => CurrentPage == AppPage.Vision;
+    public bool IsErrorPage => CurrentPage == AppPage.Error;
+    public bool IsMESPage => CurrentPage == AppPage.Mes;
+    public bool IsPowerPage => CurrentPage == AppPage.Power;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

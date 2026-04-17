@@ -4,93 +4,149 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IndustrialMachineSimulator.UI.Controls"
+             xmlns:controls="clr-namespace:IndustrialMachineSimulator.UI.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="110" d:DesignWidth="1920">
     <Grid>
-        <Grid.Resources>
-            <!--Set style cho nut menu bottom-->
-            <Style x:Key="BottomNavButtonStyle" TargetType="Button">
-                <Setter Property="Width" Value="90"></Setter>
-                <Setter Property="Height" Value="70"></Setter>
-                <Setter Property="Background" Value="White"></Setter>
-                <Setter Property="Margin" Value="60,0,0,0"></Setter>
-            </Style>
-        </Grid.Resources>
+        
         
         <!--Thanh bar menu chinh duoi bottom-->
-<StackPanel  Orientation="Horizontal" Background="White" VerticalAlignment="Center">
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}" >
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE10F;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Home" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7F4;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" Margin="0,15,0,0" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Maint" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8A5;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" Margin="0,10,0,0" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Recipe" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE9F9;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Datalog" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE115;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Setup" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEA8F;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Alarms" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF5ED;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="List" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEB50;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Quick" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE114;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Vision" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEA39;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Error" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF6FA;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="MES" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-        <Button  Style="{StaticResource BottomNavButtonStyle}">
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF5F3;" FontSize="50" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" ></TextBlock>
-        </Button>
-        <Label FontFamily="Arial" FontSize="20" Content="Power" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="60,0,0,5" ></Label>
-    </StackPanel>
-</StackPanel>
+      
+<UniformGrid  Rows="1" Columns="12" Background="White">
+    
+   
+      <!--Nut Home-->
+     <controls:BottomNavItem
+                Label="Home"
+                IconNormal="/Resources/Icons/BottomNav/home_black.png"
+                IconActive="/Resources/Icons/BottomNav/home_blue.png"
+                Command="{Binding ShowHomeCommand}"
+                IsItemEnabled="{Binding CanHome}"
+                IsActive="{Binding IsHomePage}">
+         
+     </controls:BottomNavItem>
+    
+    <!--Nut Maint-->
+    <controls:BottomNavItem
+                Label="Maint"
+                IconNormal="/Resources/Icons/BottomNav/maint_black.png"
+                IconActive="/Resources/Icons/BottomNav/maint_blue.png"
+                Command="{Binding ShowMaintCommand}"
+                IsItemEnabled="{Binding CanMaint}"
+                IsActive="{Binding IsMaintPage}">
+        
+    </controls:BottomNavItem>
+    
+    <!--Nut Recipe-->
+    <controls:BottomNavItem
+                Label="Recipe"
+                IconNormal="/Resources/Icons/BottomNav/recipe_black.png"
+                IconActive="/Resources/Icons/BottomNav/recipe_blue.png"
+                Command="{Binding ShowRecipeCommand}"
+                IsItemEnabled="{Binding CanRecipe}"
+                IsActive="{Binding IsRecipePage}">
+        
+    </controls:BottomNavItem>
+    
+    <!--Nut Datalog-->
+            <controls:BottomNavItem
+             Label="Datalog"
+             IconNormal="/Resources/Icons/BottomNav/datalog_black.png"
+             IconActive="/Resources/Icons/BottomNav/datalog_blue.png"
+             Command="{Binding ShowDatalogCommand}"
+             IsItemEnabled="{Binding CanDatalog}"
+             IsActive="{Binding IsDatalogPage}">
+
+            </controls:BottomNavItem>
+    
+            <!--Nut Setup-->
+            <controls:BottomNavItem
+             Label="Setup"
+             IconNormal="/Resources/Icons/BottomNav/setup_black.png"
+             IconActive="/Resources/Icons/BottomNav/setup_blue.png"
+             Command="{Binding ShowSetupCommand}"
+             IsItemEnabled="{Binding CanSetup}"
+             IsActive="{Binding IsSetupPage}">
+
+            </controls:BottomNavItem>
+            <!--Nut Alarms-->
+            <controls:BottomNavItem
+             Label="Alarms"
+             IconNormal="/Resources/Icons/BottomNav/alarms_black.png"
+             IconActive="/Resources/Icons/BottomNav/alarms_blue.png"
+             Command="{Binding ShowAlarmsCommand}"
+             IsItemEnabled="{Binding CanAlarms}"
+             IsActive="{Binding IsAlarmsPage}">
+
+            </controls:BottomNavItem>
+            <!--Nut List-->
+            <controls:BottomNavItem
+             Label="List"
+             IconNormal="/Resources/Icons/BottomNav/list_black.png"
+             IconActive="/Resources/Icons/BottomNav/list_blue.png"
+             Command="{Binding ShowListCommand}"
+             IsItemEnabled="{Binding CanList}"
+             IsActive="{Binding IsListPage}">
+
+            </controls:BottomNavItem>
+            <!--Nut Quick-->
+            <controls:BottomNavItem
+             Label="Quick"
+             IconNormal="/Resources/Icons/BottomNav/quick_black.png"
+             IconActive="/Resources/Icons/BottomNav/quick_blue.png"
+             Command="{Binding ShowQuickCommand}"
+             IsItemEnabled="{Binding CanQuick}"
+             IsActive="{Binding IsQuickPage}">
+
+            </controls:BottomNavItem>
+    
+            <!--Nut Vision-->
+            <controls:BottomNavItem
+             Label="Vision"
+             IconNormal="/Resources/Icons/BottomNav/vision_black.png"
+             IconActive="/Resources/Icons/BottomNav/vision_blue.png"
+             Command="{Binding ShowVisionCommand}"
+             IsItemEnabled="{Binding CanVision}"
+             IsActive="{Binding IsVisionPage}">
+
+            </controls:BottomNavItem>
+
+            <!--Nut Error-->
+            <controls:BottomNavItem
+             Label="Error"
+             IconNormal="/Resources/Icons/BottomNav/error_black.png"
+             IconActive="/Resources/Icons/BottomNav/error_blue.png"
+             Command="{Binding ShowErrorCommand}"
+             IsItemEnabled="{Binding CanError}"
+             IsActive="{Binding IsErrorPage}">
+
+            </controls:BottomNavItem>
+
+            <!--Nut MES-->
+            <controls:BottomNavItem
+             Label="MES"
+             IconNormal="/Resources/Icons/BottomNav/mes_black.png"
+             IconActive="/Resources/Icons/BottomNav/mes_blue.png"
+             Command="{Binding ShowMESCommand}"
+             IsItemEnabled="{Binding CanMES}"
+             IsActive="{Binding IsMESPage}">
+
+            </controls:BottomNavItem>
+    
+            <!--Nut Power-->
+            <controls:BottomNavItem
+             Label="Power"
+             IconNormal="/Resources/Icons/BottomNav/power_black.png"
+             IconActive="/Resources/Icons/BottomNav/power_blue.png"
+             Command="{Binding ShowPowerCommand}"
+             IsItemEnabled="{Binding CanPower}"
+             IsActive="{Binding IsPowerPage}">
+
+            </controls:BottomNavItem>
+
+
+
+
+        </UniformGrid>
     </Grid>
 </UserControl>

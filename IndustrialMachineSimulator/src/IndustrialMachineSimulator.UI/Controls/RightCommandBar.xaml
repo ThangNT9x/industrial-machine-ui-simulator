@@ -5,39 +5,51 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IndustrialMachineSimulator.UI.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="150">
+             d:DesignHeight="740" d:DesignWidth="150">
     <Grid>
         <Grid.Resources>
             <!--Set style cho nut menu ben phai-->
             <Style x:Key="CircleButtonStyle" TargetType="Button">
-                <Setter Property="Width" Value="100"></Setter>
-                <Setter Property="Height" Value="100"></Setter>
+                <Setter Property="Width" Value="80"></Setter>
+                <Setter Property="Height" Value="80"></Setter>
                 <Setter Property="Background" Value="White"></Setter>
                 <Setter Property="BorderBrush" Value="#D9D9D9"></Setter>
                 <Setter Property="Foreground" Value="DodgerBlue"></Setter>
+                <Setter Property="Cursor" Value="Hand"></Setter>
                 <Setter Property="Template" >
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Grid>
+                            <Grid x:Name="Root">
                                 <Ellipse x:Name="circle"
-             Fill="{TemplateBinding Background}"
-             Stroke="{TemplateBinding BorderBrush}"
-             StrokeThickness="1">
+                                         Fill="{TemplateBinding Background}"
+                                         Stroke="{TemplateBinding BorderBrush}"
+                                         StrokeThickness="1">
 
                                 </Ellipse>
-                                <ContentPresenter HorizontalAlignment="Center" 
-                      VerticalAlignment="Center"></ContentPresenter>
+                                <ContentPresenter x:Name="contentPresenter"
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"></ContentPresenter>
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="circle"
-                Property="Opacity"
-                Value="0.9"></Setter>
+                                            Property="Stroke"
+                                            Value="#3399FF"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="circle"
-                Property="Opacity"
-                Value="0.75"></Setter>
+                                    <Setter TargetName="Root"
+                                            Property="RenderTransform"
+                                            >
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.96" ScaleY="0.96"></ScaleTransform>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="circle" Property="Opacity" Value="0.85">
+                                        
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Root" Property="Opacity" Value="0.35"></Setter>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -47,47 +59,48 @@
             </Style>
         </Grid.Resources>
         <!-- set border bao quanh thanh menu -->
-        <Border Grid.Column="2" Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10,10,0,10">
+        <Border  Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10,10,0,10">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" >
                 <!--Nut Start-->
-                <Button Style="{StaticResource CircleButtonStyle}">
+                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanStart}">
                     <TextBlock FontFamily="Segoe MDL2 Assets"
                         Text="&#xF745;"
                         FontSize="30"
                         FontWeight="Bold"
                         Foreground="DodgerBlue"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        >
                     </TextBlock>
                 </Button>
                 <Label Content="Start" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15"></Label>
 
                 <!--Nut Stop-->
-                <Button Style="{StaticResource CircleButtonStyle}">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF12A;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanStop}">
+                    <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xF12A;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
                 <Label Content="Stop" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
                 </Label>
 
                 <!--Nut Cycle Stop-->
-                <Button Style="{StaticResource CircleButtonStyle}">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEDAB;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanCycleStop}">
+                    <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xEDAB;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
                 <Label Content="CycleStop" FontFamily="Arial" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
                 </Label>
 
                 <!--Nut Initalitation-->
-                <Button Style="{StaticResource CircleButtonStyle}">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE819;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanInit}">
+                    <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xE819;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
                 <Label Content="Init" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
                 </Label>
 
-                <!--Nut Initalitation-->
-                <Button Style="{StaticResource CircleButtonStyle}">
+                <!--Nut Reset-->
+                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanReset}">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>

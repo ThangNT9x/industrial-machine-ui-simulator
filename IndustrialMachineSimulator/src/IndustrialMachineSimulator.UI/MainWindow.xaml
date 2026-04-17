@@ -4,23 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:IndustrialMachineSimulator.UI.Controls"
+        xmlns:views="clr-namespace:IndustrialMachineSimulator.UI.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Industrial Machine Simulator"
         Height="1050"
         Width="1920" WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
         <Grid>
+
             <Grid.Resources>
-                
-                <!--Set style cho tieu de title panel-->
-                <Style x:Key="TittlePanelStyle" TargetType="TextBlock">
-                    <Setter Property="FontFamily" Value="Arial"></Setter>
-                    <Setter Property="FontSize" Value="25"></Setter>
-                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                    <Setter Property="Margin" Value="10,0,0,0"></Setter>
-                </Style>
+                <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"></BooleanToVisibilityConverter>
             </Grid.Resources>
-            
             <!--Chia hang thanh 4 phan-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="38"></RowDefinition>
@@ -28,450 +23,65 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="110"></RowDefinition>
             </Grid.RowDefinitions>
-            <!--Chia man hinh giua thanh 3 cot-->
             <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.05*"></ColumnDefinition>
-                    <ColumnDefinition Width="1.05*"></ColumnDefinition>
-                    <ColumnDefinition Width="150"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-               
-                <!--Man hinh vision ben trai -->
-                <Border Grid.Column="0" Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="35"></RowDefinition>
-                            <RowDefinition Height="5*"></RowDefinition>
-                            <RowDefinition Height="4*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" BorderBrush="#D9D9D9" BorderThickness="0,0,0,1">
-                            <TextBlock Text="PCB Process" Style="{StaticResource TittlePanelStyle}"></TextBlock>
-                        </Border>
-                        <Border Grid.Row="1" BorderBrush="#D9D9D9" BorderThickness="0,0,0,1">
-                            <Grid >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="4*"></ColumnDefinition>
-                                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30"></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Grid.Row="0" Height="25" 
-                                           Width="80" TextAlignment="Center" 
-                                           HorizontalAlignment="Left" Text="VISION VIEW" 
-                                           Background="blue" Foreground="White" ></TextBlock>
-                                <Grid Grid.Column="0" Grid.Row="1" Background="Gray" Margin="5" ></Grid>
-                                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="Product Quantity" FontFamily="Arial" 
-                                               FontSize="25" Foreground="Black"
-                                               FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
-                                    <Grid Height="40" Margin="0,20,0,0">
-                                        <Label Content="PCB OK" FontSize="25" FontFamily="Arial"
-                                               Foreground="Black" HorizontalAlignment="Left" 
-                                               VerticalAlignment="Center"
-                                               FontWeight="Bold">
-                                        </Label>
-                                        <Label Content="{Binding PcbOkCount}" Foreground="green" FontFamily="Arial" 
-                                              FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
-                                              VerticalAlignment="Center" ></Label>
-                                    </Grid>
-                                    <Grid Height="40" Margin="0,20,0,0">
-                                        <Label Content="PBA OK" FontSize="25" FontFamily="Arial"
-                                               Foreground="Black" HorizontalAlignment="Left" 
-                                               VerticalAlignment="Center"
-                                               FontWeight="Bold">
-                                        </Label>
-                                        <Label Content="{Binding PbaOkCount}" Foreground="green" FontFamily="Arial" 
-                                              FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
-                                              VerticalAlignment="Center" ></Label>
-                                    </Grid>
-                                    <Grid Height="40" Margin="0,20,0,0">
-                                        <Label Content="PBA NG" FontSize="25" FontFamily="Arial"
-                                               Foreground="Black" HorizontalAlignment="Left" 
-                                               VerticalAlignment="Center"
-                                               FontWeight="Bold">
-                                        </Label>
-                                        <Label Content="{Binding PbaNgCount}" Foreground="Red" FontFamily="Arial" 
-                                               FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
-                                               VerticalAlignment="Center" ></Label>
-                                    </Grid>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        <Grid Grid.Row="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" BorderBrush="#D9D9D9" BorderThickness="0,0,0,1">
-                                <TextBlock Style="{StaticResource TittlePanelStyle}" Text="Mean Time Between Interruptions" ></TextBlock>
-                            </Border>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Border Grid.Column="0" Grid.RowSpan="4" Background="#99CCFF"></Border>
-                                <Border Grid.Column="2" Grid.RowSpan="4" Background="#99CCFF"></Border>
-                                <Border Grid.Row="1" Grid.ColumnSpan="4" Height="1" Background="#D9D9D9" VerticalAlignment="top" ></Border>
-                                <Border Grid.Row="2" Grid.ColumnSpan="4" Height="1" Background="#D9D9D9" VerticalAlignment="top" ></Border>
-                                <Border Grid.Row="3" Grid.ColumnSpan="4" Height="1" Background="#D9D9D9" VerticalAlignment="top" ></Border>
-                                <Border Grid.Row="3" Grid.ColumnSpan="4" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                <Border Grid.Column="3" Grid.RowSpan="4" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
+            <!--Thanh bar menu phai-->
+            <controls:RightCommandBar  Grid.Column="1"></controls:RightCommandBar>
+           
+            <!-- Man hinh giua-->
+            <Grid Grid.Row="2"
+                  Visibility="{Binding IsHomePage,Converter={StaticResource BoolToVisibilityConverter} }">
+                <views:HomeView  ></views:HomeView>
+            </Grid>
+            <Grid Grid.Row="2" 
+                  Visibility="{Binding IsMaintPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                 <views:MaintView></views:MaintView>
+            </Grid>
+            <Grid Grid.Row="2"
+                  Visibility="{Binding IsRecipePage,Converter={StaticResource BoolToVisibilityConverter}}">
+                 <views:RecipeView></views:RecipeView>
+            </Grid>
 
-                                <TextBlock Grid.Column="0" Grid.Row="0" Text="MTBI" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Alarm Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="0" Grid.Row="2" Text="Stop Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="0" Grid.Row="3" Text="In Count" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Idle Time" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="1" Text="Run Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="2" Text="Cycle Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="3" Text="Out Count" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                <Label Grid.Column="1" Grid.Row="0" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="1" Grid.Row="1" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="1" Grid.Row="2" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="1" Grid.Row="3" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="3" Grid.Row="0" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="3" Grid.Row="1" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="3" Grid.Row="2" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                <Label Grid.Column="3" Grid.Row="3" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-
-                            </Grid>
-                        </Grid>
-                    </Grid>
-
-                </Border>
-                <!--Thanh bar menu phai-->
-                <controls:RightCommandBar Grid.Column="2"></controls:RightCommandBar>
-
-                <!--Man hinh trang thai co cau may ben phai-->
-                <Border Grid.Column="1" Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="35"></RowDefinition>
-                            <RowDefinition Height="5*"></RowDefinition>
-                            <RowDefinition Height="4*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <!--Tieu de grid ben phai hang1-->
-                        <Border Grid.Row="0" BorderBrush="#D9D9D9" BorderThickness="0,0,0,1">
-                            <TextBlock Style="{StaticResource TittlePanelStyle}" Text="SORTER"></TextBlock>
-                        </Border>
-                        <Border Grid.Row="1" BorderBrush="#D9D9D9" BorderThickness="0,0,0,1"></Border>
-                        <!--Tiep tuc chia doi man hinh trong man ben phai hang2-->
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <!--Chia man 2.1 thanh 3 cot-->
-                            <Grid Grid.Column="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <!--Tiep tuc chia nho bang ben trong cot 1-->
-                                <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Border BorderBrush="#D9D9D9" BorderThickness="1">
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Arial" FontSize="20" 
-                                        Foreground="Black" HorizontalAlignment="Center" 
-                                        VerticalAlignment="Center"
-                                        Text="Stage Material"></TextBlock>
-                                            <Grid>
-                                                <Label Height="25" Width="30" Background="#99FF00" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                                <Label Content="OK" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                            </Grid>
-                                            <Grid>
-                                                <Label Height="25" Width="30" Background="Red" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                                <Label Content="NG" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                            </Grid>
-                                            <Grid>
-                                                <Label Height="25" Width="30" Background="Blue" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                                <Label Content="XOUT" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="30,0,0,0"></Label>
-                                            </Grid>
-                                            <Grid>
-                                                <Label Height="25" Width="30" Background="#FFFF00" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                                <Label Content="NG" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                            </Grid>
-
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-
-                                <!--Man hinh o giua cot 1, chia thanh hinh anh conveyor-->
-                                <!-- In/Out Conveyor-->
-                                <Grid Grid.Column="1" Margin="5,0,5,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="35"></ColumnDefinition>
-                                        <ColumnDefinition Width="15"></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition Width="15"></ColumnDefinition>
-                                        <ColumnDefinition Width="35"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Border Grid.Column="0" Grid.Row="0" Background="Green" Margin="5,0,0,5"></Border>
-                                    <Border Grid.Column="0" Grid.Row="1" Background="Green" Margin="5,0,0,5"></Border>
-                                    <Border Grid.Column="4" Grid.Row="0" Background="Green" Margin="0,0,5,5"></Border>
-                                    <Border Grid.Column="4" Grid.Row="1" Background="Green" Margin="0,0,5,5"></Border>
-                                    <TextBlock Grid.Column="2" Grid.Row="0"
-                                                Text="IN CV"
-                                                FontFamily="Arial"
-                                                FontSize="10"
-                                                Foreground="Black"
-                                                FontWeight="Bold"
-                                                HorizontalAlignment="Center"
-                                                Margin="0,10,0,0"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="1"
-                                                Text="OUT CV"
-                                                FontFamily="Arial"
-                                                FontSize="10"
-                                                Foreground="Black"
-                                                FontWeight="Bold"
-                                                HorizontalAlignment="Center"
-                                                Margin="0,10,0,0"></TextBlock>
-                                    <Label Grid.Column="1" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Top"></Label>
-                                    <Label Grid.Column="1" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom"></Label>
-                                    <Label Grid.Column="3" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom" Margin="0,0,0,5"></Label>
-
-                                    <Label Grid.Column="3" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Top" Margin="0,30,0,0"></Label>
-                                    <Label Grid.Column="1" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom"></Label>
-                                </Grid>
-                                <!-- In/Out Lift-->
-                                <Grid Grid.Column="2" >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="35"></ColumnDefinition>
-                                        <ColumnDefinition Width="35"></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition Width="15"></ColumnDefinition>
-                                        <ColumnDefinition Width="35"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Border Grid.Column="0" Grid.Row="0" Background="Green" Margin="5,0,0,5"></Border>
-                                    <Border Grid.Column="0" Grid.Row="1" Background="Green" Margin="5,0,0,5"></Border>
-                                    <Border Grid.Column="4" Grid.Row="0" Background="Green" Margin="0,0,5,5"></Border>
-                                    <Border Grid.Column="4" Grid.Row="1" Background="Green" Margin="0,0,5,5"></Border>
-                                    <TextBlock Grid.Column="2" Grid.Row="0"
-                                                Text="IN LIFT"
-                                                FontFamily="Arial"
-                                                FontSize="10"
-                                                Foreground="Black"
-                                                FontWeight="Bold"
-                                                HorizontalAlignment="Left"
-                                                Margin="0,10,0,0"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="1"
-                                                Text="OUT LF"
-                                                FontFamily="Arial"
-                                                FontSize="10"
-                                                Foreground="Black"
-                                                FontWeight="Bold"
-                                                HorizontalAlignment="Left"
-                                                Margin="0,10,0,0"></TextBlock>
-                                    <Label Grid.Column="3" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Top"></Label>
-                                    <Label Grid.Column="3" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom" Margin="0,0,0,5"></Label>
-                                    <Label Grid.Column="3" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom" Margin="0,0,0,50"></Label>
-
-                                    <Label Grid.Column="3" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Top"></Label>
-                                    <Label Grid.Column="3" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom" Margin="0,0,0,5"></Label>
-                                    <Label Grid.Column="3" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom" Margin="0,0,0,50"></Label>
-                                    <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,5">
-                                        <Label  Height="30" Background="#990000" Content="DW" Foreground="White" FontFamily="Arial" FontSize="15"></Label>
-                                        <Label  Height="30" Background="Pink" Content="LD" Foreground="Black" FontFamily="Arial" FontSize="15"></Label>
-                                        <Label  Height="30" Background="#990000" Content="UP" Foreground="White" FontFamily="Arial" FontSize="15"></Label>
-
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,5">
-                                        <Label  Height="30" Background="#990000" Content="DW" Foreground="White" FontFamily="Arial" FontSize="15"></Label>
-                                        <Label  Height="30" Background="Pink" Content="LD" Foreground="Black" FontFamily="Arial" FontSize="15"></Label>
-                                        <Label  Height="30" Background="#990000" Content="UP" Foreground="White" FontFamily="Arial" FontSize="15"></Label>
-
-                                    </StackPanel>
-
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Column="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition Width="15"></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="2" Background="Green"  Margin="0,50,0,50"></Border>
-                                <TextBlock Grid.Column="2" Text="NG CONV" Foreground="White"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"></TextBlock>
-                                <Label Grid.Column="1" Height="15" Background="#FFCCCC"></Label>
-                                <Label Grid.Column="1" Height="15" Background="#FFCCCC" 
-                                        VerticalAlignment="Bottom" Margin="0,0,0,65"></Label>
-                            </Grid>
-                        </Grid>
-
-                        <!--Hang3 man hinh ben phai-->
-                        <Grid Grid.Row="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10">
-                                    <!--Stage trai phai status-->
-                                    <Grid Grid.Column="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Border Grid.Column="0" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                        <Border Grid.Column="1" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                        <Border Grid.Row="0" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                        <Border Grid.Row="1" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                        <TextBlock Grid.Column="0" Grid.Row="2" Foreground="Black" Text="1" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="1" Grid.Row="2" Foreground="Black" Text="2" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Grid.Row="2" Foreground="Black" Text="3" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Grid.Row="1" Foreground="Black" Text="4" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="1" Grid.Row="1" Foreground="Black" Text="5" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="0" Grid.Row="1" Foreground="Black" Text="6" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="0" Grid.Row="0" Foreground="Black" Text="7" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="1" Grid.Row="0" Foreground="Black" Text="8" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Grid.Row="0" Foreground="Black" Text="9" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-
-                                    </Grid>
-                                </Border>
-                                <Border Grid.Column="2" BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10">
-                                    <!--Stage trai phai status-->
-                                    <Grid Grid.Column="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Border Grid.Column="0" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                        <Border Grid.Column="1" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                        <Border Grid.Row="0" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                        <Border Grid.Row="1" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                        <TextBlock Grid.Column="0" Grid.Row="2" Foreground="Black" Text="1" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="1" Grid.Row="2" Foreground="Black" Text="2" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Grid.Row="2" Foreground="Black" Text="3" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Grid.Row="1" Foreground="Black" Text="4" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="1" Grid.Row="1" Foreground="Black" Text="5" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="0" Grid.Row="1" Foreground="Black" Text="6" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="0" Grid.Row="0" Foreground="Black" Text="7" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="1" Grid.Row="0" Foreground="Black" Text="8" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Grid.Row="0" Foreground="Black" Text="9" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-
-                                    </Grid>
-                                </Border>
-                                <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                    <CheckBox Content="Input Stop" FontFamily="Arial" 
-                                               FontSize="15" VerticalAlignment="Top"
-                                               RenderTransformOrigin="0,0.5"
-                                               Margin="0,0,0,20">
-                                        <CheckBox.RenderTransform>
-                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5" ></ScaleTransform>
-                                        </CheckBox.RenderTransform>
-                                    </CheckBox>
-                                    <CheckBox Content="Out Traybox" FontFamily="Arial" FontSize="15" 
-                                               VerticalAlignment="Top"
-                                               RenderTransformOrigin="0,0.5">
-                                        <CheckBox.RenderTransform>
-                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5" ></ScaleTransform>
-                                        </CheckBox.RenderTransform>
-                                    </CheckBox>
-                                </StackPanel>
-
-                            </Grid>
-                            <!--Hinh minh hoa tin hieu sensor conveyor-->
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="35"></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition Height="15"></RowDefinition>
-                                    <RowDefinition Height="15"></RowDefinition>
-                                    <RowDefinition Height="35"></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Border Grid.Column="1" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                                <Border Grid.Column="2" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                                <Border Grid.Column="3" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                                <Border Grid.Column="4" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                                <Border Grid.Column="5" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-
-                                <Border Grid.Column="1" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                                <Border Grid.Column="2" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                                <Border Grid.Column="3" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                                <Border Grid.Column="4" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                                <Border Grid.Column="5" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-
-                                <TextBlock Grid.Column="1" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                                <TextBlock Grid.Column="1" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                                <TextBlock Grid.Column="1" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-
-                                <TextBlock Grid.Column="2" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="3" Text="DOWN" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="2" Text="UP" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-
-                                <TextBlock Grid.Column="3" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                                <TextBlock Grid.Column="3" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                                <TextBlock Grid.Column="3" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-                                <TextBlock Grid.Column="4" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                                <TextBlock Grid.Column="4" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                                <TextBlock Grid.Column="4" Grid.Row="3" Text="DOWN" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-                                <TextBlock Grid.Column="4" Grid.Row="2" Text="UP" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-
-                                <TextBlock Grid.Column="5" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                                <TextBlock Grid.Column="5" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                                <TextBlock Grid.Column="5" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-
-                                <TextBlock Grid.Column="1" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="In conveyor"></TextBlock>
-                                <TextBlock Grid.Column="2" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feed 1"></TextBlock>
-                                <TextBlock Grid.Column="3" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feed 2"></TextBlock>
-                                <TextBlock Grid.Column="4" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="feed 3"></TextBlock>
-                                <TextBlock Grid.Column="5" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Out conveyor"></TextBlock>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Border>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsDatalogPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:DatalogView></views:DatalogView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsSetupPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:SetupView></views:SetupView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsAlarmsPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:AlarmsView></views:AlarmsView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsListPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:ListView></views:ListView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsQuickPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:QuickView></views:QuickView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsVisionPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:VisionView></views:VisionView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsErrorPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:ErrorView></views:ErrorView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsMESPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:MesView></views:MesView>
+                </Grid>
+                <Grid Grid.Row="2"
+                      Visibility="{Binding IsPowerPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:PowerView></views:PowerView>
+                </Grid>
 
             </Grid>
             <!--Thanh menu bar top-->

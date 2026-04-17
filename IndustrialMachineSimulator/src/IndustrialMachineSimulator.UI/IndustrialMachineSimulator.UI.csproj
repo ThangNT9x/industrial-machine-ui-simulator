@@ -9,14 +9,39 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\BottomNav\alarms_black.png" />
+    <None Remove="Resources\Icons\BottomNav\alarms_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\datalog_black.png" />
+    <None Remove="Resources\Icons\BottomNav\datalog_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\error_black.png" />
+    <None Remove="Resources\Icons\BottomNav\error_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\home_black.png" />
+    <None Remove="Resources\Icons\BottomNav\home_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\list_black.png" />
+    <None Remove="Resources\Icons\BottomNav\list_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\maint_black.png" />
+    <None Remove="Resources\Icons\BottomNav\maint_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\mes_black.png" />
+    <None Remove="Resources\Icons\BottomNav\mes_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\power_black.png" />
+    <None Remove="Resources\Icons\BottomNav\power_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\quick_black.png" />
+    <None Remove="Resources\Icons\BottomNav\quick_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\recipe_black.png" />
+    <None Remove="Resources\Icons\BottomNav\recipe_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\setup_black.png" />
+    <None Remove="Resources\Icons\BottomNav\setup_blue.png" />
+    <None Remove="Resources\Icons\BottomNav\vision_black.png" />
+    <None Remove="Resources\Icons\BottomNav\vision_blue.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IndustrialMachineSimulator.Core\IndustrialMachineSimulator.Core.csproj" />
     <ProjectReference Include="..\IndustrialMachineSimulator.Infrastructure\IndustrialMachineSimulator.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Converters\" />
-    <Folder Include="Resources\" />
-    <Folder Include="Views\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +50,33 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\BottomNav\alarms_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\alarms_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\datalog_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\datalog_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\error_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\error_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\home_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\home_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\list_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\list_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\maint_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\maint_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\mes_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\mes_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\power_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\power_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\quick_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\quick_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\recipe_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\recipe_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\setup_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\setup_blue.png" />
+    <Resource Include="Resources\Icons\BottomNav\vision_black.png" />
+    <Resource Include="Resources\Icons\BottomNav\vision_blue.png" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,84 @@
+﻿<Window x:Class="IndustrialMachineSimulator.UI.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Login"
+        Height="260"
+        Width="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="White">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <PasswordBox x:Name="txtPassword" Grid.Row="3" FontSize="18"></PasswordBox>
+        <TextBlock Grid.Row="0"
+                   Text="Enter the password"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   FontFamily="Arial"
+                   Foreground="Black"/>
+
+        <Grid Grid.Row="4">
+            <RadioButton x:Name="EngineerRadio"
+                         Content="Engineer"
+                         FontSize="16"
+                         FontFamily="Arial"
+                         FontWeight="Bold"
+                         HorizontalAlignment="Left"
+                         Margin="60,0,0,0"
+                         IsChecked="True"/>
+
+            <RadioButton x:Name="DeveloperRadio"
+                         Content="Developer"
+                         FontSize="16"
+                         FontWeight="Bold"
+                         HorizontalAlignment="Right"
+                         Margin="0,0,60,0"
+                         FontFamily="Arial"/>
+        </Grid>
+
+        <Grid Grid.Row="5"
+              >
+            <Button x:Name="LogoutButton"
+                    Content="Logout"
+                    Width="100"
+                    Height="36"
+                    Margin="12,0,0,0"
+                    HorizontalAlignment="Left"
+                    Background="DodgerBlue"
+                    Click="LogoutButton_Click"
+                    Foreground="Black">
+                
+            </Button>
+            <Button Content="Cancel"
+                    Width="100"
+                    Height="36"
+                    Margin="0,0,12,0"
+                    HorizontalAlignment="Right"
+                    Background="DodgerBlue"
+                    Click="CancelButton_Click"
+                    Foreground="Black"
+                    />
+
+            <Button Content="OK"
+                    Width="100"
+                    Height="36"
+                    HorizontalAlignment="Center"
+                    Background="DodgerBlue"
+                    Click="OkButton_Click"
+                    Foreground="Black"
+                    />
+        </Grid>
+    </Grid>
+</Window>
+

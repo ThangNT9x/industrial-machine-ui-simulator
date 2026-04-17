@@ -1,0 +1,113 @@
+﻿<UserControl x:Class="IndustrialMachineSimulator.UI.Controls.BottomNavItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             x:Name="root"
+             mc:Ignorable="d"
+             d:DesignHeight="110"
+             d:DesignWidth="150">
+
+    <Button Background="Transparent"
+            BorderThickness="0"
+            BorderBrush="Transparent"
+            Padding="0"
+            Command="{Binding Command, ElementName=root}"
+            IsEnabled="{Binding IsItemEnabled, ElementName=root}">
+        <Button.Template>
+            <ControlTemplate TargetType="Button">
+                <Grid Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4"/>
+                        <RowDefinition Height="52"/>
+                        <RowDefinition Height="24"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Thanh active -->
+                    <Border Grid.Row="0">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsActive, ElementName=root}" Value="True">
+                                        <Setter Property="Background" Value="#1E5EFF"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+
+                    <!-- Icon -->
+                    <Grid Grid.Row="1"
+                          Width="40"
+                          Height="40"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+
+                        <Image Source="{Binding IconNormal, ElementName=root}"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Setter Property="Opacity" Value="1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive, ElementName=root}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsItemEnabled, ElementName=root}" Value="False">
+                                            <Setter Property="Opacity" Value="0.35"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <Image Source="{Binding IconActive, ElementName=root}"
+                               Stretch="Uniform"
+                               SnapsToDevicePixels="True">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Opacity" Value="1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive, ElementName=root}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsItemEnabled, ElementName=root}" Value="False">
+                                            <Setter Property="Opacity" Value="0.35"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Grid>
+
+                    <!-- Label -->
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding Label, ElementName=root}"
+                               FontFamily="Arial"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="Opacity" Value="1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsActive, ElementName=root}" Value="True">
+                                        <Setter Property="Foreground" Value="#1E5EFF"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsItemEnabled, ElementName=root}" Value="False">
+                                        <Setter Property="Opacity" Value="0.35"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </ControlTemplate>
+        </Button.Template>
+    </Button>
+</UserControl>
+

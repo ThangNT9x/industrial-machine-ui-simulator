@@ -13,18 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace IndustrialMachineSimulator.UI.Controls
+namespace IndustrialMachineSimulator.UI.Views
 {
     /// <summary>
-    /// Interaction logic for TopHeaderBar.xaml
+    /// Interaction logic for MaintView.xaml
     /// </summary>
-    public partial class TopHeaderBar : UserControl
+    public partial class MaintView : UserControl
     {
-        public TopHeaderBar()
+        public MaintView()
         {
             InitializeComponent();
         }
-
-        
     }
 }
