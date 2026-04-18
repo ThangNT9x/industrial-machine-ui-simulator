@@ -226,9 +226,11 @@
                         VerticalAlignment="Center" FontSize="28"
                         FontWeight="Bold"
                         Margin="35,0"></Label>
+                
+                
                 <!--binding du lieu status cua Laser-->
                 <TextBlock Grid.Column="3" Grid.Row="1"
-                            Text="2000 / 20000H (100 %)"
+                            Text="{Binding LaserTimeText}"
                             FontFamily="Arial" FontSize="28"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
@@ -286,6 +288,19 @@
                            VerticalAlignment="Bottom"
                            TextAlignment="Center"
                            Margin="0,0,50,0">
+                    
+                </TextBlock>
+                
+                <!--Status Machine Text-->
+                <TextBlock Grid.Column="0"
+                           Grid.Row="0"
+                           FontFamily="Arial"
+                           FontSize="18"
+                           Text="{Binding StatusText}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Bottom"
+                           TextAlignment="Center"
+                           Margin="35,0">
                     
                 </TextBlock>
                 

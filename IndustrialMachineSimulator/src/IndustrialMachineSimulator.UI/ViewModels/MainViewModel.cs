@@ -5,6 +5,7 @@ using System.Windows.Input;
 using IndustrialMachineSimulator.Core.Services;
 using System.Windows;
 using IndustrialMachineSimulator.UI;
+using IndustrialMachineSimulator.Core.Entities;
 
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
@@ -44,6 +45,9 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand InitializeCommand { get; }
     public ICommand StartCommand { get; }
     public ICommand StopCommand { get; }
+    public ICommand CycleStopCommand { get; }
+    public ICommand ResetCommand { get; }
+
     public ICommand LoginCommand { get; }
     public ICommand ShowHomeCommand { get;  }
     public ICommand ShowMaintCommand { get; }
@@ -59,16 +63,44 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ShowPowerCommand { get; }
 
     public string CurrentRoleText => CurrentRole.ToString();
-    
-    public string EqpId { get; set; } = "Laser Router 01";
-    public string LineName { get; set; } = "TEST";
+    private MachineState _currentMachineState = MachineState.Offline;
+    public MachineState CurrentMachineState
+    {
+        get => _currentMachineState;
+        set
+        {
+            _currentMachineState = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentMachineStateText));
+            UpdateMachineState();
+        }
+    }
+    public string CurrentMachineStateText=>CurrentMachineState.ToString();
     public string OsVersion { get; set; } = "0.0.1";
     
 
-    public string LaserTimeText { get; set; } = "0";
-    public string TemperatureText { get; set; } = "0";
-    public string HostStatusText {  get; set; } = "Connected";
-    public string LaserStatusText { get; set;  } = "Ready";
+    public string LaserTimeText { get; set; } = "2000 / 20000H (100 %)";
+    private string _hostStatusText = "Disconnected";
+    public string HostStatusText
+    {
+        get=> _hostStatusText;
+        set
+        {
+            _hostStatusText = value;
+            OnPropertyChanged();
+        }
+        
+    }
+    private string _laserStatusText = "Offline";
+    public string LaserStatusText
+    {
+        get=> _laserStatusText;
+        set
+        {
+            _laserStatusText = value;
+            OnPropertyChanged();
+        }
+    }
 
     public MainViewModel(MachineController machineController)
     {
@@ -76,21 +108,48 @@ public class MainViewModel : INotifyPropertyChanged
 
         InitializeCommand = new RelayCommand(async _ =>
         {
-            await _machineController.InitializeAsync();
-            StatusText = _machineController.Status.State.ToString();
+            CurrentMachineState = MachineState.Initializing;
+            await Task.Delay(800);
+            CurrentMachineState = MachineState.Ready;
         });
 
-        StartCommand = new RelayCommand(async _ =>
+        StartCommand = new RelayCommand(_ =>
         {
-            await _machineController.StartAsync();
-            StatusText = _machineController.Status.State.ToString();
+            if(CurrentMachineState == MachineState.Ready||
+            CurrentMachineState==MachineState.Stopped||
+            CurrentMachineState==MachineState.Standby)
+            {
+                CurrentMachineState = MachineState.Running;
+            }
+            return Task.CompletedTask;
         });
 
-        StopCommand = new RelayCommand(async _ =>
+        StopCommand = new RelayCommand(_ =>
         {
-            await _machineController.StopAsync();
-            StatusText = _machineController.Status.State.ToString();
+           if(CurrentMachineState==MachineState.Running)
+            {
+                CurrentMachineState = MachineState.Stopped;
+            }
+            return Task.CompletedTask;
         });
+        CycleStopCommand = new RelayCommand(_ =>
+        {
+            if (CurrentMachineState == MachineState.Running)
+            {
+                CurrentMachineState = MachineState.Stopped;
+            }
+            return Task.CompletedTask;
+        });
+        ResetCommand = new RelayCommand(_ =>
+        {
+            if(CurrentMachineState==MachineState.Stopped||
+            CurrentMachineState==MachineState.Alarm)
+            {
+                CurrentMachineState = MachineState.Ready;
+            }
+            return Task.CompletedTask;
+        });
+        
 
         ShowHomeCommand = new RelayCommand(_ =>
         {
@@ -195,6 +254,7 @@ public class MainViewModel : INotifyPropertyChanged
         });
         CurrentRole = UserRole.Operator;
         ApplyRolePermissions();
+        CurrentMachineState = MachineState.Offline;
     }
 
 
@@ -417,11 +477,7 @@ public class MainViewModel : INotifyPropertyChanged
         switch (CurrentRole)
         {
             case UserRole.Operator:
-                CanStart = true;
-                CanStop = true;
-                CanCycleStop = true;
-                CanInit = false;
-                CanReset = false;
+
 
                 CanHome = true;
                 CanMaint = false;
@@ -437,11 +493,7 @@ public class MainViewModel : INotifyPropertyChanged
                 CanPower = false;
                 break;
             case UserRole.Engineer:
-                CanStart = true;
-                CanStop = true;
-                CanCycleStop = true;
-                CanInit = true;
-                CanReset = true;
+
 
                 CanHome = true;
                 CanMaint = true;
@@ -458,11 +510,7 @@ public class MainViewModel : INotifyPropertyChanged
                 break;
 
             case UserRole.Developer:
-                CanStart = true;
-                CanStop = true;
-                CanCycleStop = true;
-                CanInit = true;
-                CanReset = true;
+
 
                 CanHome = true;
                 CanMaint = true;
@@ -481,6 +529,91 @@ public class MainViewModel : INotifyPropertyChanged
     }
     #endregion
 
+    private void UpdateMachineState()
+    {
+        switch(CurrentMachineState)
+        {
+            case MachineState.Offline:
+                StatusText = "Offline";
+                HostStatusText = "Disconnected";
+                LaserStatusText = "offline";
+
+                CanInit = true;
+                CanStart = false;
+                CanStop = false;
+                CanReset = false;
+                CanCycleStop = false;
+                break;
+            case MachineState.Initializing:
+                StatusText = "Initializing";
+                HostStatusText = "Connecting...";
+                LaserStatusText = "Initializing...";
+
+                CanInit = false;
+                CanStart = false;
+                CanStop= false;
+                CanCycleStop= false;
+                CanReset= false;
+                break;
+            case MachineState.Ready:
+                StatusText = "Ready";
+                HostStatusText = "Connected";
+                LaserStatusText = "Ready";
+
+                CanInit= false;
+                CanStart= true;
+                CanStop = false;
+                CanCycleStop = false;
+                CanReset = true;
+                break;
+            case MachineState.Running:
+                StatusText = "Running";
+                HostStatusText = "Connected";
+                LaserStatusText = "Running";
+
+                CanInit = false;
+                CanStart = false;
+                CanStop = true;
+                CanCycleStop = true;
+                CanReset = false;
+                break;
+            case MachineState.Stopped:
+                StatusText = "stopped";
+                HostStatusText = "Connected";
+                LaserStatusText = "Stopped";
+
+                CanInit = false;
+                CanStart = true;
+                CanStop = false;
+                CanCycleStop = false;
+                CanReset = true;
+                break;
+            case MachineState.Alarm:
+                StatusText = "Alarm";
+                HostStatusText = "Connected";
+                LaserStatusText = "Alarm";
+
+                CanInit = false;
+                CanStart = false;
+                CanStop = true;
+                CanCycleStop = true;
+                CanReset = true;
+                break;
+            case MachineState.Standby:
+                StatusText = "Standby";
+                HostStatusText = "Connected";
+                LaserStatusText = "Standby";
+
+                CanInit = false;
+                CanStart = true;
+                CanStop = false;
+                CanCycleStop = false;
+                CanReset = true;
+                break;
+
+
+        }
+    }
   
 
     private AppPage _currentPage= AppPage.Home;

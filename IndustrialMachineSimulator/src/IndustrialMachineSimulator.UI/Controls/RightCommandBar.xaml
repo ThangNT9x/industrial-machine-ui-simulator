@@ -62,7 +62,9 @@
         <Border  Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10,10,0,10">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" >
                 <!--Nut Start-->
-                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanStart}">
+                <Button Style="{StaticResource CircleButtonStyle}" 
+                        IsEnabled="{Binding CanStart}"
+                        Command="{Binding StartCommand}">
                     <TextBlock FontFamily="Segoe MDL2 Assets"
                         Text="&#xF745;"
                         FontSize="30"
@@ -76,7 +78,9 @@
                 <Label Content="Start" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15"></Label>
 
                 <!--Nut Stop-->
-                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanStop}">
+                <Button Style="{StaticResource CircleButtonStyle}" 
+                        IsEnabled="{Binding CanStop}"
+                        Command="{Binding StopCommand}">
                     <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xF12A;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
@@ -84,7 +88,9 @@
                 </Label>
 
                 <!--Nut Cycle Stop-->
-                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanCycleStop}">
+                <Button Style="{StaticResource CircleButtonStyle}" 
+                        IsEnabled="{Binding CanCycleStop}"
+                        Command="{Binding CycleStopCommand}">
                     <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xEDAB;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
@@ -92,7 +98,9 @@
                 </Label>
 
                 <!--Nut Initalitation-->
-                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanInit}">
+                <Button Style="{StaticResource CircleButtonStyle}" 
+                        IsEnabled="{Binding CanInit}"
+                        Command="{Binding InitializeCommand}">
                     <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xE819;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
@@ -100,7 +108,9 @@
                 </Label>
 
                 <!--Nut Reset-->
-                <Button Style="{StaticResource CircleButtonStyle}" IsEnabled="{Binding CanReset}">
+                <Button Style="{StaticResource CircleButtonStyle}" 
+                        IsEnabled="{Binding CanReset}"
+                        Command="{Binding ResetCommand}">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </TextBlock>
                 </Button>
