@@ -62,6 +62,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ShowMESCommand { get; }
     public ICommand ShowPowerCommand { get; }
 
+    public ICommand OpenSimulatorWindowCommand {  get; }
+
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
     public MachineState CurrentMachineState
@@ -77,8 +79,29 @@ public class MainViewModel : INotifyPropertyChanged
     }
     public string CurrentMachineStateText=>CurrentMachineState.ToString();
     public string OsVersion { get; set; } = "0.0.1";
-    
 
+    private bool _isPowerMachineOn;
+    public bool IsPowerMachineOn
+    {
+        get => _isPowerMachineOn;
+        set
+        {
+            _isPowerMachineOn = value;
+            OnPropertyChanged();
+            ApplySimulatorSignals();
+        }
+    }
+    private bool _isAlarmOn;
+    public bool IsAlarmOn
+    {
+        get => _isAlarmOn;
+        set
+        {
+            _isAlarmOn = value;
+            OnPropertyChanged();
+            ApplySimulatorSignals();
+        }
+    }
     public string LaserTimeText { get; set; } = "2000 / 20000H (100 %)";
     private string _hostStatusText = "Disconnected";
     public string HostStatusText
@@ -108,16 +131,31 @@ public class MainViewModel : INotifyPropertyChanged
 
         InitializeCommand = new RelayCommand(async _ =>
         {
+            if (!IsPowerMachineOn) return;
+            if (IsAlarmOn) return;
+            if (CurrentMachineState!=MachineState.Standby) return;
             CurrentMachineState = MachineState.Initializing;
             await Task.Delay(800);
             CurrentMachineState = MachineState.Ready;
         });
 
+        OpenSimulatorWindowCommand = new RelayCommand(_ =>
+        {
+            var simulatorWindow = new Views.SimulatorControlWindow(this);
+            if(Application.Current.MainWindow!=null)
+            {
+                simulatorWindow.Owner=Application.Current.MainWindow;
+            }
+            simulatorWindow.Show();
+            return Task.CompletedTask;
+        });
+
         StartCommand = new RelayCommand(_ =>
         {
+            if (!IsPowerMachineOn) return Task.CompletedTask;
+            if (IsAlarmOn) return Task.CompletedTask;
             if(CurrentMachineState == MachineState.Ready||
-            CurrentMachineState==MachineState.Stopped||
-            CurrentMachineState==MachineState.Standby)
+            CurrentMachineState==MachineState.Stopped)
             {
                 CurrentMachineState = MachineState.Running;
             }
@@ -142,6 +180,8 @@ public class MainViewModel : INotifyPropertyChanged
         });
         ResetCommand = new RelayCommand(_ =>
         {
+            if (!IsPowerMachineOn) return Task.CompletedTask;
+            IsAlarmOn = false;
             if(CurrentMachineState==MachineState.Stopped||
             CurrentMachineState==MachineState.Alarm)
             {
@@ -538,7 +578,7 @@ public class MainViewModel : INotifyPropertyChanged
                 HostStatusText = "Disconnected";
                 LaserStatusText = "offline";
 
-                CanInit = true;
+                CanInit = false;
                 CanStart = false;
                 CanStop = false;
                 CanReset = false;
@@ -595,8 +635,8 @@ public class MainViewModel : INotifyPropertyChanged
 
                 CanInit = false;
                 CanStart = false;
-                CanStop = true;
-                CanCycleStop = true;
+                CanStop = false;
+                CanCycleStop = false;
                 CanReset = true;
                 break;
             case MachineState.Standby:
@@ -604,17 +644,34 @@ public class MainViewModel : INotifyPropertyChanged
                 HostStatusText = "Connected";
                 LaserStatusText = "Standby";
 
-                CanInit = false;
-                CanStart = true;
+                CanInit = true;
+                CanStart = false;
                 CanStop = false;
                 CanCycleStop = false;
-                CanReset = true;
+                CanReset = false;
                 break;
 
 
         }
     }
-  
+
+    private void ApplySimulatorSignals()
+    {
+        if (!IsPowerMachineOn)
+        {
+            CurrentMachineState = MachineState.Offline;
+            return;
+        }
+        if (IsAlarmOn)
+        {
+            CurrentMachineState = MachineState.Alarm;
+            return;
+        }
+        if(CurrentMachineState == MachineState.Offline)
+        {
+            CurrentMachineState = MachineState.Standby;
+        }
+    }
 
     private AppPage _currentPage= AppPage.Home;
     public AppPage CurrentPage

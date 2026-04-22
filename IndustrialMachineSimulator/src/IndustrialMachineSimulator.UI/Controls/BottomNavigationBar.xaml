@@ -138,7 +138,7 @@
              Label="Power"
              IconNormal="/Resources/Icons/BottomNav/power_black.png"
              IconActive="/Resources/Icons/BottomNav/power_blue.png"
-             Command="{Binding ShowPowerCommand}"
+             Command="{Binding OpenSimulatorWindowCommand}"
              IsItemEnabled="{Binding CanPower}"
              IsActive="{Binding IsPowerPage}">
 
