@@ -80,6 +80,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsDiodeGreen));
             OnPropertyChanged(nameof(IsPulsingGreen));
             OnPropertyChanged(nameof(IsAlarmState));
+            OnPropertyChanged(nameof(PowerMachineStatusText));
             UpdateMachineState();
         }
     }
@@ -98,7 +99,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsLaserGreen));
             OnPropertyChanged(nameof(IsDiodeGreen));
             OnPropertyChanged(nameof(IsPulsingGreen));
-
+            OnPropertyChanged(nameof(PowerMachineStatusText));
             OnPropertyChanged(nameof(IsAlarmState));
             ApplySimulatorSignals();
         }
@@ -116,7 +117,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsLaserGreen));
             OnPropertyChanged(nameof(IsDiodeGreen));
             OnPropertyChanged(nameof(IsPulsingGreen));
-
+            OnPropertyChanged(nameof(PowerMachineStatusText));
             OnPropertyChanged(nameof(IsAlarmState));
             ApplySimulatorSignals();
         }
@@ -128,6 +129,7 @@ public class MainViewModel : INotifyPropertyChanged
             _isAlarmOn = true;
             OnPropertyChanged(nameof(IsAlarmOn));
             OnPropertyChanged(nameof(IsAlarmState));
+            OnPropertyChanged(nameof(PowerMachineStatusText));
         }
 
         if (CurrentMachineState != MachineState.Alarm)
@@ -199,6 +201,12 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    public string PowerMachineStatusText => IsPowerMachineOn ? "On" : "Off";
+    public string AlarmStatusText => IsAlarmOn ? "On" : "Off";
+
+    public string MachineStateStatusText => CurrentMachineState.ToString();
+
+
     private bool _isLaserOn;
     public bool IsLaserOn
     {
@@ -246,14 +254,30 @@ public class MainViewModel : INotifyPropertyChanged
         get => _isFrontDoorClosed;
         set
         {
+            if (_isFrontDoorClosed == value) return;
+
+            bool wasClosed = _isFrontDoorClosed;
             _isFrontDoorClosed = value;
+
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsHostGreen));
             OnPropertyChanged(nameof(IsLaserGreen));
             OnPropertyChanged(nameof(IsDiodeGreen));
             OnPropertyChanged(nameof(IsPulsingGreen));
-
             OnPropertyChanged(nameof(IsAlarmState));
+            OnPropertyChanged(nameof(IsFrontDoorGreen));
+
+            if (wasClosed && !value)
+            {
+                IsFrontDoorSafetyReset = false;
+
+                if (CurrentMachineState == MachineState.Running ||
+                    CurrentMachineState == MachineState.Initializing)
+                {
+                    EnterAlarm("Front door opened during operation.");
+                }
+            }
+
             ApplySimulatorSignals();
         }
     }
@@ -263,26 +287,56 @@ public class MainViewModel : INotifyPropertyChanged
         get => _isRearDoorClosed;
         set
         {
+            if (_isRearDoorClosed == value) return;
+
+            bool wasClosed = _isRearDoorClosed;
             _isRearDoorClosed = value;
+
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsHostGreen));
             OnPropertyChanged(nameof(IsLaserGreen));
             OnPropertyChanged(nameof(IsDiodeGreen));
             OnPropertyChanged(nameof(IsPulsingGreen));
-
             OnPropertyChanged(nameof(IsAlarmState));
+            OnPropertyChanged(nameof(IsRearDoorGreen));
+
+            if (wasClosed && !value)
+            {
+                IsRearDoorSafetyReset = false;
+
+                if (CurrentMachineState == MachineState.Running ||
+                    CurrentMachineState == MachineState.Initializing)
+                {
+                    EnterAlarm("Rear door opened during operation.");
+                }
+            }
+
             ApplySimulatorSignals();
         }
     }
-    private bool _isDoorSafetyReset;
-    public bool IsDoorSafetyReset
+
+    private bool _isFrontDoorSafetyReset;
+    public bool IsFrontDoorSafetyReset
     {
-        get => _isDoorSafetyReset;
+        get => _isFrontDoorSafetyReset;
         set
         {
-            _isDoorSafetyReset = value;
+            if (_isFrontDoorSafetyReset == value) return;
+            _isFrontDoorSafetyReset = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsFrontDoorGreen));
+        }
+    }
+
+    private bool _isRearDoorSafetyReset;
+    public bool IsRearDoorSafetyReset
+    {
+        get => _isRearDoorSafetyReset;
+        set
+        {
+            if (_isRearDoorSafetyReset == value) return;
+            _isRearDoorSafetyReset = value;
+            OnPropertyChanged();
             OnPropertyChanged(nameof(IsRearDoorGreen));
         }
     }
@@ -336,7 +390,8 @@ public class MainViewModel : INotifyPropertyChanged
                 return;
             }
 
-            IsDoorSafetyReset = true;
+            IsFrontDoorSafetyReset = IsFrontDoorClosed;
+            IsRearDoorSafetyReset = IsRearDoorClosed;
             HasCompletedInitialInit = true;
             CurrentMachineState = MachineState.Ready;
         });
@@ -386,9 +441,23 @@ public class MainViewModel : INotifyPropertyChanged
         {
             if (!IsPowerMachineOn) return Task.CompletedTask;
             IsAlarmOn = false;
-            if (IsRearDoorClosed && IsFrontDoorClosed)
+            IsFrontDoorSafetyReset = IsFrontDoorClosed;
+            IsRearDoorSafetyReset = IsRearDoorClosed;
+
+            if (!IsFrontDoorClosed || !IsRearDoorClosed)
             {
-                IsDoorSafetyReset = true;
+                if (!IsFrontDoorClosed && !IsRearDoorClosed)
+                {
+                    MessageBox.Show("Front door and Rear door are still open.");
+                }
+                else if (!IsFrontDoorClosed)
+                {
+                    MessageBox.Show("Front door is still open.");
+                }
+                else if (!IsRearDoorClosed)
+                {
+                    MessageBox.Show("Rear door is still open.");
+                }
             }
             if (!HasCompletedInitialInit)
             {
@@ -512,7 +581,8 @@ public class MainViewModel : INotifyPropertyChanged
         IsPowerMachineOn = false;
         IsAlarmOn = false;
         IsLaserOn = true;
-        IsDoorSafetyReset = false;
+        IsFrontDoorSafetyReset = false;
+        IsRearDoorSafetyReset = false;
         IsPulsingOn = true;
         IsDiodeOn = true;
         IsRearDoorClosed = true; 
@@ -529,9 +599,10 @@ public class MainViewModel : INotifyPropertyChanged
     public bool IsDiodeGreen=>IsDiodeOn && CurrentMachineState != MachineState.Offline;
     public bool IsPulsingGreen=>IsPulsingOn && CurrentMachineState != MachineState.Offline;
 
-   
-    public bool IsFrontDoorGreen=>IsFrontDoorClosed && IsDoorSafetyReset;
-    public bool IsRearDoorGreen => IsRearDoorClosed && IsDoorSafetyReset;
+
+    public bool IsFrontDoorGreen => IsFrontDoorClosed && IsFrontDoorSafetyReset;
+    public bool IsRearDoorGreen => IsRearDoorClosed && IsRearDoorSafetyReset;
+
 
 
     #region cac nut nhan
@@ -935,16 +1006,8 @@ public class MainViewModel : INotifyPropertyChanged
         FrontDoorStatusText = IsFrontDoorClosed ? "Closed" : "Open";
         RearDoorStatusText = IsRearDoorClosed ? "Closed" : "Open";
         PulsingStatusText = IsPulsingOn ? "On" : "Off";
-        if (!IsFrontDoorClosed || !IsRearDoorClosed)
-        {
-            IsDoorSafetyReset = false;
-            if (CurrentMachineState == MachineState.Running ||
-                CurrentMachineState == MachineState.Initializing) 
-            {
-                EnterAlarm("Door opened during operation.");
-            }
-            return;
-        }
+
+       
         
         if (!IsPowerMachineOn)
         {
