@@ -42,7 +42,7 @@
                                            Foreground="#1683FF"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Right"
-                                           Margin="0,0,20,0"
+                                           Margin="0,0,15,0"
                                            FontWeight="SemiBold"></TextBlock>
                                 </Grid>
                             </Border>
@@ -53,7 +53,7 @@
                                     <Setter TargetName="Knob" Property="Background" Value="#16B84E"></Setter>
                                     <Setter TargetName="SwitchText" Property="Text" Value="On"></Setter>
                                     <Setter TargetName="SwitchText" Property="HorizontalAlignment" Value="Left"></Setter>
-                                    <Setter TargetName="SwitchText" Property="Margin" Value="20,0,0,0"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Margin" Value="15,0,0,0"></Setter>
                                     <Setter TargetName="SwitchText" Property="Foreground" Value="#16B84E"></Setter>
                                     <Setter Property="BorderBrush" Value="#5ED48B"></Setter>
                                 </Trigger>
@@ -63,7 +63,7 @@
                                     <Setter TargetName="Knob" Property="Background" Value="#4DA3FF"></Setter>
                                     <Setter TargetName="SwitchText" Property="Text" Value="Off" ></Setter>
                                     <Setter TargetName="SwitchText" Property="HorizontalAlignment" Value="Right"></Setter>
-                                    <Setter TargetName="SwitchText" Property="Margin" Value="0,0,20,0"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Margin" Value="0,0,15,0"></Setter>
                                     <Setter TargetName="SwitchText" Property="Foreground" Value="#1683FF" ></Setter>
                                     <Setter Property="BorderBrush" Value="#4DA3FF" ></Setter>
                                 </Trigger>
@@ -80,6 +80,80 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            <!--Style rieng cho nut Door-->
+            <Style x:Key="SwitchDoorStyle" TargetType="ToggleButton">
+                <Setter Property="Width" Value="130"></Setter>
+                <Setter Property="Height" Value="40"></Setter>
+                <Setter Property="Background" Value="#E5E5E5"></Setter>
+                <Setter Property="BorderBrush" Value="#4DA3FF"></Setter>
+                <Setter Property="Foreground" Value="#4DA3FF"></Setter>
+                <Setter Property="FontSize" Value="14"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="OuterBorder"
+                                    Background="White"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="2"
+                                    CornerRadius="20"
+                                    Padding="2">
+                                <Grid>
+
+
+                                    <!--Nut tron-->
+                                    <Border x:Name="Knob"
+                                            Width="60"
+                                            Height="32"
+                                            Background="#1683FF"
+                                            CornerRadius="16"
+                                            HorizontalAlignment="Left">
+
+                                    </Border>
+                                    <!--Text-->
+                                    <TextBlock x:Name="SwitchText"
+                                           Text="Open"
+                                           Foreground="#1683FF"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right"
+                                           Margin="0,0,15,0"
+                                           FontWeight="SemiBold"></TextBlock>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <!--Khi bat-->
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right"></Setter>
+                                    <Setter TargetName="Knob" Property="Background" Value="#16B84E"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Text" Value="Closed"></Setter>
+                                    <Setter TargetName="SwitchText" Property="HorizontalAlignment" Value="Left"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Margin" Value="15,0,0,0"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Foreground" Value="#16B84E"></Setter>
+                                    <Setter Property="BorderBrush" Value="#5ED48B"></Setter>
+                                </Trigger>
+                                <!--Khi tat-->
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Left" ></Setter>
+                                    <Setter TargetName="Knob" Property="Background" Value="#4DA3FF"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Text" Value="Open" ></Setter>
+                                    <Setter TargetName="SwitchText" Property="HorizontalAlignment" Value="Right"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Margin" Value="0,0,15,0"></Setter>
+                                    <Setter TargetName="SwitchText" Property="Foreground" Value="#1683FF" ></Setter>
+                                    <Setter Property="BorderBrush" Value="#4DA3FF" ></Setter>
+                                </Trigger>
+                                <!--Hover-->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="OuterBorder" Property="Opacity" Value="0.95"></Setter>
+                                </Trigger>
+                                <!--Disable-->
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="OuterBorder" Property="Opacity" Value="0.5"></Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -162,12 +236,17 @@
                        Text="Alarm" FontFamily="Arial" FontSize="16"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"></TextBlock>
-
+            <!--Power Machine-->
             <ToggleButton Grid.Column="2" Grid.Row="1" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding IsPowerMachineOn,Mode=TwoWay}"></ToggleButton>
-            <ToggleButton Grid.Column="2" Grid.Row="2" Style="{StaticResource SwitchToggleStyle}" IsChecked="False"></ToggleButton>
-            <ToggleButton Grid.Column="2" Grid.Row="3" Style="{StaticResource SwitchToggleStyle}" IsChecked="False"></ToggleButton>
-            <ToggleButton Grid.Column="2" Grid.Row="4" Style="{StaticResource SwitchToggleStyle}" IsChecked="False"></ToggleButton>
-            <ToggleButton Grid.Column="2" Grid.Row="5" Style="{StaticResource SwitchToggleStyle}" IsChecked="False"></ToggleButton>
+            <!--Diode-->
+            <ToggleButton Grid.Column="2" Grid.Row="2" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding IsDiodeOn,Mode=TwoWay}"></ToggleButton>
+            <!--Laser-->
+            <ToggleButton Grid.Column="2" Grid.Row="3" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding IsLaserOn,Mode=TwoWay}"></ToggleButton>
+            <!--Front Door-->
+            <ToggleButton Grid.Column="2" Grid.Row="4" Style="{StaticResource SwitchDoorStyle}" IsChecked="{Binding IsFrontDoorClosed,Mode=TwoWay}"></ToggleButton>
+            <!--Rear Door-->
+            <ToggleButton Grid.Column="2" Grid.Row="5" Style="{StaticResource SwitchDoorStyle}" IsChecked="{Binding IsRearDoorClosed,Mode=TwoWay}"></ToggleButton>
+            <!--Alarm-->
             <ToggleButton Grid.Column="2" Grid.Row="6" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding IsAlarmOn,Mode=TwoWay}"></ToggleButton>
 
             

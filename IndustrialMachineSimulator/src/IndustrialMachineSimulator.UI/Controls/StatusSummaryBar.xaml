@@ -7,6 +7,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="120" d:DesignWidth="1920">
     <Grid>
+        <Grid.Resources>
+            <Style x:Key="StatusLampState" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe MDL2 Assets"></Setter>
+                <Setter Property="FontSize" Value="40"></Setter>
+                <Setter Property="Foreground" Value="#00FF00"></Setter>
+                <Setter Property="Margin" Value="0,0,35,0"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            </Style>
+        </Grid.Resources>
+
         <!-- Chia man hinh grid 2-->
         <Grid  Height="auto" Background="White">
             <Grid.ColumnDefinitions>
@@ -119,17 +130,21 @@
 
                 <!--Icon mau xanh trang thai Host -->
                 <TextBlock Grid.Column="0" Grid.Row="1"
-                    FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                    FontSize="40" Foreground="#00FF00"
-                    Margin="0,0,35,0"
-                    VerticalAlignment="Center"
-                    TextAlignment="Right"></TextBlock>
-                <TextBlock Grid.Column="0" Grid.Row="1"
-                           Text="{Binding HostStatusText}"
-                           FontFamily="Arial" FontSize="12"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           TextAlignment="Center"></TextBlock>
+                           Text="&#xEC43;">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource StatusLampState}">
+                            <Setter Property="Foreground" Value="#BFBFBF"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsHostGreen}" Value="True">
+                                    <Setter Property="Foreground" Value="#00FF00"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsHostGreen}" Value="False">
+                                    <Setter Property="Foreground" Value="#D9534F"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 <Label Grid.Column="0" Grid.Row="1" Content="Host" 
                        FontFamily="Arial" HorizontalAlignment="Left" 
                        VerticalAlignment="Center" FontSize="28"
@@ -137,11 +152,21 @@
                        Margin="35,0"></Label>
                 <!--Icon mau xanh trang thai Diode -->
                 <TextBlock Grid.Column="0" Grid.Row="2"
-                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                  FontSize="40" Foreground="#00FF00"
-                  Margin="0,0,35,0"
-                  VerticalAlignment="Center"
-                  TextAlignment="Right"></TextBlock>
+                           Text="&#xEC43;">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource StatusLampState}">
+                            <Setter Property="Foreground" Value="#BFBFBF"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDiodeGreen}" Value="True">
+                                    <Setter Property="Foreground" Value="#00FF00"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDiodeGreen}" Value="False">
+                                    <Setter Property="Foreground" Value="#D9534F"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 
                 <Label Grid.Column="0" Grid.Row="2" Content="Diode" 
                      FontFamily="Arial" HorizontalAlignment="Left" 
@@ -151,72 +176,54 @@
 
                 <!--Icon mau xanh trang thai Laser -->
                 <TextBlock Grid.Column="1" Grid.Row="1"
-                    FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                    FontSize="40" Foreground="#00FF00"
-                    Margin="0,0,35,0"
-                           VerticalAlignment="Center"
-                    TextAlignment="Right"></TextBlock>
+                           Text="&#xEC43;">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource StatusLampState}">
+                            <Setter Property="Foreground" Value="#BFBFBF"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLaserGreen}" Value="True">
+                                    <Setter Property="Foreground" Value="#00FF00"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLaserGreen}" Value="False">
+                                    <Setter Property="Foreground" Value="#D9534F"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+
+                </TextBlock>
                              
                 <Label Grid.Column="1" Grid.Row="1" Content="Laser" 
                         FontFamily="Arial" HorizontalAlignment="Left" 
                         VerticalAlignment="Center" FontSize="28"
                         FontWeight="Bold"
                         Margin="35,0"></Label>
-                <!--binding du lieu status cua Laser-->
-                <TextBlock Grid.Column="1" Grid.Row="1"
-                            Text="{Binding LaserStatusText}"
-                            FontFamily="Arial" FontSize="12"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            TextAlignment="Center"></TextBlock>
                 
                 <!--Icon mau xanh trang thai Pulsing -->
                 <TextBlock Grid.Column="1" Grid.Row="2"
-                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                  FontSize="40" Foreground="#00FF00"
-                  Margin="0,0,35,0"
-                  VerticalAlignment="Center"
-                  TextAlignment="Right"></TextBlock>
+                           Text="&#xEC43;">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource StatusLampState}">
+                            <Setter Property="Foreground" Value="#BFBFBF"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPulsingGreen}" Value="True">
+                                    <Setter Property="Foreground" Value="#00FF00"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPulsingGreen}" Value="False">
+                                    <Setter Property="Foreground" Value="#D9534F"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+
+                </TextBlock>
 
                 <Label Grid.Column="1" Grid.Row="2" Content="Pulsing" 
                      FontFamily="Arial" HorizontalAlignment="Left" 
                      VerticalAlignment="Center" FontSize="28"
                      FontWeight="Bold"
                      Margin="35,0"></Label>
-                <!--Icon mau xanh trang thai Laser -->
-                <TextBlock Grid.Column="1" Grid.Row="1"
-                    FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                    FontSize="40" Foreground="#00FF00"
-                    Margin="0,0,35,0"
-                           VerticalAlignment="Center"
-                    TextAlignment="Right"></TextBlock>
-                             
-                <Label Grid.Column="1" Grid.Row="1" Content="Laser" 
-                        FontFamily="Arial" HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" FontSize="28"
-                        FontWeight="Bold"
-                        Margin="35,0"></Label>
-                <!--binding du lieu status cua Laser-->
-                <TextBlock Grid.Column="1" Grid.Row="1"
-                            Text="{Binding LaserStatusText}"
-                            FontFamily="Arial" FontSize="12"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            TextAlignment="Center"></TextBlock>
-                
-                <!--Icon mau xanh trang thai Pulsing -->
-                <TextBlock Grid.Column="1" Grid.Row="2"
-                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                  FontSize="40" Foreground="#00FF00"
-                  Margin="0,0,35,0"
-                  VerticalAlignment="Center"
-                  TextAlignment="Right"></TextBlock>
 
-                <Label Grid.Column="1" Grid.Row="2" Content="Pulsing" 
-                     FontFamily="Arial" HorizontalAlignment="Left" 
-                     VerticalAlignment="Center" FontSize="28"
-                     FontWeight="Bold"
-                     Margin="35,0"></Label>
                 
                 <!--Icon mau xanh trang thai LaserTime -->
  
@@ -240,11 +247,22 @@
 
                 <!--Icon mau xanh trang thai Front Door -->
                 <TextBlock Grid.Column="2" Grid.Row="2"
-                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                  FontSize="40" Foreground="#00FF00"
-                  Margin="0,0,35,0"
-                  VerticalAlignment="Center"
-                  TextAlignment="Right"></TextBlock>
+                           Text="&#xEC43;">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource StatusLampState}">
+                            <Setter Property="Foreground" Value="#BFBFBF"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFrontDoorGreen}" Value="True">
+                                    <Setter Property="Foreground" Value="#00FF00"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFrontDoorGreen}" Value="False">
+                                    <Setter Property="Foreground" Value="#D9534F"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+
+                </TextBlock>
 
                 <Label Grid.Column="2" Grid.Row="2" Content="Front Door" 
                      FontFamily="Arial" HorizontalAlignment="Left" 
@@ -254,11 +272,22 @@
 
                 <!--Icon mau xanh trang thai Rear Door -->
                 <TextBlock Grid.Column="3" Grid.Row="2"
-                  FontFamily="Segoe MDL2 Assets" Text="&#xEC43;"
-                  FontSize="40" Foreground="#00FF00"
-                  Margin="0,0,35,0"
-                  VerticalAlignment="Center"
-                  TextAlignment="Right"></TextBlock>
+                           Text="&#xEC43;">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource StatusLampState}">
+                            <Setter Property="Foreground" Value="#BFBFBF"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsRearDoorGreen}" Value="True">
+                                    <Setter Property="Foreground" Value="#00FF00"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsRearDoorGreen}" Value="False">
+                                    <Setter Property="Foreground" Value="#D9534F"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+
+                </TextBlock>
 
                 <Label Grid.Column="3" Grid.Row="2" Content="Rear Door" 
                      FontFamily="Arial" HorizontalAlignment="Left" 
