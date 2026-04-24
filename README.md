@@ -33,7 +33,8 @@ This project is inspired by real industrial machine software and focuses on:
 
 ## Screenshots
 ### Main Dashboard
-<img width="1906" height="1038" alt="dashboard-running" src="https://github.com/user-attachments/assets/102e7234-5d17-469f-bafe-fe617f5ad279" />
+<img width="1906" height="1038" alt="dashboard-running" src="https://github.com/user-attachments/assets/2818e2b9-4745-4595-93e9-3b0135095f2f" />
+
 
 
 ### Running / Alarm State
