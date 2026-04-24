@@ -47,7 +47,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand StopCommand { get; }
     public ICommand CycleStopCommand { get; }
     public ICommand ResetCommand { get; }
-
+    public ICommand RunStatusBarCommand { get; }
+    public bool IsRunButtonInStopMode=>CurrentMachineState==MachineState.Running;
     public ICommand LoginCommand { get; }
     public ICommand ShowHomeCommand { get;  }
     public ICommand ShowMaintCommand { get; }
@@ -81,6 +82,10 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsPulsingGreen));
             OnPropertyChanged(nameof(IsAlarmState));
             OnPropertyChanged(nameof(PowerMachineStatusText));
+            OnPropertyChanged(nameof(IsTowerRedOn));
+            OnPropertyChanged(nameof(IsTowerYellowOn));
+            OnPropertyChanged(nameof(IsTowerGreenOn));
+            OnPropertyChanged(nameof(IsRunButtonInStopMode));
             UpdateMachineState();
         }
     }
@@ -138,6 +143,50 @@ public class MainViewModel : INotifyPropertyChanged
         }
 
         MessageBox.Show(message);
+    }
+    private Task TryStartMachine()
+    {
+        if (!IsPowerMachineOn)
+        {
+            MessageBox.Show("Power Machine is Off.");
+            return Task.CompletedTask;
+        }
+
+        if (IsAlarmOn || CurrentMachineState == MachineState.Alarm)
+        {
+            MessageBox.Show("Machine is alarm state. Please reset first!");
+            return Task.CompletedTask;
+        }
+
+        if (!IsLaserOn)
+        {
+            MessageBox.Show("Laser is Off.");
+            return Task.CompletedTask;
+        }
+
+        if (!IsFrontDoorClosed || !IsRearDoorClosed)
+        {
+            MessageBox.Show("Door is open. Cannot start.");
+            return Task.CompletedTask;
+        }
+
+        if (CurrentMachineState == MachineState.Ready ||
+            CurrentMachineState == MachineState.Stopped)
+        {
+            CurrentMachineState = MachineState.Running;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task TryStopMachine()
+    {
+        if (CurrentMachineState == MachineState.Running)
+        {
+            CurrentMachineState = MachineState.Stopped;
+        }
+
+        return Task.CompletedTask;
     }
     public string LaserTimeText { get; set; } = "2000 / 20000H (100 %)";
     private string _hostStatusText = "Disconnected";
@@ -201,6 +250,13 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    public bool IsTowerRedOn => CurrentMachineState == MachineState.Alarm;
+    public bool IsTowerYellowOn =>
+        CurrentMachineState == MachineState.Standby ||
+        CurrentMachineState == MachineState.Initializing ||
+        CurrentMachineState == MachineState.Stopped||
+        CurrentMachineState==MachineState.Ready;
+    public bool IsTowerGreenOn =>CurrentMachineState == MachineState.Running;
     public string PowerMachineStatusText => IsPowerMachineOn ? "On" : "Off";
     public string AlarmStatusText => IsAlarmOn ? "On" : "Off";
 
@@ -407,27 +463,18 @@ public class MainViewModel : INotifyPropertyChanged
             return Task.CompletedTask;
         });
 
-        StartCommand = new RelayCommand(_ =>
-        {
-            if (!IsPowerMachineOn) return Task.CompletedTask;
-            if (IsAlarmOn) return Task.CompletedTask;
-            if(!IsLaserOn) return Task.CompletedTask;
-            if(!IsFrontDoorClosed||!IsRearDoorClosed) return Task.CompletedTask;
-            if(CurrentMachineState == MachineState.Ready||
-            CurrentMachineState==MachineState.Stopped)
-            {
-                CurrentMachineState = MachineState.Running;
-            }
-            return Task.CompletedTask;
-        });
+        StartCommand = new RelayCommand(_ => TryStartMachine());
 
-        StopCommand = new RelayCommand(_ =>
+        StopCommand = new RelayCommand(_ => TryStopMachine());
+
+        RunStatusBarCommand = new RelayCommand(_ =>
         {
-           if(CurrentMachineState==MachineState.Running)
+            if (CurrentMachineState == MachineState.Running)
             {
-                CurrentMachineState = MachineState.Stopped;
+                return TryStopMachine();
             }
-            return Task.CompletedTask;
+
+            return TryStartMachine();
         });
         CycleStopCommand = new RelayCommand(_ =>
         {

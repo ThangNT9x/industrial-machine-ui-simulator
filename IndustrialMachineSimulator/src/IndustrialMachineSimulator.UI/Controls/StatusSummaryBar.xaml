@@ -16,6 +16,64 @@
                 <Setter Property="HorizontalAlignment" Value="Right"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
             </Style>
+            
+            <!--Style cho nut Run-->
+            <Style x:Key="RunButtomStyle" TargetType="Button">
+                <Setter Property="Width" Value="120"></Setter>
+                <Setter Property="Height" Value="120"></Setter>
+                <Setter Property="Background" Value="Blue"></Setter>
+                <Setter Property="BorderBrush" Value="Blue"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid x:Name="BackgroundButtonRun" Background="Blue">
+                                <TextBlock x:Name="IconRun"
+                                           FontFamily="Segoe MDL2 Assets" Text="&#xF5B0;" 
+                                           FontSize="80" Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Top">
+                                </TextBlock>
+                                <TextBlock x:Name="TextRun"
+                                           FontFamily="Arial" FontSize="25" 
+                                           Text="RUN" Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Bottom"
+                                           TextAlignment="Center">
+                                </TextBlock>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <!--khi dang run-->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="BackgroundButtonRun"
+                                            Property="Background"
+                                            Value="#3399FF"></Setter>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="BackgroundButtonRun"
+                                            Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.96" ScaleY="0.96"></ScaleTransform>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="BackgroundButtonRun" Property="Opacity" Value="0.85">
+
+                                    </Setter>
+                                </Trigger>
+                                <DataTrigger Binding="{Binding IsRunButtonInStopMode}" Value="False">
+                                    <Setter TargetName="BackgroundButtonRun" Property="Background" Value="Blue"></Setter>
+                                    <Setter TargetName="IconRun" Property="Text" Value="&#xF5B0;"></Setter>
+                                    <Setter TargetName="TextRun" Property="Text" Value="RUN"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsRunButtonInStopMode}" Value="True">
+                                    <Setter TargetName="BackgroundButtonRun" Property="Background" Value="OrangeRed"></Setter>
+                                    <Setter TargetName="IconRun" Property="Text" Value="&#xE004;"></Setter>
+                                    <Setter TargetName="TextRun" Property="Text" Value="STOP"></Setter>
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </Grid.Resources>
 
         <!-- Chia man hinh grid 2-->
@@ -25,15 +83,8 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <!-- Nut nhan RUN -->
-            <Button Grid.Column="0" Width="120" Height="120" Background="blue" BorderBrush="blue"></Button>
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,5,0,0">
-                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xF5B0;" 
-                    FontSize="80" Foreground="White"
-                    Margin="0,0,20,0"
-                    ></TextBlock>
-                <TextBlock FontFamily="Arial" FontSize="25" Text="RUN" Foreground="White"
-                    TextAlignment="Center"></TextBlock>
-            </StackPanel>
+            <Button Grid.Column="0" Style="{StaticResource RunButtomStyle}" Command="{Binding RunStatusBarCommand}">
+            </Button>
             <!--Tiep tuc chia nho grid so 2 -->
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>

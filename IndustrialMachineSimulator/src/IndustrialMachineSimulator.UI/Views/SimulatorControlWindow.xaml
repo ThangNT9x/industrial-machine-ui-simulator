@@ -171,10 +171,58 @@
                 VerticalAlignment="Bottom"
                 Margin="10,0,10,0">
         </Border>
+        <!--Tittle-->
         <TextBlock Grid.Row="0" Text="Monitoring"
                    FontFamily="Arial" FontSize="20" Foreground="Black"
                    FontWeight="Bold" Margin="20,0,0,0"
                    VerticalAlignment="Bottom"></TextBlock>
+        <Grid Grid.Row="0" HorizontalAlignment="Right" Width="auto" Margin="0,0,70,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            
+            <Label  Grid.Column="0" Content="Tower Lamp" FontFamily="Arial" FontSize="20" FontWeight="Bold"></Label>
+            <Border Grid.Column="1" Width="20" Height="20" CornerRadius="10" Background="Red" BorderThickness="1" BorderBrush="Black" Margin="10,0,10,0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Opacity" Value="0.25"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsTowerRedOn}" Value="True">
+                                <Setter Property="Opacity" Value="1"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            <Border Grid.Column="2" Width="20" Height="20" CornerRadius="10" Background="Yellow" BorderThickness="1" BorderBrush="Black" Margin="10,0,10,0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Opacity" Value="0.25"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsTowerYellowOn}" Value="True">
+                                <Setter Property="Opacity" Value="1"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            <Border Grid.Column="3" Width="20" Height="20" CornerRadius="10" Background="Green" BorderThickness="1" BorderBrush="Black" Margin="10,0,10,0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Opacity" Value="0.25"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsTowerGreenOn}" Value="True">
+                                <Setter Property="Opacity" Value="1"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
