@@ -6,6 +6,7 @@ using IndustrialMachineSimulator.Core.Services;
 using System.Windows;
 using IndustrialMachineSimulator.UI;
 using IndustrialMachineSimulator.Core.Entities;
+using System.Collections.ObjectModel;
 
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
@@ -98,7 +99,10 @@ public class MainViewModel : INotifyPropertyChanged
         get => _isPowerMachineOn;
         set
         {
+            if(_isPowerMachineOn == value) return;
+            bool wasOn = _isPowerMachineOn;
             _isPowerMachineOn = value;
+
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsHostGreen));
             OnPropertyChanged(nameof(IsLaserGreen));
@@ -106,6 +110,15 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsPulsingGreen));
             OnPropertyChanged(nameof(PowerMachineStatusText));
             OnPropertyChanged(nameof(IsAlarmState));
+            if(wasOn &&!value)
+            {
+                if(CurrentMachineState==MachineState.Running||
+                    CurrentMachineState==MachineState.Initializing)
+                {
+                    EnterAlarm("POWER-001", "Power machine turned off during operation.");
+                    return;
+                }
+            }
             ApplySimulatorSignals();
         }
     }
@@ -116,6 +129,11 @@ public class MainViewModel : INotifyPropertyChanged
         set
         {
             if (_isAlarmOn == value) return;
+            if (value)
+            {
+                EnterAlarm("SIMU-ALARM-001", "Manual alarm trigger from Simulator", false);
+                return;
+            }
             _isAlarmOn = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsHostGreen));
@@ -127,7 +145,7 @@ public class MainViewModel : INotifyPropertyChanged
             ApplySimulatorSignals();
         }
     }
-    private void EnterAlarm(string message)
+    private void EnterAlarm(string code, string message, bool showPopup=true)
     {
         if (!_isAlarmOn)
         {
@@ -142,7 +160,12 @@ public class MainViewModel : INotifyPropertyChanged
             CurrentMachineState = MachineState.Alarm;
         }
 
-        MessageBox.Show(message);
+        AddAlarm(code, message);
+        if (showPopup)
+        {
+            MessageBox.Show(message);
+        }
+        
     }
     private Task TryStartMachine()
     {
@@ -261,6 +284,7 @@ public class MainViewModel : INotifyPropertyChanged
     public string AlarmStatusText => IsAlarmOn ? "On" : "Off";
 
     public string MachineStateStatusText => CurrentMachineState.ToString();
+    public ObservableCollection<AlarmRecord> AlarmItems { get; } = new();
 
 
     private bool _isLaserOn;
@@ -330,7 +354,7 @@ public class MainViewModel : INotifyPropertyChanged
                 if (CurrentMachineState == MachineState.Running ||
                     CurrentMachineState == MachineState.Initializing)
                 {
-                    EnterAlarm("Front door opened during operation.");
+                    EnterAlarm("DOOR-001","Front door opened during operation.");
                 }
             }
 
@@ -363,7 +387,7 @@ public class MainViewModel : INotifyPropertyChanged
                 if (CurrentMachineState == MachineState.Running ||
                     CurrentMachineState == MachineState.Initializing)
                 {
-                    EnterAlarm("Rear door opened during operation.");
+                    EnterAlarm("DOOR-002","Rear door opened during operation.");
                 }
             }
 
@@ -396,6 +420,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsRearDoorGreen));
         }
     }
+    private Views.SimulatorControlWindow? _simulatorWindow;
 
     public MainViewModel(MachineController machineController)
     {
@@ -454,12 +479,28 @@ public class MainViewModel : INotifyPropertyChanged
 
         OpenSimulatorWindowCommand = new RelayCommand(_ =>
         {
-            var simulatorWindow = new Views.SimulatorControlWindow(this);
-            if(Application.Current.MainWindow!=null)
+            if (_simulatorWindow == null || !_simulatorWindow.IsLoaded) 
             {
-                simulatorWindow.Owner=Application.Current.MainWindow;
+                _simulatorWindow = new Views.SimulatorControlWindow(this);
+                if(Application.Current.MainWindow != null)
+                {
+                    _simulatorWindow.Owner = Application.Current.MainWindow;
+                }
+                _simulatorWindow.Closed += (_, _) => _simulatorWindow = null;
+                _simulatorWindow.Show();
             }
-            simulatorWindow.Show();
+            else
+            {
+                if(_simulatorWindow.WindowState==WindowState.Minimized)
+                {
+                    _simulatorWindow.WindowState= WindowState.Normal;
+                }
+                _simulatorWindow.Activate();
+                _simulatorWindow.Topmost = true;
+                _simulatorWindow.Topmost = false;
+                _simulatorWindow.Focus();
+
+            }
             return Task.CompletedTask;
         });
 
@@ -1068,11 +1109,14 @@ public class MainViewModel : INotifyPropertyChanged
         }
         if (!IsLaserOn)
         {
-            if(CurrentMachineState==MachineState.Running)
-            {
-                CurrentMachineState = MachineState.Alarm;
-            }
             LaserStatusText = "Off";
+            if (CurrentMachineState == MachineState.Running ||
+                CurrentMachineState == MachineState.Initializing ||
+                CurrentMachineState == MachineState.Ready) 
+            {
+                EnterAlarm("LASER-001", "Laser turned off during machine operation.");
+                return;
+            }
             return;
         }
         
@@ -1121,6 +1165,17 @@ public class MainViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    private void AddAlarm(string code,string message,string severity="Error")
+    {
+        AlarmItems.Insert(0, new AlarmRecord
+        {
+            Id = AlarmItems.Count + 1,
+            Timestamp=DateTime.Now,
+            Code=code,
+            Message=message,
+            Severity=severity
+        });
+    }
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
