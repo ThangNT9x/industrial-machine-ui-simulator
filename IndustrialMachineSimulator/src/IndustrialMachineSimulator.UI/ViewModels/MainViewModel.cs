@@ -67,6 +67,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand OpenSimulatorWindowCommand {  get; }
 
+    public ICommand ClearAlarmUiCommand { get; }
+
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
     public MachineState CurrentMachineState
@@ -292,6 +294,7 @@ public class MainViewModel : INotifyPropertyChanged
     public string MachineStateStatusText => CurrentMachineState.ToString();
     public ObservableCollection<AlarmRecord> AlarmItems { get; } = new();
 
+    private readonly IAlarmFileLogger _alarmFileLogger;
 
     private readonly IAlarmRepository _alarmRepository;
 
@@ -430,10 +433,11 @@ public class MainViewModel : INotifyPropertyChanged
     }
     private Views.SimulatorControlWindow? _simulatorWindow;
 
-    public MainViewModel(MachineController machineController, IAlarmRepository alarmRepository)
+    public MainViewModel(MachineController machineController, IAlarmRepository alarmRepository, IAlarmFileLogger alarmFileLogger)
     {
         _machineController = machineController;
         _alarmRepository = alarmRepository;
+        _alarmFileLogger = alarmFileLogger;
 
         InitializeCommand = new RelayCommand(async _ =>
         {
@@ -569,7 +573,12 @@ public class MainViewModel : INotifyPropertyChanged
             }
             return Task.CompletedTask;
         });
-        
+        ClearAlarmUiCommand = new RelayCommand(async _ =>
+        {
+            await _alarmRepository.ClearVisibleAsync();
+            AlarmItems.Clear();
+            
+        });
 
         ShowHomeCommand = new RelayCommand(_ =>
         {
@@ -1172,6 +1181,17 @@ public class MainViewModel : INotifyPropertyChanged
     public bool IsMESPage => CurrentPage == AppPage.Mes;
     public bool IsPowerPage => CurrentPage == AppPage.Power;
 
+    public async Task LoadAlarmHistoryAsync()
+    {
+        AlarmItems.Clear();
+
+        var items = await _alarmRepository.GetVisibleAsync();
+        foreach (var item in items)
+        {
+            AlarmItems.Add(item);
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private async Task AddAlarmAsync(string code, string message, string severity = "Error")
@@ -1186,6 +1206,7 @@ public class MainViewModel : INotifyPropertyChanged
 
         AlarmItems.Insert(0, record);
         await _alarmRepository.AddAsync(record);
+        await _alarmFileLogger.WriteAsync(record);
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

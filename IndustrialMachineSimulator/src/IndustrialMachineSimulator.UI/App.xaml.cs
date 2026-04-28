@@ -40,6 +40,7 @@ public partial class App : Application
         services.AddSingleton<IPlcService, MockPlcService>();
         services.AddSingleton<IMesClient, MockMesClient>();
         services.AddSingleton<IAlarmRepository, SqliteAlarmRepository>();
+        services.AddSingleton<IAlarmFileLogger, AlarmFileLogger>();
         services.AddSingleton<ILoggerService, LoggerService>();
 
         services.AddSingleton<MachineController>();

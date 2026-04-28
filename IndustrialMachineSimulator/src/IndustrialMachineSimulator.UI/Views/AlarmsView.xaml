@@ -9,36 +9,49 @@
     <Grid Background="White" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-                   Text="Alarm Log"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   FontFamily="Arial"
-                   VerticalAlignment="Center"
-                   Margin="10,0,0,0"/>
+               Text="Alarm Log"
+               FontSize="28"
+               FontWeight="Bold"
+               FontFamily="Arial"
+               VerticalAlignment="Center"
+               Margin="10,0,0,0"/>
 
-        <DataGrid Grid.Row="1"
-                  ItemsSource="{Binding AlarmItems}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  HeadersVisibility="Column"
-                  Margin="10">
+        <StackPanel Grid.Row="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,0,10,0">
+            <Button Content="Clear"
+                Width="100"
+                Height="36"
+                FontSize="16"
+                FontFamily="Arial"
+                Command="{Binding ClearAlarmUiCommand}" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="2"
+              ItemsSource="{Binding AlarmItems}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              HeadersVisibility="Column"
+              Margin="10">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Time"
-                                    Binding="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}"
-                                    Width="220"/>
+                                Binding="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}"
+                                Width="220"/>
                 <DataGridTextColumn Header="Code"
-                                    Binding="{Binding Code}"
-                                    Width="120"/>
+                                Binding="{Binding Code}"
+                                Width="120"/>
                 <DataGridTextColumn Header="Severity"
-                                    Binding="{Binding Severity}"
-                                    Width="120"/>
+                                Binding="{Binding Severity}"
+                                Width="120"/>
                 <DataGridTextColumn Header="Message"
-                                    Binding="{Binding Message}"
-                                    Width="*"/>
+                                Binding="{Binding Message}"
+                                Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

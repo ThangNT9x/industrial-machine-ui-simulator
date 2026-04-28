@@ -13,4 +13,6 @@ public class AlarmLogEntity
     public string Code { get; set; } = string.Empty;
     public string Severity { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
+    public bool IsClearedFromUi { get; set; } = false;
+    public DateTime? ClearedAt { get; set; }
 }

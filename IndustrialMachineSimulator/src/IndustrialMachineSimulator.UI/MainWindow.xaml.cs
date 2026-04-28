@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using IndustrialMachineSimulator.UI.ViewModels;
-using IndustrialMachineSimulator.UI.Controls;
 
 namespace IndustrialMachineSimulator.UI;
 
@@ -10,5 +9,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = vm;
+
+        Loaded += async (_, _) =>
+        {
+            await vm.LoadAlarmHistoryAsync();
+        };
     }
 }
