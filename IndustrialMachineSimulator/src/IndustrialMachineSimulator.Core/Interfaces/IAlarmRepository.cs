@@ -4,6 +4,6 @@ namespace IndustrialMachineSimulator.Core.Interfaces;
 
 public interface IAlarmRepository
 {
-    Task AddAsync(AlarmRecord alarm, CancellationToken cancellationToken = default);
-    Task<List<AlarmRecord>> GetRecentAsync(CancellationToken cancellationToken = default);
+    Task AddAsync(AlarmRecord record);
+    Task<List<AlarmRecord>> GetAllAsync();
 }

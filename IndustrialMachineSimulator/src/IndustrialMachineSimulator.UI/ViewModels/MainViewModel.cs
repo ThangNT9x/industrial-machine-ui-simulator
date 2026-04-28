@@ -1,12 +1,13 @@
-﻿using System.ComponentModel;
+﻿using IndustrialMachineSimulator.Core.Entities;
+using IndustrialMachineSimulator.Core.Interfaces;
+using IndustrialMachineSimulator.Core.Services;
+using IndustrialMachineSimulator.UI;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
-using System.Windows.Input;
-using IndustrialMachineSimulator.Core.Services;
 using System.Windows;
-using IndustrialMachineSimulator.UI;
-using IndustrialMachineSimulator.Core.Entities;
-using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
@@ -110,18 +111,23 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsPulsingGreen));
             OnPropertyChanged(nameof(PowerMachineStatusText));
             OnPropertyChanged(nameof(IsAlarmState));
+            OnPropertyChanged(nameof(IsPowerOffOverlayVisible));
             if(wasOn &&!value)
             {
                 if(CurrentMachineState==MachineState.Running||
                     CurrentMachineState==MachineState.Initializing)
                 {
-                    EnterAlarm("POWER-001", "Power machine turned off during operation.");
+                    _ = EnterAlarmAsync("POWER-001", "Power machine turned off during operation.");
                     return;
                 }
             }
             ApplySimulatorSignals();
         }
     }
+
+    public bool IsPowerOffOverlayVisible => !IsPowerMachineOn;
+
+
     private bool _isAlarmOn;
     public bool IsAlarmOn
     {
@@ -131,7 +137,7 @@ public class MainViewModel : INotifyPropertyChanged
             if (_isAlarmOn == value) return;
             if (value)
             {
-                EnterAlarm("SIMU-ALARM-001", "Manual alarm trigger from Simulator", false);
+                _ = EnterAlarmAsync("SIMU-ALARM-001", "Manual alarm trigger from Simulator", false);
                 return;
             }
             _isAlarmOn = value;
@@ -145,14 +151,14 @@ public class MainViewModel : INotifyPropertyChanged
             ApplySimulatorSignals();
         }
     }
-    private void EnterAlarm(string code, string message, bool showPopup=true)
+    private async Task EnterAlarmAsync(string code, string message, bool showPopup = true)
     {
         if (!_isAlarmOn)
         {
             _isAlarmOn = true;
             OnPropertyChanged(nameof(IsAlarmOn));
             OnPropertyChanged(nameof(IsAlarmState));
-            OnPropertyChanged(nameof(PowerMachineStatusText));
+            OnPropertyChanged(nameof(AlarmStatusText));
         }
 
         if (CurrentMachineState != MachineState.Alarm)
@@ -160,12 +166,12 @@ public class MainViewModel : INotifyPropertyChanged
             CurrentMachineState = MachineState.Alarm;
         }
 
-        AddAlarm(code, message);
+        await AddAlarmAsync(code, message);
+
         if (showPopup)
         {
             MessageBox.Show(message);
         }
-        
     }
     private Task TryStartMachine()
     {
@@ -287,6 +293,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<AlarmRecord> AlarmItems { get; } = new();
 
 
+    private readonly IAlarmRepository _alarmRepository;
+
     private bool _isLaserOn;
     public bool IsLaserOn
     {
@@ -354,7 +362,7 @@ public class MainViewModel : INotifyPropertyChanged
                 if (CurrentMachineState == MachineState.Running ||
                     CurrentMachineState == MachineState.Initializing)
                 {
-                    EnterAlarm("DOOR-001","Front door opened during operation.");
+                    _ = EnterAlarmAsync("DOOR-001","Front door opened during operation.");
                 }
             }
 
@@ -387,7 +395,7 @@ public class MainViewModel : INotifyPropertyChanged
                 if (CurrentMachineState == MachineState.Running ||
                     CurrentMachineState == MachineState.Initializing)
                 {
-                    EnterAlarm("DOOR-002","Rear door opened during operation.");
+                    _ = EnterAlarmAsync("DOOR-002","Rear door opened during operation.");
                 }
             }
 
@@ -422,9 +430,10 @@ public class MainViewModel : INotifyPropertyChanged
     }
     private Views.SimulatorControlWindow? _simulatorWindow;
 
-    public MainViewModel(MachineController machineController)
+    public MainViewModel(MachineController machineController, IAlarmRepository alarmRepository)
     {
         _machineController = machineController;
+        _alarmRepository = alarmRepository;
 
         InitializeCommand = new RelayCommand(async _ =>
         {
@@ -1114,7 +1123,7 @@ public class MainViewModel : INotifyPropertyChanged
                 CurrentMachineState == MachineState.Initializing ||
                 CurrentMachineState == MachineState.Ready) 
             {
-                EnterAlarm("LASER-001", "Laser turned off during machine operation.");
+                _ =EnterAlarmAsync("LASER-001", "Laser turned off during machine operation.");
                 return;
             }
             return;
@@ -1165,17 +1174,20 @@ public class MainViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private void AddAlarm(string code,string message,string severity="Error")
+    private async Task AddAlarmAsync(string code, string message, string severity = "Error")
     {
-        AlarmItems.Insert(0, new AlarmRecord
+        var record = new AlarmRecord
         {
-            Id = AlarmItems.Count + 1,
-            Timestamp=DateTime.Now,
-            Code=code,
-            Message=message,
-            Severity=severity
-        });
+            Timestamp = DateTime.Now,
+            Code = code,
+            Severity = severity,
+            Message = message
+        };
+
+        AlarmItems.Insert(0, record);
+        await _alarmRepository.AddAsync(record);
     }
+
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

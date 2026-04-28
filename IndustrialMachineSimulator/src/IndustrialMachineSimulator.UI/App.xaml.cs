@@ -1,7 +1,10 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using IndustrialMachineSimulator.Core.Interfaces;
 using IndustrialMachineSimulator.Core.Services;
+using IndustrialMachineSimulator.Infrastructure.Data;
 using IndustrialMachineSimulator.Infrastructure.Hardware;
 using IndustrialMachineSimulator.Infrastructure.Logging;
 using IndustrialMachineSimulator.Infrastructure.Networking;
@@ -18,12 +21,25 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        Directory.CreateDirectory("Data");
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlite("Data Source=Data/app.db")
+            .Options;
+
+        using (var dbContext = new AppDbContext(options))
+        {
+            dbContext.Database.EnsureCreated();
+        }
+
         var services = new ServiceCollection();
+
+        services.AddSingleton(options);
 
         services.AddSingleton<ICameraService, MockCameraService>();
         services.AddSingleton<IPlcService, MockPlcService>();
         services.AddSingleton<IMesClient, MockMesClient>();
-        services.AddSingleton<IAlarmRepository, InMemoryAlarmRepository>();
+        services.AddSingleton<IAlarmRepository, SqliteAlarmRepository>();
         services.AddSingleton<ILoggerService, LoggerService>();
 
         services.AddSingleton<MachineController>();

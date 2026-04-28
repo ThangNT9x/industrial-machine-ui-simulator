@@ -7,14 +7,18 @@ public class InMemoryAlarmRepository : IAlarmRepository
 {
     private readonly List<AlarmRecord> _alarms = new();
 
-    public Task AddAsync(AlarmRecord alarm, CancellationToken cancellationToken = default)
+    public Task AddAsync(AlarmRecord record)
     {
-        _alarms.Add(alarm);
+        _alarms.Add(record);
         return Task.CompletedTask;
     }
 
-    public Task<List<AlarmRecord>> GetRecentAsync(CancellationToken cancellationToken = default)
+    public Task<List<AlarmRecord>> GetAllAsync()
     {
-        return Task.FromResult(_alarms.OrderByDescending(a => a.Timestamp).Take(20).ToList());
+        var result = _alarms
+            .OrderByDescending(a => a.Timestamp)
+            .ToList();
+
+        return Task.FromResult(result);
     }
 }
