@@ -30,6 +30,14 @@ public partial class App : Application
         using (var dbContext = new AppDbContext(options))
         {
             dbContext.Database.EnsureCreated();
+            dbContext.Database.ExecuteSqlRaw("""
+                                            CREATE TABLE IF NOT EXISTS OperationLogs (
+                                                Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                                                Timestamp TEXT NOT NULL,
+                                                Category TEXT NOT NULL,
+                                                Message TEXT NOT NULL
+                                            );
+                                            """);
         }
 
         var services = new ServiceCollection();
@@ -40,8 +48,10 @@ public partial class App : Application
         services.AddSingleton<IPlcService, MockPlcService>();
         services.AddSingleton<IMesClient, MockMesClient>();
         services.AddSingleton<IAlarmRepository, SqliteAlarmRepository>();
+        services.AddSingleton<IOperationLogRepository, SqliteOperationLogRepository>();
         services.AddSingleton<IAlarmFileLogger, AlarmFileLogger>();
         services.AddSingleton<ILoggerService, LoggerService>();
+        services.AddSingleton<IOperationFileLogger, OperationFileLogger>();
 
         services.AddSingleton<MachineController>();
         services.AddSingleton<MainViewModel>();

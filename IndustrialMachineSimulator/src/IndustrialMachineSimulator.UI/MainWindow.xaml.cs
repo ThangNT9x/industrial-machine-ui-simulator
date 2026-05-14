@@ -13,6 +13,7 @@ public partial class MainWindow : Window
         Loaded += async (_, _) =>
         {
             await vm.LoadAlarmHistoryAsync();
+            await vm.LoadOperationHistoryAsync();
         };
     }
 }

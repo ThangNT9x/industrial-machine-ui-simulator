@@ -69,6 +69,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand ClearAlarmUiCommand { get; }
 
+    public ICommand ClearOperationUiCommand { get; }
+
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
     public MachineState CurrentMachineState
@@ -120,8 +122,13 @@ public class MainViewModel : INotifyPropertyChanged
                     CurrentMachineState==MachineState.Initializing)
                 {
                     _ = EnterAlarmAsync("POWER-001", "Power machine turned off during operation.");
+                    _ = AddOperationLogAsync("Power", "Power machine turned off.");
                     return;
                 }
+            }
+            if (!wasOn && value)
+            {
+                _ = AddOperationLogAsync("Power", "Power machine turned on.");
             }
             ApplySimulatorSignals();
         }
@@ -149,6 +156,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsDiodeGreen));
             OnPropertyChanged(nameof(IsPulsingGreen));
             OnPropertyChanged(nameof(PowerMachineStatusText));
+            OnPropertyChanged(nameof(AlarmStatusText));
             OnPropertyChanged(nameof(IsAlarmState));
             ApplySimulatorSignals();
         }
@@ -175,49 +183,48 @@ public class MainViewModel : INotifyPropertyChanged
             MessageBox.Show(message);
         }
     }
-    private Task TryStartMachine()
+    private async Task TryStartMachine()
     {
         if (!IsPowerMachineOn)
         {
             MessageBox.Show("Power Machine is Off.");
-            return Task.CompletedTask;
+            return;
         }
 
         if (IsAlarmOn || CurrentMachineState == MachineState.Alarm)
         {
             MessageBox.Show("Machine is alarm state. Please reset first!");
-            return Task.CompletedTask;
+            return;
         }
 
         if (!IsLaserOn)
         {
             MessageBox.Show("Laser is Off.");
-            return Task.CompletedTask;
+            return;
         }
 
         if (!IsFrontDoorClosed || !IsRearDoorClosed)
         {
             MessageBox.Show("Door is open. Cannot start.");
-            return Task.CompletedTask;
+            return;
         }
 
         if (CurrentMachineState == MachineState.Ready ||
             CurrentMachineState == MachineState.Stopped)
         {
             CurrentMachineState = MachineState.Running;
+            await AddOperationLogAsync("Run", "Machine started running.");
         }
-
-        return Task.CompletedTask;
+  
     }
 
-    private Task TryStopMachine()
+    private async Task TryStopMachine()
     {
         if (CurrentMachineState == MachineState.Running)
         {
             CurrentMachineState = MachineState.Stopped;
+            await AddOperationLogAsync("Run", "Machine stopped.");
         }
-
-        return Task.CompletedTask;
     }
     public string LaserTimeText { get; set; } = "2000 / 20000H (100 %)";
     private string _hostStatusText = "Disconnected";
@@ -281,6 +288,31 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    private async Task AddOperationLogAsync(string category, string message)
+    {
+        var record = new OperationLogRecord
+        {
+            Timestamp = DateTime.Now,
+            Category = category,
+            Message = message
+        };
+        OperationItems.Insert(0, record);
+
+        await _operationLogRepository.AddAsync(record);
+        await _operationFileLogger.WriteAsync(record);
+    }
+    public ObservableCollection<OperationLogRecord> OperationItems { get; } = new();
+    public async Task LoadOperationHistoryAsync()
+    {
+        OperationItems.Clear();
+        var items = await _operationLogRepository.GetVisibleAsync();
+        foreach (var item in items)
+        {
+            OperationItems.Add(item);
+        }
+    }
+
+    private readonly IOperationFileLogger _operationFileLogger;
     public bool IsTowerRedOn => CurrentMachineState == MachineState.Alarm;
     public bool IsTowerYellowOn =>
         CurrentMachineState == MachineState.Standby ||
@@ -297,6 +329,8 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly IAlarmFileLogger _alarmFileLogger;
 
     private readonly IAlarmRepository _alarmRepository;
+
+    private readonly IOperationLogRepository _operationLogRepository;
 
     private bool _isLaserOn;
     public bool IsLaserOn
@@ -433,14 +467,21 @@ public class MainViewModel : INotifyPropertyChanged
     }
     private Views.SimulatorControlWindow? _simulatorWindow;
 
-    public MainViewModel(MachineController machineController, IAlarmRepository alarmRepository, IAlarmFileLogger alarmFileLogger)
+    public MainViewModel(MachineController machineController,
+        IAlarmRepository alarmRepository, 
+        IAlarmFileLogger alarmFileLogger,
+        IOperationLogRepository operationLogRepository,
+        IOperationFileLogger operationFileLogger)
     {
         _machineController = machineController;
         _alarmRepository = alarmRepository;
         _alarmFileLogger = alarmFileLogger;
+        _operationLogRepository = operationLogRepository;
+        _operationFileLogger=operationFileLogger;
 
         InitializeCommand = new RelayCommand(async _ =>
         {
+            await AddOperationLogAsync("Init", "Initialization started.");
             if (!IsPowerMachineOn)
             {
                 MessageBox.Show("Power Machine is Off.");
@@ -455,9 +496,7 @@ public class MainViewModel : INotifyPropertyChanged
 
             if (!IsFrontDoorClosed || !IsRearDoorClosed)
             {
-                MessageBox.Show("Door is open. Cannot initialize.");
-                IsAlarmOn = true;
-                CurrentMachineState = MachineState.Alarm;
+                await EnterAlarmAsync("DOOR-001", "Door is open. Cannot initialize.");
                 return;
             }
 
@@ -478,9 +517,7 @@ public class MainViewModel : INotifyPropertyChanged
 
             if (!IsFrontDoorClosed || !IsRearDoorClosed)
             {
-                MessageBox.Show("Door opened during initialization.");
-                IsAlarmOn = true;
-                CurrentMachineState = MachineState.Alarm;
+                await EnterAlarmAsync("DOOR-001", "Door opened during initialization.");
                 return;
             }
 
@@ -488,6 +525,7 @@ public class MainViewModel : INotifyPropertyChanged
             IsRearDoorSafetyReset = IsRearDoorClosed;
             HasCompletedInitialInit = true;
             CurrentMachineState = MachineState.Ready;
+            await AddOperationLogAsync("Init", "Initialization completed successfully.");
         });
 
         OpenSimulatorWindowCommand = new RelayCommand(_ =>
@@ -530,17 +568,23 @@ public class MainViewModel : INotifyPropertyChanged
 
             return TryStartMachine();
         });
-        CycleStopCommand = new RelayCommand(_ =>
+        CycleStopCommand = new RelayCommand(async _ =>
         {
             if (CurrentMachineState == MachineState.Running)
             {
                 CurrentMachineState = MachineState.Stopped;
+                await AddOperationLogAsync("Run", "Machine cycle-stopped.");
             }
-            return Task.CompletedTask;
         });
-        ResetCommand = new RelayCommand(_ =>
+        ResetCommand = new RelayCommand(async _ =>
         {
-            if (!IsPowerMachineOn) return Task.CompletedTask;
+            if (!IsPowerMachineOn)
+            {
+                MessageBox.Show("Power Machine is Off.");
+                return;
+            }
+            await AddOperationLogAsync("Reset", "Machine reset command executed.");
+       
             IsAlarmOn = false;
             IsFrontDoorSafetyReset = IsFrontDoorClosed;
             IsRearDoorSafetyReset = IsRearDoorClosed;
@@ -563,7 +607,7 @@ public class MainViewModel : INotifyPropertyChanged
             if (!HasCompletedInitialInit)
             {
                 CurrentMachineState = MachineState.Standby;
-                return Task.CompletedTask;
+                return;
             }
             if (CurrentMachineState==MachineState.Stopped||
             CurrentMachineState==MachineState.Alarm)
@@ -571,13 +615,18 @@ public class MainViewModel : INotifyPropertyChanged
                 CurrentMachineState = MachineState.Ready;
                 
             }
-            return Task.CompletedTask;
+            
         });
         ClearAlarmUiCommand = new RelayCommand(async _ =>
         {
             await _alarmRepository.ClearVisibleAsync();
             AlarmItems.Clear();
             
+        });
+        ClearOperationUiCommand = new RelayCommand(async _ =>
+        {
+            await _operationLogRepository.ClearVisibleAsync();
+            OperationItems.Clear();
         });
 
         ShowHomeCommand = new RelayCommand(_ =>
