@@ -22,9 +22,11 @@ namespace IndustrialMachineSimulator.UI
         public string? SelectedRole { get; private set; }
         public bool IslogoutRequested { get; private set; } = false;
         public string CurrentRole { get; }
-        public LoginWindow(string currentRole)
+        public LoginWindow(string currentRole, string engineerPassword, string developerPassword)
         {
             InitializeComponent();
+            _engineerPassword = engineerPassword;
+            _developerPassword = developerPassword;
             CurrentRole = currentRole;
             txtPassword.Focus();
             if(CurrentRole =="Operator")
@@ -36,24 +38,21 @@ namespace IndustrialMachineSimulator.UI
         }
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            string password=txtPassword.Password.Trim();
-            if(password=="1")
-            {
-                SelectedRole = "Engineer";
-                DialogResult = true;
-                Close();
-            }
-            else if (password == "2")
+            var password = txtPassword.Password;
+
+            if (password == _developerPassword)
             {
                 SelectedRole = "Developer";
                 DialogResult = true;
-                Close();
+            }
+            else if (password == _engineerPassword)
+            {
+                SelectedRole = "Engineer";
+                DialogResult = true;
             }
             else
             {
-                MessageBox.Show("Wrong password.", "Login failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                txtPassword.Clear();
-                txtPassword.Focus();
+                MessageBox.Show("Wrong password.");
             }
         }
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -68,7 +67,8 @@ namespace IndustrialMachineSimulator.UI
             DialogResult = true;
             Close();
         }
+        private readonly string _engineerPassword;
+        private readonly string _developerPassword;
 
-        
     }
 }

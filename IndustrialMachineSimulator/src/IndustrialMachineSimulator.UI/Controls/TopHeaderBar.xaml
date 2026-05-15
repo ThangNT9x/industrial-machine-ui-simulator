@@ -20,7 +20,7 @@
 
                 </ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="SM_S928_ROUTER_LASER_SIMULATOR" 
+            <TextBlock Text="{Binding AppTitle}"
                 FontSize="25" FontFamily="Arial" Foreground="White"
 />
             <!-- chia vi tri nut button login va exit -->

@@ -96,8 +96,39 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
     public string CurrentMachineStateText=>CurrentMachineState.ToString();
-    public string OsVersion { get; set; } = "0.0.1";
+    private string _osVersion = "0.0.1";
+    public string OsVersion
+    {
+        get => _osVersion;
+        set
+        {
+            _osVersion = value;
+            OnPropertyChanged();
+        }
+    }
 
+    private string _laserTimeText = "2000 / 20000H (100 %)";
+    public string LaserTimeText
+    {
+        get => _laserTimeText;
+        set
+        {
+            _laserTimeText = value;
+            OnPropertyChanged();
+        }
+    }
+    private string _appTitle = "SM_S928_ROUTER_LASER_SIMULATOR";
+    public string AppTitle
+    {
+        get => _appTitle;
+        set
+        {
+            _appTitle = value;
+            OnPropertyChanged();
+        }
+    }
+    public string EngineerPassword => _machineConfig.EngineerPassword;
+    public string DeveloperPassword => _machineConfig.DeveloperPassword;
     private bool _isPowerMachineOn;
     public bool IsPowerMachineOn
     {
@@ -226,7 +257,7 @@ public class MainViewModel : INotifyPropertyChanged
             await AddOperationLogAsync("Run", "Machine stopped.");
         }
     }
-    public string LaserTimeText { get; set; } = "2000 / 20000H (100 %)";
+   
     private string _hostStatusText = "Disconnected";
     public string HostStatusText
     {
@@ -331,6 +362,10 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly IAlarmRepository _alarmRepository;
 
     private readonly IOperationLogRepository _operationLogRepository;
+
+    private readonly IConfigService _configService;
+
+    private readonly MachineConfig _machineConfig;
 
     private bool _isLaserOn;
     public bool IsLaserOn
@@ -471,13 +506,20 @@ public class MainViewModel : INotifyPropertyChanged
         IAlarmRepository alarmRepository, 
         IAlarmFileLogger alarmFileLogger,
         IOperationLogRepository operationLogRepository,
-        IOperationFileLogger operationFileLogger)
+        IOperationFileLogger operationFileLogger,
+        IConfigService configService)
     {
         _machineController = machineController;
         _alarmRepository = alarmRepository;
         _alarmFileLogger = alarmFileLogger;
         _operationLogRepository = operationLogRepository;
         _operationFileLogger=operationFileLogger;
+        _configService = configService;
+        _machineConfig = _configService.Load();
+        AppTitle = _machineConfig.AppTitle;
+        OsVersion = _machineConfig.OsVersion;
+        LaserTimeText = _machineConfig.LaserTimeText;
+        AppTitle = _machineConfig.AppTitle;
 
         InitializeCommand = new RelayCommand(async _ =>
         {
@@ -703,8 +745,11 @@ public class MainViewModel : INotifyPropertyChanged
         );
         LoginCommand = new RelayCommand (_ =>
         {
-            var loginWindow=new LoginWindow(CurrentRole.ToString());
-            if(Application.Current.MainWindow!=null)
+            var loginWindow = new LoginWindow(
+            CurrentRole.ToString(),
+            EngineerPassword,
+            DeveloperPassword);
+            if (Application.Current.MainWindow!=null)
             {
                 loginWindow.Owner = Application.Current.MainWindow;
             }
@@ -744,6 +789,7 @@ public class MainViewModel : INotifyPropertyChanged
         IsFrontDoorClosed = true;
         HasCompletedInitialInit = false;
         UpdateMachineState();
+
 
     }
 

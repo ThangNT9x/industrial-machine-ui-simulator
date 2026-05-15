@@ -1,15 +1,16 @@
-﻿using System.IO;
-using System.Windows;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using IndustrialMachineSimulator.Core.Interfaces;
+﻿using IndustrialMachineSimulator.Core.Interfaces;
 using IndustrialMachineSimulator.Core.Services;
+using IndustrialMachineSimulator.Infrastructure.Configuration;
 using IndustrialMachineSimulator.Infrastructure.Data;
 using IndustrialMachineSimulator.Infrastructure.Hardware;
 using IndustrialMachineSimulator.Infrastructure.Logging;
 using IndustrialMachineSimulator.Infrastructure.Networking;
 using IndustrialMachineSimulator.Infrastructure.Repositories;
 using IndustrialMachineSimulator.UI.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System.Windows;
 
 namespace IndustrialMachineSimulator.UI;
 
@@ -52,7 +53,7 @@ public partial class App : Application
         services.AddSingleton<IAlarmFileLogger, AlarmFileLogger>();
         services.AddSingleton<ILoggerService, LoggerService>();
         services.AddSingleton<IOperationFileLogger, OperationFileLogger>();
-
+        services.AddSingleton<IConfigService, JsonConfigService>();
         services.AddSingleton<MachineController>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
