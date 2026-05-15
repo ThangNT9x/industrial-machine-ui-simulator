@@ -71,6 +71,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     public ICommand ClearOperationUiCommand { get; }
 
+    public ICommand SaveConfigCommand { get; }
+
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
     public MachineState CurrentMachineState
@@ -129,6 +131,60 @@ public class MainViewModel : INotifyPropertyChanged
     }
     public string EngineerPassword => _machineConfig.EngineerPassword;
     public string DeveloperPassword => _machineConfig.DeveloperPassword;
+
+    private string _engineerPasswordValue = string.Empty;
+    public string EngineerPasswordValue
+    {
+        get => _engineerPasswordValue;
+        set
+        {
+            _engineerPasswordValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _developerPasswordValue = string.Empty;
+    public string DeveloperPasswordValue
+    {
+        get => _developerPasswordValue;
+        set
+        {
+            _developerPasswordValue = value;
+            OnPropertyChanged();
+        }
+    }
+    private string _editAppTitle = string.Empty;
+    public string EditAppTitle
+    {
+        get => _editAppTitle;
+        set
+        {
+            _editAppTitle = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _editOsVersion = string.Empty;
+    public string EditOsVersion
+    {
+        get => _editOsVersion;
+        set
+        {
+            _editOsVersion = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _editLaserTimeText = string.Empty;
+    public string EditLaserTimeText
+    {
+        get => _editLaserTimeText;
+        set
+        {
+            _editLaserTimeText = value;
+            OnPropertyChanged();
+        }
+    }
     private bool _isPowerMachineOn;
     public bool IsPowerMachineOn
     {
@@ -367,6 +423,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     private readonly MachineConfig _machineConfig;
 
+
     private bool _isLaserOn;
     public bool IsLaserOn
     {
@@ -519,7 +576,12 @@ public class MainViewModel : INotifyPropertyChanged
         AppTitle = _machineConfig.AppTitle;
         OsVersion = _machineConfig.OsVersion;
         LaserTimeText = _machineConfig.LaserTimeText;
+        EditAppTitle = _machineConfig.AppTitle;
+        EditOsVersion = _machineConfig.OsVersion;
+        EditLaserTimeText = _machineConfig.LaserTimeText;
         AppTitle = _machineConfig.AppTitle;
+        EngineerPasswordValue = _machineConfig.EngineerPassword;
+        DeveloperPasswordValue = _machineConfig.DeveloperPassword;
 
         InitializeCommand = new RelayCommand(async _ =>
         {
@@ -669,6 +731,12 @@ public class MainViewModel : INotifyPropertyChanged
         {
             await _operationLogRepository.ClearVisibleAsync();
             OperationItems.Clear();
+        });
+        SaveConfigCommand = new RelayCommand(_ =>
+        {
+            SaveConfig();
+            MessageBox.Show("Configuration saved.");
+            return Task.CompletedTask;
         });
 
         ShowHomeCommand = new RelayCommand(_ =>
@@ -1307,5 +1375,19 @@ public class MainViewModel : INotifyPropertyChanged
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+    private void SaveConfig()
+    {
+        AppTitle = EditAppTitle;
+        OsVersion = EditOsVersion;
+        LaserTimeText = EditLaserTimeText;
+
+        _machineConfig.AppTitle = EditAppTitle;
+        _machineConfig.OsVersion = EditOsVersion;
+        _machineConfig.LaserTimeText = EditLaserTimeText;
+        _machineConfig.EngineerPassword = EngineerPasswordValue;
+        _machineConfig.DeveloperPassword = DeveloperPasswordValue;
+
+        _configService.Save(_machineConfig);
     }
 }
