@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Input;
+using System.Globalization;
 
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
@@ -72,6 +73,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ClearOperationUiCommand { get; }
 
     public ICommand SaveConfigCommand { get; }
+    public ICommand CancelConfigEditCommand { get; }
+    public ICommand ReloadConfigCommand { get; }
 
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
@@ -95,6 +98,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsTowerGreenOn));
             OnPropertyChanged(nameof(IsRunButtonInStopMode));
             UpdateMachineState();
+            NotifySetupStateChanged();
         }
     }
     public string CurrentMachineStateText=>CurrentMachineState.ToString();
@@ -117,6 +121,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _laserTimeText = value;
             OnPropertyChanged();
+
         }
     }
     private string _appTitle = "SM_S928_ROUTER_LASER_SIMULATOR";
@@ -140,6 +145,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _engineerPasswordValue = value;
             OnPropertyChanged();
+            NotifySetupStateChanged();
         }
     }
 
@@ -151,6 +157,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _developerPasswordValue = value;
             OnPropertyChanged();
+            NotifySetupStateChanged();
         }
     }
     private string _editAppTitle = string.Empty;
@@ -161,6 +168,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _editAppTitle = value;
             OnPropertyChanged();
+            NotifySetupStateChanged();
         }
     }
 
@@ -172,6 +180,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _editOsVersion = value;
             OnPropertyChanged();
+            NotifySetupStateChanged();
         }
     }
 
@@ -183,8 +192,13 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _editLaserTimeText = value;
             OnPropertyChanged();
+            NotifySetupStateChanged();
         }
     }
+    private CancellationTokenSource? _cycleCts;
+    private readonly Random _random = new();
+    private bool _isCycleLoopRunning;
+
     private bool _isPowerMachineOn;
     public bool IsPowerMachineOn
     {
@@ -205,6 +219,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsPowerOffOverlayVisible));
             if(wasOn &&!value)
             {
+                StopCycleLoop();
                 if(CurrentMachineState==MachineState.Running||
                     CurrentMachineState==MachineState.Initializing)
                 {
@@ -221,6 +236,77 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    private int _cycleIntervalMs = 3000;
+    public int CycleIntervalMs
+    {
+        get => _cycleIntervalMs;
+        set
+        {
+            _cycleIntervalMs = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private double _cycleOkRate = 0.8;
+    public double CycleOkRate
+    {
+        get => _cycleOkRate;
+        set
+        {
+            _cycleOkRate = value;
+            OnPropertyChanged();
+        }
+    }
+    private string _editCycleIntervalMsText = "3000";
+    public string EditCycleIntervalMsText
+    {
+        get => _editCycleIntervalMsText;
+        set
+        {
+            _editCycleIntervalMsText = value;
+            OnPropertyChanged();
+            NotifySetupStateChanged();
+        }
+    }
+
+    private string _editCycleOkRateText = "0.8";
+    public string EditCycleOkRateText
+    {
+        get => _editCycleOkRateText;
+        set
+        {
+            _editCycleOkRateText = value;
+            OnPropertyChanged();
+            NotifySetupStateChanged();
+        }
+    }
+    public bool IsSetupEditLocked => CurrentMachineState == MachineState.Running;
+
+    public bool IsAppTitleValid => !string.IsNullOrWhiteSpace(EditAppTitle);
+    public bool IsOsVersionValid => !string.IsNullOrWhiteSpace(EditOsVersion);
+    public bool IsLaserTimeValid => !string.IsNullOrWhiteSpace(EditLaserTimeText);
+    public bool IsEngineerPasswordValid => !string.IsNullOrWhiteSpace(EngineerPasswordValue);
+    public bool IsDeveloperPasswordValid => !string.IsNullOrWhiteSpace(DeveloperPasswordValue);
+
+    public bool IsCycleIntervalValid =>
+        int.TryParse(EditCycleIntervalMsText, out var ms) && ms > 0;
+
+    public bool IsCycleOkRateValid =>
+        double.TryParse(EditCycleOkRateText, NumberStyles.Float, CultureInfo.InvariantCulture, out var rate)
+        && rate >= 0 && rate <= 1;
+
+    public bool IsSetupInputValid =>
+        IsAppTitleValid &&
+        IsOsVersionValid &&
+        IsLaserTimeValid &&
+        IsEngineerPasswordValid &&
+        IsDeveloperPasswordValid &&
+        IsCycleIntervalValid &&
+        IsCycleOkRateValid;
+
+    public bool CanSaveSetup => !IsSetupEditLocked && IsSetupInputValid;
+
+    public bool HasSetupValidationError => !IsSetupInputValid;
     public bool IsPowerOffOverlayVisible => !IsPowerMachineOn;
 
 
@@ -250,6 +336,7 @@ public class MainViewModel : INotifyPropertyChanged
     }
     private async Task EnterAlarmAsync(string code, string message, bool showPopup = true)
     {
+        StopCycleLoop();
         if (!_isAlarmOn)
         {
             _isAlarmOn = true;
@@ -300,6 +387,8 @@ public class MainViewModel : INotifyPropertyChanged
             CurrentMachineState == MachineState.Stopped)
         {
             CurrentMachineState = MachineState.Running;
+            NavigateToHome();
+            StartCycleLoop();
             await AddOperationLogAsync("Run", "Machine started running.");
         }
   
@@ -309,6 +398,8 @@ public class MainViewModel : INotifyPropertyChanged
     {
         if (CurrentMachineState == MachineState.Running)
         {
+            NavigateToHome();
+            StopCycleLoop();
             CurrentMachineState = MachineState.Stopped;
             await AddOperationLogAsync("Run", "Machine stopped.");
         }
@@ -576,12 +667,10 @@ public class MainViewModel : INotifyPropertyChanged
         AppTitle = _machineConfig.AppTitle;
         OsVersion = _machineConfig.OsVersion;
         LaserTimeText = _machineConfig.LaserTimeText;
-        EditAppTitle = _machineConfig.AppTitle;
-        EditOsVersion = _machineConfig.OsVersion;
-        EditLaserTimeText = _machineConfig.LaserTimeText;
-        AppTitle = _machineConfig.AppTitle;
-        EngineerPasswordValue = _machineConfig.EngineerPassword;
-        DeveloperPasswordValue = _machineConfig.DeveloperPassword;
+        CycleIntervalMs = _machineConfig.CycleIntervalMs;
+        CycleOkRate = _machineConfig.CycleOkRate;
+        LoadEditorFromCurrentValues();
+
 
         InitializeCommand = new RelayCommand(async _ =>
         {
@@ -676,6 +765,8 @@ public class MainViewModel : INotifyPropertyChanged
         {
             if (CurrentMachineState == MachineState.Running)
             {
+                NavigateToHome();
+                StopCycleLoop();
                 CurrentMachineState = MachineState.Stopped;
                 await AddOperationLogAsync("Run", "Machine cycle-stopped.");
             }
@@ -711,13 +802,15 @@ public class MainViewModel : INotifyPropertyChanged
             if (!HasCompletedInitialInit)
             {
                 CurrentMachineState = MachineState.Standby;
+                NavigateToHome();
                 return;
             }
             if (CurrentMachineState==MachineState.Stopped||
             CurrentMachineState==MachineState.Alarm)
             {
                 CurrentMachineState = MachineState.Ready;
-                
+                NavigateToHome();
+
             }
             
         });
@@ -734,11 +827,34 @@ public class MainViewModel : INotifyPropertyChanged
         });
         SaveConfigCommand = new RelayCommand(_ =>
         {
+            if (IsSetupEditLocked)
+            {
+                MessageBox.Show("Machine is running. Stop the machine before saving setup.");
+                return Task.CompletedTask;
+            }
+
+            if (!IsSetupInputValid)
+            {
+                MessageBox.Show("Invalid setup values. Please check highlighted fields.");
+                return Task.CompletedTask;
+            }
+
             SaveConfig();
             MessageBox.Show("Configuration saved.");
             return Task.CompletedTask;
         });
+        CancelConfigEditCommand = new RelayCommand(_ =>
+        {
+            LoadEditorFromCurrentValues();
+            return Task.CompletedTask;
+        });
 
+        ReloadConfigCommand = new RelayCommand(_ =>
+        {
+            ReloadConfigFromFile();
+            MessageBox.Show("Configuration reloaded.");
+            return Task.CompletedTask;
+        });
         ShowHomeCommand = new RelayCommand(_ =>
         {
             CurrentPage = AppPage.Home;
@@ -1378,16 +1494,134 @@ public class MainViewModel : INotifyPropertyChanged
     }
     private void SaveConfig()
     {
+        if (!int.TryParse(EditCycleIntervalMsText, out var cycleIntervalMs) || cycleIntervalMs <= 0)
+        {
+            MessageBox.Show("Cycle Interval must be a positive integer.");
+            return;
+        }
+
+        if (!double.TryParse(EditCycleOkRateText, NumberStyles.Float, CultureInfo.InvariantCulture, out var cycleOkRate) ||
+            cycleOkRate < 0 || cycleOkRate > 1)
+        {
+            MessageBox.Show("Cycle OK Rate must be a number between 0 and 1.");
+            return;
+        }
+
         AppTitle = EditAppTitle;
         OsVersion = EditOsVersion;
         LaserTimeText = EditLaserTimeText;
+        CycleIntervalMs = cycleIntervalMs;
+        CycleOkRate = cycleOkRate;
 
         _machineConfig.AppTitle = EditAppTitle;
         _machineConfig.OsVersion = EditOsVersion;
         _machineConfig.LaserTimeText = EditLaserTimeText;
         _machineConfig.EngineerPassword = EngineerPasswordValue;
         _machineConfig.DeveloperPassword = DeveloperPasswordValue;
+        _machineConfig.CycleIntervalMs = cycleIntervalMs;
+        _machineConfig.CycleOkRate = cycleOkRate;
 
         _configService.Save(_machineConfig);
+        LoadEditorFromCurrentValues();
+    }
+    private void StartCycleLoop()
+    {
+        if (_isCycleLoopRunning) return;
+
+        _cycleCts = new CancellationTokenSource();
+        _isCycleLoopRunning = true;
+
+        _ = RunCycleLoopAsync(_cycleCts.Token);
+    }
+    private void StopCycleLoop()
+    {
+        _cycleCts?.Cancel();
+        _cycleCts = null;
+        _isCycleLoopRunning = false;
+    }
+    private async Task RunCycleLoopAsync(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && CurrentMachineState == MachineState.Running)
+            {
+                await Task.Delay(CycleIntervalMs, token);
+                
+
+                if (token.IsCancellationRequested || CurrentMachineState != MachineState.Running)
+                    break;
+
+                PcbOkCount += 1;
+
+                bool isOk = _random.NextDouble() < CycleOkRate;
+
+                if (isOk)
+                {
+                    PbaOkCount += 1;
+                    await AddOperationLogAsync("Cycle", "Cycle completed: OK");
+                }
+                else
+                {
+                    PbaNgCount += 1;
+                    await AddOperationLogAsync("Cycle", "Cycle completed: NG");
+                }
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+        finally
+        {
+            _isCycleLoopRunning = false;
+        }
+    }
+    private void LoadEditorFromCurrentValues()
+    {
+        EditAppTitle = AppTitle;
+        EditOsVersion = OsVersion;
+        EditLaserTimeText = LaserTimeText;
+        EngineerPasswordValue = _machineConfig.EngineerPassword;
+        DeveloperPasswordValue = _machineConfig.DeveloperPassword;
+        EditCycleIntervalMsText = CycleIntervalMs.ToString();
+        EditCycleOkRateText = CycleOkRate.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    private void ReloadConfigFromFile()
+    {
+        var latestConfig = _configService.Load();
+
+        _machineConfig.AppTitle = latestConfig.AppTitle;
+        _machineConfig.OsVersion = latestConfig.OsVersion;
+        _machineConfig.LaserTimeText = latestConfig.LaserTimeText;
+        _machineConfig.EngineerPassword = latestConfig.EngineerPassword;
+        _machineConfig.DeveloperPassword = latestConfig.DeveloperPassword;
+        _machineConfig.CycleIntervalMs = latestConfig.CycleIntervalMs;
+        _machineConfig.CycleOkRate = latestConfig.CycleOkRate;
+
+        AppTitle = _machineConfig.AppTitle;
+        OsVersion = _machineConfig.OsVersion;
+        LaserTimeText = _machineConfig.LaserTimeText;
+        CycleIntervalMs = _machineConfig.CycleIntervalMs;
+        CycleOkRate = _machineConfig.CycleOkRate;
+
+        LoadEditorFromCurrentValues();
+    }
+    private void NavigateToHome()
+    {
+        CurrentPage = AppPage.Home;
+    }
+    private void NotifySetupStateChanged()
+    {
+        OnPropertyChanged(nameof(IsSetupEditLocked));
+        OnPropertyChanged(nameof(IsAppTitleValid));
+        OnPropertyChanged(nameof(IsOsVersionValid));
+        OnPropertyChanged(nameof(IsLaserTimeValid));
+        OnPropertyChanged(nameof(IsEngineerPasswordValid));
+        OnPropertyChanged(nameof(IsDeveloperPasswordValid));
+        OnPropertyChanged(nameof(IsCycleIntervalValid));
+        OnPropertyChanged(nameof(IsCycleOkRateValid));
+        OnPropertyChanged(nameof(IsSetupInputValid));
+        OnPropertyChanged(nameof(CanSaveSetup));
+        OnPropertyChanged(nameof(HasSetupValidationError));
     }
 }

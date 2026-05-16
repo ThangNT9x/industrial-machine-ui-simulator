@@ -4,19 +4,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="600"
-             d:DesignWidth="1000">
-    <Grid Background="#F7F9FC" Margin="12">
+             d:DesignHeight="700"
+             d:DesignWidth="1100">
+
+    <Grid Background="#F5F7FA" Margin="12">
         <Grid.Resources>
+
+            <!-- Card -->
             <Style x:Key="SectionCardStyle" TargetType="Border">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="CornerRadius" Value="10"/>
                 <Setter Property="Padding" Value="20"/>
-                <Setter Property="Margin" Value="0,0,0,12"/>
+                <Setter Property="Margin" Value="0,0,0,14"/>
                 <Setter Property="BorderBrush" Value="#D9D9D9"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
+            <!-- Label -->
             <Style x:Key="LabelTextStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Arial"/>
                 <Setter Property="FontSize" Value="16"/>
@@ -25,7 +29,16 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
 
-            <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+            <!-- Section title -->
+            <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="#222222"/>
+            </Style>
+
+            <!-- Base input: bình thường trắng, running thì vàng -->
+            <Style x:Key="SetupInputTextBoxBaseStyle" TargetType="TextBox">
                 <Setter Property="Height" Value="36"/>
                 <Setter Property="FontFamily" Value="Arial"/>
                 <Setter Property="FontSize" Value="15"/>
@@ -35,9 +48,138 @@
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="0,4,0,0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSetupEditLocked}" Value="True">
+                        <Setter Property="Background" Value="#FFF7D6"/>
+                        <Setter Property="BorderBrush" Value="#F0C44C"/>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
 
-            <Style x:Key="SaveButtonStyle" TargetType="Button">
+            <!-- Input đỏ khi invalid -->
+            <Style x:Key="AppTitleInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsAppTitleValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="OsVersionInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsOsVersionValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="LaserTimeInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsLaserTimeValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="EngineerPasswordInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsEngineerPasswordValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="DeveloperPasswordInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsDeveloperPasswordValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="CycleIntervalInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsCycleIntervalValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="CycleOkRateInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource SetupInputTextBoxBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsCycleOkRateValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Footer secondary button -->
+            <Style x:Key="SecondaryFooterButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="110"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="#333333"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="#CFCFCF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Margin" Value="0,0,10,0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#F4F4F4"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Root" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Root" Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Footer primary button -->
+            <Style x:Key="PrimaryFooterButtonStyle" TargetType="Button">
                 <Setter Property="Width" Value="120"/>
                 <Setter Property="Height" Value="40"/>
                 <Setter Property="FontFamily" Value="Arial"/>
@@ -46,6 +188,7 @@
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="Background" Value="#1677FF"/>
                 <Setter Property="BorderBrush" Value="#1677FF"/>
+                <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -53,7 +196,7 @@
                             <Border x:Name="Root"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="1"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
                                     CornerRadius="8">
                                 <ContentPresenter HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"/>
@@ -70,18 +213,21 @@
                                     </Setter>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="Root" Property="Opacity" Value="0.4"/>
+                                    <Setter TargetName="Root" Property="Background" Value="#BFBFBF"/>
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#BFBFBF"/>
+                                    <Setter TargetName="Root" Property="Opacity" Value="1"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
+
         </Grid.Resources>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="12"/>
+            <RowDefinition Height="14"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -93,7 +239,7 @@
                        FontSize="28"
                        FontWeight="Bold"
                        Foreground="#222222"/>
-            <TextBlock Text="Machine configuration"
+            <TextBlock Text="Machine configuration settings"
                        FontFamily="Arial"
                        FontSize="15"
                        Foreground="#666666"
@@ -101,22 +247,18 @@
         </StackPanel>
 
         <!-- Content -->
-        <ScrollViewer Grid.Row="2"
-                      VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
-                <!-- Machine Info -->
+                <!-- Machine -->
                 <Border Style="{StaticResource SectionCardStyle}">
                     <StackPanel>
-                        <TextBlock Text="Machine Information"
-                                   FontFamily="Arial"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   Foreground="#222222"/>
+                        <TextBlock Text="Machine"
+                                   Style="{StaticResource SectionTitleStyle}"/>
 
                         <Grid Margin="0,18,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="190"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -127,48 +269,39 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0"
-                                       Grid.Column="0"
+                            <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="App Title"
                                        Style="{StaticResource LabelTextStyle}"/>
-                            <TextBox Grid.Row="0"
-                                     Grid.Column="1"
-                                     Style="{StaticResource InputTextBoxStyle}"
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Style="{StaticResource AppTitleInputStyle}"
                                      Text="{Binding EditAppTitle, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <TextBlock Grid.Row="2"
-                                       Grid.Column="0"
+                            <TextBlock Grid.Row="2" Grid.Column="0"
                                        Text="OS Version"
                                        Style="{StaticResource LabelTextStyle}"/>
-                            <TextBox Grid.Row="2"
-                                     Grid.Column="1"
-                                     Style="{StaticResource InputTextBoxStyle}"
+                            <TextBox Grid.Row="2" Grid.Column="1"
+                                     Style="{StaticResource OsVersionInputStyle}"
                                      Text="{Binding EditOsVersion, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <TextBlock Grid.Row="4"
-                                       Grid.Column="0"
+                            <TextBlock Grid.Row="4" Grid.Column="0"
                                        Text="Laser Time"
                                        Style="{StaticResource LabelTextStyle}"/>
-                            <TextBox Grid.Row="4"
-                                     Grid.Column="1"
-                                     Style="{StaticResource InputTextBoxStyle}"
+                            <TextBox Grid.Row="4" Grid.Column="1"
+                                     Style="{StaticResource LaserTimeInputStyle}"
                                      Text="{Binding EditLaserTimeText, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
 
-                <!-- User Password -->
+                <!-- Password -->
                 <Border Style="{StaticResource SectionCardStyle}">
                     <StackPanel>
-                        <TextBlock Text="User Password"
-                                   FontFamily="Arial"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   Foreground="#222222"/>
+                        <TextBlock Text="Password"
+                                   Style="{StaticResource SectionTitleStyle}"/>
 
                         <Grid Margin="0,18,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="190"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -177,24 +310,60 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0"
-                                       Grid.Column="0"
+                            <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Engineer Password"
                                        Style="{StaticResource LabelTextStyle}"/>
-                            <TextBox Grid.Row="0"
-                                     Grid.Column="1"
-                                     Style="{StaticResource InputTextBoxStyle}"
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Style="{StaticResource EngineerPasswordInputStyle}"
                                      Text="{Binding EngineerPasswordValue, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <TextBlock Grid.Row="2"
-                                       Grid.Column="0"
+                            <TextBlock Grid.Row="2" Grid.Column="0"
                                        Text="Developer Password"
                                        Style="{StaticResource LabelTextStyle}"/>
-                            <TextBox Grid.Row="2"
-                                     Grid.Column="1"
-                                     Style="{StaticResource InputTextBoxStyle}"
+                            <TextBox Grid.Row="2" Grid.Column="1"
+                                     Style="{StaticResource DeveloperPasswordInputStyle}"
                                      Text="{Binding DeveloperPasswordValue, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cycle -->
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Cycle"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <Grid Margin="0,18,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="190"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="16"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Cycle Interval (ms)"
+                                       Style="{StaticResource LabelTextStyle}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Style="{StaticResource CycleIntervalInputStyle}"
+                                     Text="{Binding EditCycleIntervalMsText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Cycle OK Rate"
+                                       Style="{StaticResource LabelTextStyle}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1"
+                                     Style="{StaticResource CycleOkRateInputStyle}"
+                                     Text="{Binding EditCycleOkRateText, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+
+                        <TextBlock Text="Example: Cycle Interval = 3000, Cycle OK Rate = 0.8"
+                                   FontFamily="Arial"
+                                   FontSize="13"
+                                   Foreground="#777777"
+                                   Margin="0,12,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -202,13 +371,74 @@
         </ScrollViewer>
 
         <!-- Footer -->
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,12,0,0">
-            <Button Content="Save"
-                    Style="{StaticResource SaveButtonStyle}"
-                    Command="{Binding SaveConfigCommand}"/>
-        </StackPanel>
+        <Grid Grid.Row="3" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Status -->
+            <Border Grid.Column="0"
+                    Padding="14,10"
+                    CornerRadius="8"
+                    BorderThickness="1">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#EEF5FF"/>
+                        <Setter Property="BorderBrush" Value="#B8D4FF"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSetupEditLocked}" Value="True">
+                                <Setter Property="Background" Value="#FFF7D6"/>
+                                <Setter Property="BorderBrush" Value="#F0C44C"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding HasSetupValidationError}" Value="True">
+                                <Setter Property="Background" Value="#FDECEC"/>
+                                <Setter Property="BorderBrush" Value="#D9534F"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock FontFamily="Arial"
+                           FontSize="14"
+                           FontWeight="SemiBold">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#1F5FBF"/>
+                            <Setter Property="Text" Value="Ready to save configuration."/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSetupEditLocked}" Value="True">
+                                    <Setter Property="Foreground" Value="#9A6B00"/>
+                                    <Setter Property="Text" Value="Machine is running. Changes are pending, but Save is disabled."/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding HasSetupValidationError}" Value="True">
+                                    <Setter Property="Foreground" Value="#B42318"/>
+                                    <Setter Property="Text" Value="Invalid values detected. Please check highlighted fields before saving."/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="16,0,0,0">
+                <Button Content="Reload"
+                        Style="{StaticResource SecondaryFooterButtonStyle}"
+                        Command="{Binding ReloadConfigCommand}"/>
+
+                <Button Content="Cancel"
+                        Style="{StaticResource SecondaryFooterButtonStyle}"
+                        Command="{Binding CancelConfigEditCommand}"/>
+
+                <Button Content="Save"
+                        Style="{StaticResource PrimaryFooterButtonStyle}"
+                        Command="{Binding SaveConfigCommand}"
+                        IsEnabled="{Binding CanSaveSetup}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
