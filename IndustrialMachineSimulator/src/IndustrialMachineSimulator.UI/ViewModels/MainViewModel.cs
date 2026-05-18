@@ -75,6 +75,12 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand SaveConfigCommand { get; }
     public ICommand CancelConfigEditCommand { get; }
     public ICommand ReloadConfigCommand { get; }
+    public ICommand ApplyRecipeCommand { get; }
+    public ICommand CancelRecipeEditCommand { get; }
+    public ICommand ReloadRecipeCommand { get; }
+    public ICommand LoadSelectedRecipeCommand { get; }
+    public ICommand SaveRecipeCommand { get; }
+    public ICommand DeleteRecipeCommand { get; }
 
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
@@ -99,6 +105,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsRunButtonInStopMode));
             UpdateMachineState();
             NotifySetupStateChanged();
+            NotifyRecipeStateChanged();
         }
     }
     public string CurrentMachineStateText=>CurrentMachineState.ToString();
@@ -244,6 +251,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _cycleIntervalMs = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentCycleIntervalText));
         }
     }
 
@@ -255,8 +263,11 @@ public class MainViewModel : INotifyPropertyChanged
         {
             _cycleOkRate = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentCycleOkRateText));
         }
     }
+    public string CurrentCycleIntervalText => $"{CycleIntervalMs} ms";
+    public string CurrentCycleOkRateText => $"{CycleOkRate:P0}";
     private string _editCycleIntervalMsText = "3000";
     public string EditCycleIntervalMsText
     {
@@ -280,7 +291,100 @@ public class MainViewModel : INotifyPropertyChanged
             NotifySetupStateChanged();
         }
     }
+    private string _currentRecipeName = "Default Recipe";
+    public string CurrentRecipeName
+    {
+        get => _currentRecipeName;
+        set
+        {
+            _currentRecipeName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _currentProductModel = "MODEL-001";
+    public string CurrentProductModel
+    {
+        get => _currentProductModel;
+        set
+        {
+            _currentProductModel = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _enableNgSimulation = true;
+    public bool EnableNgSimulation
+    {
+        get => _enableNgSimulation;
+        set
+        {
+            _enableNgSimulation = value;
+            OnPropertyChanged();
+        }
+    }
+    private string _editRecipeName = "Default Recipe";
+    public string EditRecipeName
+    {
+        get => _editRecipeName;
+        set
+        {
+            _editRecipeName = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
+
+    private string _editProductModel = "MODEL-001";
+    public string EditProductModel
+    {
+        get => _editProductModel;
+        set
+        {
+            _editProductModel = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
+
+    private string _editRecipeCycleIntervalMsText = "3000";
+    public string EditRecipeCycleIntervalMsText
+    {
+        get => _editRecipeCycleIntervalMsText;
+        set
+        {
+            _editRecipeCycleIntervalMsText = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
+
+    private string _editRecipeCycleOkRateText = "0.8";
+    public string EditRecipeCycleOkRateText
+    {
+        get => _editRecipeCycleOkRateText;
+        set
+        {
+            _editRecipeCycleOkRateText = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
+
+    private bool _editEnableNgSimulation = true;
+    public bool EditEnableNgSimulation
+    {
+        get => _editEnableNgSimulation;
+        set
+        {
+            _editEnableNgSimulation = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
     public bool IsSetupEditLocked => CurrentMachineState == MachineState.Running;
+    public bool IsRecipeEditLocked => CurrentMachineState == MachineState.Running;
+
 
     public bool IsAppTitleValid => !string.IsNullOrWhiteSpace(EditAppTitle);
     public bool IsOsVersionValid => !string.IsNullOrWhiteSpace(EditOsVersion);
@@ -308,7 +412,43 @@ public class MainViewModel : INotifyPropertyChanged
 
     public bool HasSetupValidationError => !IsSetupInputValid;
     public bool IsPowerOffOverlayVisible => !IsPowerMachineOn;
+    public bool IsRecipeNameValid => !string.IsNullOrWhiteSpace(EditRecipeName);
+    public bool IsProductModelValid => !string.IsNullOrWhiteSpace(EditProductModel);
 
+    public bool IsRecipeCycleIntervalValid =>
+        int.TryParse(EditRecipeCycleIntervalMsText, out var ms) && ms > 0;
+
+    public bool IsRecipeCycleOkRateValid =>
+        double.TryParse(EditRecipeCycleOkRateText, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out var rate)
+        && rate >= 0 && rate <= 1;
+
+    public bool IsRecipeInputValid =>
+        IsRecipeNameValid &&
+        IsProductModelValid &&
+        IsRecipeCycleIntervalValid &&
+        IsRecipeCycleOkRateValid;
+
+    public bool CanApplyRecipe => !IsRecipeEditLocked && IsRecipeInputValid;
+    public bool HasRecipeValidationError => !IsRecipeInputValid;
+    public ObservableCollection<RecipeItem> RecipeItems { get; } = new();
+
+    private RecipeItem? _selectedRecipeItem;
+    public RecipeItem? SelectedRecipeItem
+    {
+        get => _selectedRecipeItem;
+        set
+        {
+            _selectedRecipeItem = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasSelectedRecipe));
+            NotifyRecipeStateChanged();
+        }
+    }
+
+    public bool HasSelectedRecipe => SelectedRecipeItem != null;
+    public bool CanSaveRecipe => !IsRecipeEditLocked && IsRecipeInputValid;
+    public bool CanDeleteRecipe => !IsRecipeEditLocked && HasSelectedRecipe;
 
     private bool _isAlarmOn;
     public bool IsAlarmOn
@@ -670,7 +810,13 @@ public class MainViewModel : INotifyPropertyChanged
         CycleIntervalMs = _machineConfig.CycleIntervalMs;
         CycleOkRate = _machineConfig.CycleOkRate;
         LoadEditorFromCurrentValues();
-
+    
+        CurrentRecipeName = _machineConfig.CurrentRecipeName;
+        CurrentProductModel = _machineConfig.CurrentProductModel;
+        EnableNgSimulation = _machineConfig.EnableNgSimulation;
+        LoadRecipeEditorFromCurrentValues();
+        EnsureRecipeListInitialized();
+        LoadRecipeListFromConfig();
 
         InitializeCommand = new RelayCommand(async _ =>
         {
@@ -747,7 +893,40 @@ public class MainViewModel : INotifyPropertyChanged
             }
             return Task.CompletedTask;
         });
+        ApplyRecipeCommand = new RelayCommand(async _ =>
+        {
+            await ApplyRecipeAsync();
+        });
 
+        CancelRecipeEditCommand = new RelayCommand(_ =>
+        {
+            LoadRecipeEditorFromCurrentValues();
+            return Task.CompletedTask;
+        });
+
+        ReloadRecipeCommand = new RelayCommand(_ =>
+        {
+            LoadRecipeEditorFromCurrentValues();
+            MessageBox.Show("Recipe editor reloaded.");
+            return Task.CompletedTask;
+        });
+        LoadSelectedRecipeCommand = new RelayCommand(_ =>
+        {
+            LoadSelectedRecipeIntoEditor();
+            return Task.CompletedTask;
+        });
+
+        SaveRecipeCommand = new RelayCommand(_ =>
+        {
+            SaveRecipeToList();
+            return Task.CompletedTask;
+        });
+
+        DeleteRecipeCommand = new RelayCommand(_ =>
+        {
+            DeleteSelectedRecipe();
+            return Task.CompletedTask;
+        });
         StartCommand = new RelayCommand(_ => TryStartMachine());
 
         StopCommand = new RelayCommand(_ => TryStopMachine());
@@ -1553,7 +1732,7 @@ public class MainViewModel : INotifyPropertyChanged
 
                 PcbOkCount += 1;
 
-                bool isOk = _random.NextDouble() < CycleOkRate;
+                bool isOk = !EnableNgSimulation || _random.NextDouble() < CycleOkRate;
 
                 if (isOk)
                 {
@@ -1612,6 +1791,7 @@ public class MainViewModel : INotifyPropertyChanged
     }
     private void NotifySetupStateChanged()
     {
+        NotifyRecipeStateChanged();
         OnPropertyChanged(nameof(IsSetupEditLocked));
         OnPropertyChanged(nameof(IsAppTitleValid));
         OnPropertyChanged(nameof(IsOsVersionValid));
@@ -1623,5 +1803,179 @@ public class MainViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(IsSetupInputValid));
         OnPropertyChanged(nameof(CanSaveSetup));
         OnPropertyChanged(nameof(HasSetupValidationError));
+    }
+    private void NotifyRecipeStateChanged()
+    {
+        OnPropertyChanged(nameof(IsRecipeEditLocked));
+        OnPropertyChanged(nameof(IsRecipeNameValid));
+        OnPropertyChanged(nameof(IsProductModelValid));
+        OnPropertyChanged(nameof(IsRecipeCycleIntervalValid));
+        OnPropertyChanged(nameof(IsRecipeCycleOkRateValid));
+        OnPropertyChanged(nameof(IsRecipeInputValid));
+        OnPropertyChanged(nameof(CanApplyRecipe));
+        OnPropertyChanged(nameof(HasRecipeValidationError));
+        OnPropertyChanged(nameof(CanSaveRecipe));
+        OnPropertyChanged(nameof(CanDeleteRecipe));
+        OnPropertyChanged(nameof(HasSelectedRecipe));
+    }
+    private void LoadRecipeEditorFromCurrentValues()
+    {
+        EditRecipeName = CurrentRecipeName;
+        EditProductModel = CurrentProductModel;
+        EditRecipeCycleIntervalMsText = CycleIntervalMs.ToString();
+        EditRecipeCycleOkRateText = CycleOkRate.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        EditEnableNgSimulation = EnableNgSimulation;
+    }
+    private async Task ApplyRecipeAsync()
+    {
+        if (IsRecipeEditLocked)
+        {
+            MessageBox.Show("Machine is running. Stop the machine before applying recipe.");
+            return;
+        }
+
+        if (!IsRecipeInputValid)
+        {
+            MessageBox.Show("Invalid recipe values. Please check highlighted fields.");
+            return;
+        }
+
+        var cycleInterval = int.Parse(EditRecipeCycleIntervalMsText);
+        var cycleOkRate = double.Parse(
+            EditRecipeCycleOkRateText,
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        CurrentRecipeName = EditRecipeName;
+        CurrentProductModel = EditProductModel;
+        CycleIntervalMs = cycleInterval;
+        CycleOkRate = cycleOkRate;
+        EnableNgSimulation = EditEnableNgSimulation;
+        _machineConfig.CurrentRecipeName = CurrentRecipeName;
+        _machineConfig.CurrentProductModel = CurrentProductModel;
+        _machineConfig.CycleIntervalMs = CycleIntervalMs;
+        _machineConfig.CycleOkRate = CycleOkRate;
+        _machineConfig.EnableNgSimulation = EnableNgSimulation;
+
+        _configService.Save(_machineConfig);
+
+        await AddOperationLogAsync("Recipe",
+            $"Recipe applied: {CurrentRecipeName} / {CurrentProductModel}");
+        MessageBox.Show("Save Config Successed!");
+    }
+    private void EnsureRecipeListInitialized()
+    {
+        if (_machineConfig.Recipes == null)
+        {
+            _machineConfig.Recipes = new List<RecipeItem>();
+        }
+
+        if (_machineConfig.Recipes.Count == 0)
+        {
+            _machineConfig.Recipes.Add(new RecipeItem
+            {
+                RecipeName = CurrentRecipeName,
+                ProductModel = CurrentProductModel,
+                CycleIntervalMs = CycleIntervalMs,
+                CycleOkRate = CycleOkRate,
+                EnableNgSimulation = EnableNgSimulation
+            });
+
+            _configService.Save(_machineConfig);
+        }
+    }
+    private void LoadRecipeListFromConfig()
+    {
+        RecipeItems.Clear();
+
+        foreach (var recipe in _machineConfig.Recipes.OrderBy(x => x.RecipeName))
+        {
+            RecipeItems.Add(recipe);
+        }
+    }
+    private void LoadSelectedRecipeIntoEditor()
+    {
+        if (SelectedRecipeItem == null)
+            return;
+
+        EditRecipeName = SelectedRecipeItem.RecipeName;
+        EditProductModel = SelectedRecipeItem.ProductModel;
+        EditRecipeCycleIntervalMsText = SelectedRecipeItem.CycleIntervalMs.ToString();
+        EditRecipeCycleOkRateText = SelectedRecipeItem.CycleOkRate.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        EditEnableNgSimulation = SelectedRecipeItem.EnableNgSimulation;
+    }
+    private void SaveRecipeToList()
+    {
+        if (IsRecipeEditLocked)
+        {
+            MessageBox.Show("Machine is running. Stop the machine before saving recipe.");
+            return;
+        }
+
+        if (!IsRecipeInputValid)
+        {
+            MessageBox.Show("Invalid recipe values. Please check highlighted fields.");
+            return;
+        }
+
+        int cycleInterval = int.Parse(EditRecipeCycleIntervalMsText);
+        double cycleOkRate = double.Parse(EditRecipeCycleOkRateText, CultureInfo.InvariantCulture);
+
+        var existing = _machineConfig.Recipes
+            .FirstOrDefault(x => x.RecipeName.Equals(EditRecipeName, StringComparison.OrdinalIgnoreCase));
+
+        if (existing == null)
+        {
+            _machineConfig.Recipes.Add(new RecipeItem
+            {
+                RecipeName = EditRecipeName,
+                ProductModel = EditProductModel,
+                CycleIntervalMs = cycleInterval,
+                CycleOkRate = cycleOkRate,
+                EnableNgSimulation = EditEnableNgSimulation
+            });
+        }
+        else
+        {
+            existing.ProductModel = EditProductModel;
+            existing.CycleIntervalMs = cycleInterval;
+            existing.CycleOkRate = cycleOkRate;
+            existing.EnableNgSimulation = EditEnableNgSimulation;
+        }
+
+        _configService.Save(_machineConfig);
+        LoadRecipeListFromConfig();
+
+        SelectedRecipeItem = RecipeItems
+            .FirstOrDefault(x => x.RecipeName.Equals(EditRecipeName, StringComparison.OrdinalIgnoreCase));
+
+        MessageBox.Show("Recipe saved.");
+    }
+    private void DeleteSelectedRecipe()
+    {
+        if (IsRecipeEditLocked)
+        {
+            MessageBox.Show("Machine is running. Stop the machine before deleting recipe.");
+            return;
+        }
+
+        if (SelectedRecipeItem == null)
+        {
+            MessageBox.Show("Please select a recipe.");
+            return;
+        }
+
+        var recipeToDelete = _machineConfig.Recipes
+            .FirstOrDefault(x => x.RecipeName.Equals(SelectedRecipeItem.RecipeName, StringComparison.OrdinalIgnoreCase));
+
+        if (recipeToDelete == null)
+            return;
+
+        _machineConfig.Recipes.Remove(recipeToDelete);
+        _configService.Save(_machineConfig);
+        LoadRecipeListFromConfig();
+
+        SelectedRecipeItem = null;
+
+        MessageBox.Show("Recipe deleted.");
     }
 }

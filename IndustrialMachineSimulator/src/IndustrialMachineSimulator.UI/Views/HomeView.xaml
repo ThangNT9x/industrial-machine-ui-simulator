@@ -84,6 +84,7 @@
                                     <Label Content="{Binding PbaNgCount}" Foreground="Red" FontFamily="Arial" 
                                      FontSize="25" FontWeight="Bold" HorizontalAlignment="Right"
                                      VerticalAlignment="Center" ></Label>
+
                                 </Grid>
 
                             </StackPanel>
@@ -118,19 +119,19 @@
                             <Border Grid.Row="3" Grid.ColumnSpan="4" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
                             <Border Grid.Column="3" Grid.RowSpan="4" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
 
-                            <TextBlock Grid.Column="0" Grid.Row="0" Text="MTBI" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Alarm Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Stop Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                            <TextBlock Grid.Column="0" Grid.Row="3" Text="In Count" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                            <TextBlock Grid.Column="2" Grid.Row="0" Text="Idle Time" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Recipe Name" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Product Model" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Cycle Interval" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <TextBlock Grid.Column="0" Grid.Row="3" Text="Cycle OK Rate" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <TextBlock Grid.Column="2" Grid.Row="0" Text="Enable Simu" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                             <TextBlock Grid.Column="2" Grid.Row="1" Text="Run Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                             <TextBlock Grid.Column="2" Grid.Row="2" Text="Cycle Time" FontFamily="Arial" FontSize="20"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                             <TextBlock Grid.Column="2" Grid.Row="3" Text="Out Count" FontFamily="Arial" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                            <Label Grid.Column="1" Grid.Row="0" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="1" Grid.Row="1" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="1" Grid.Row="2" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="1" Grid.Row="3" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="3" Grid.Row="0" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="0" Content="{Binding CurrentRecipeName}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="1" Content="{Binding CurrentProductModel}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="2" Content="{Binding CurrentCycleIntervalText}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="3" Content="{Binding CurrentCycleOkRateText}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                        <Label Grid.Column="3" Grid.Row="0" Content="{Binding EnableNgSimulation}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                             <Label Grid.Column="3" Grid.Row="1" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                             <Label Grid.Column="3" Grid.Row="2" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                             <Label Grid.Column="3" Grid.Row="3" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
