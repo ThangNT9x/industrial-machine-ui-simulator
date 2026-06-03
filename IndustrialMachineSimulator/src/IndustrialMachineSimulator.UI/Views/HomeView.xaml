@@ -48,10 +48,74 @@
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Column="0" Grid.Row="0" Height="25" 
                                  Width="80" TextAlignment="Center" 
-                                 HorizontalAlignment="Left" Text="VISION VIEW" 
+                                 HorizontalAlignment="Left" Text="MES Monitor" 
                                  Background="blue" Foreground="White" ></TextBlock>
-                            <Grid Grid.Column="0" Grid.Row="1" Background="Gray" Margin="5" ></Grid>
-                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                        <Border Background="White"
+                                BorderBrush="#D9D9D9"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="12"
+                                Grid.Column="0" Grid.Row="1"
+                                >
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="10"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="10"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="MES Monitor"
+                                               FontSize="22"
+                                               FontWeight="Bold"
+                                               Foreground="#222222"/>
+
+                                    <StackPanel Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <Ellipse Width="12"
+                                                 Height="12"
+                                                 Fill="{Binding MesStatusDotColor}"
+                                                 Margin="0,0,8,0"/>
+                                        <TextBlock Text="{Binding MesConnectionStatusText}"
+                                                   FontSize="14"
+                                                   FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Grid.Row="2">
+                                    <TextBlock Text="{Binding LastMesTxText}"
+                                               FontSize="13"
+                                               Foreground="#444444"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding LastMesRxText}"
+                                               FontSize="13"
+                                               Foreground="#444444"/>
+                                </StackPanel>
+
+                                <DataGrid Grid.Row="4"
+                                          ItemsSource="{Binding HomeMesItems}"
+                                          AutoGenerateColumns="False"
+                                          IsReadOnly="True"
+                                          HeadersVisibility="Column">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="120"/>
+                                        <DataGridTextColumn Header="Dir" Binding="{Binding Direction}" Width="60"/>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding MessageType}" Width="120"/>
+                                        <DataGridTextColumn Header="Payload" Binding="{Binding Payload}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </Border>
+                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Product Quantity" FontFamily="Arial" 
                                      FontSize="25" Foreground="Black"
                                      FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
@@ -177,21 +241,59 @@
                               Foreground="Black" HorizontalAlignment="Center" 
                               VerticalAlignment="Center"
                               Text="Stage Material"></TextBlock>
-                                        <Grid>
-                                            <Label Height="25" Width="30" Background="#99FF00" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                            <Label Content="OK" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                        </Grid>
-                                        <Grid>
-                                            <Label Height="25" Width="30" Background="Red" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                            <Label Content="NG" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                                        </Grid>
-                                        <Grid>
+                                    <Grid>
+                                        <Label Height="25"
+                                               Width="30"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left">
+                                            <Label.Style>
+                                                <Style TargetType="Label">
+                                                    <Setter Property="Background" Value="#D8F5B2"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsStageMaterialOkLampOn}" Value="True">
+                                                            <Setter Property="Background" Value="#99FF00"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Label.Style>
+                                        </Label>
+
+                                        <Label Content="OK"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid>
+                                        <Label Height="25"
+                                               Width="30"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left">
+                                            <Label.Style>
+                                                <Style TargetType="Label">
+                                                    <Setter Property="Background" Value="#F5CACA"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsStageMaterialNgLampOn}" Value="True">
+                                                            <Setter Property="Background" Value="Red"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Label.Style>
+                                        </Label>
+
+                                        <Label Content="NG"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid>
                                             <Label Height="25" Width="30" Background="Blue" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
                                             <Label Content="XOUT" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="30,0,0,0"></Label>
                                         </Grid>
                                         <Grid>
                                             <Label Height="25" Width="30" Background="#FFFF00" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
-                                            <Label Content="NG" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                                            <Label Content="IDLE" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                                         </Grid>
 
                                     </StackPanel>
@@ -359,10 +461,59 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <Border Grid.Column="0" Grid.Row="0" Background="Green" Margin="5,0,0,5"></Border>
-                                <Border Grid.Column="0" Grid.Row="1" Background="Green" Margin="5,0,0,5"></Border>
-                                <Border Grid.Column="4" Grid.Row="0" Background="Green" Margin="0,0,5,5"></Border>
-                                <Border Grid.Column="4" Grid.Row="1" Background="Green" Margin="0,0,5,5"></Border>
+                                <Border Grid.Column="0" Grid.Row="0"  Margin="5,0,0,5">
+                                
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#9FD49F"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsInLiftRunning}" Value="True">
+                                                    <Setter Property="Background" Value="Green"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                               
+                            </Border>
+                                <Border Grid.Column="0" Grid.Row="1"  Margin="5,0,0,5">
+
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#9FD49F"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutLiftRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                                <Border Grid.Column="4" Grid.Row="0" Margin="0,0,5,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#9FD49F"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInLiftRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                            </Border>
+                            <Border Grid.Column="4" Grid.Row="1" Margin="0,0,5,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#9FD49F"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutLiftRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                                
                                 <TextBlock Grid.Column="2" Grid.Row="0"
                                       Text="IN LIFT"
                                       FontFamily="Arial"
@@ -408,7 +559,18 @@
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="2" Background="Green"  Margin="0,50,0,50"></Border>
+                        <Border Grid.Column="2"  Margin="0,50,0,50">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#9FD49F"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsNgConveyorRunning}" Value="True">
+                                            <Setter Property="Background" Value="Green"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
                             <TextBlock Grid.Column="2" Text="NG CONV" Foreground="White"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"></TextBlock>
@@ -433,81 +595,533 @@
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10">
                                 <!--Stage trai phai status-->
-                                <Grid Grid.Column="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Border Grid.Column="0" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                    <Border Grid.Column="1" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                    <Border Grid.Row="0" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                    <Border Grid.Row="1" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                    <TextBlock Grid.Column="0" Grid.Row="2" Foreground="Black" Text="1" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="1" Grid.Row="2" Foreground="Black" Text="2" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="2" Foreground="Black" Text="3" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="1" Foreground="Black" Text="4" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="1" Grid.Row="1" Foreground="Black" Text="5" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="0" Grid.Row="1" Foreground="Black" Text="6" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Foreground="Black" Text="7" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="1" Grid.Row="0" Foreground="Black" Text="8" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="0" Foreground="Black" Text="9" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
 
-                                </Grid>
-                            </Border>
+                                <Border Grid.Column="0" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right"/>
+                                <Border Grid.Column="1" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right"/>
+                                <Border Grid.Row="0" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom"/>
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom"/>
+
+                                <!-- 1 -->
+                                <Border Grid.Column="0" Grid.Row="2" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                
+                                                <DataTrigger Binding="{Binding IsStageAIndex1Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex1Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                
+                                                <DataTrigger Binding="{Binding IsStageAIndex1Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="1" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 2 -->
+                                <Border Grid.Column="1" Grid.Row="2" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex2Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex2Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex2Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="2" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 3 -->
+                                <Border Grid.Column="2" Grid.Row="2" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex3Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex3Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex3Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="3" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 4 -->
+                                <Border Grid.Column="2" Grid.Row="1" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex4Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex4Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex4Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="4" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 5 -->
+                                <Border Grid.Column="1" Grid.Row="1" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex5Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex5Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex5Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="5" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 6 -->
+                                <Border Grid.Column="0" Grid.Row="1" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex6Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex6Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex6Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="6" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 7 -->
+                                <Border Grid.Column="0" Grid.Row="0" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex7Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex7Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex7Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="7" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 8 -->
+                                <Border Grid.Column="1" Grid.Row="0" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex8Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex8Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex8Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="8" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 9 -->
+                                <Border Grid.Column="2" Grid.Row="0" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageAIndex9Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex9Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageAIndex9Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="9" FontFamily="Arial" FontSize="25" Foreground="Black"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
                             <Border Grid.Column="2" BorderBrush="Black" BorderThickness="1" Margin="10,10,10,10">
                                 <!--Stage trai phai status-->
-                                <Grid Grid.Column="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Border Grid.Column="0" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                    <Border Grid.Column="1" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right" ></Border>
-                                    <Border Grid.Row="0" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                    <Border Grid.Row="1" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom" ></Border>
-                                    <TextBlock Grid.Column="0" Grid.Row="2" Foreground="Black" Text="1" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="1" Grid.Row="2" Foreground="Black" Text="2" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="2" Foreground="Black" Text="3" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="1" Foreground="Black" Text="4" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="1" Grid.Row="1" Foreground="Black" Text="5" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="0" Grid.Row="1" Foreground="Black" Text="6" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Foreground="Black" Text="7" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="1" Grid.Row="0" Foreground="Black" Text="8" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                                    <TextBlock Grid.Column="2" Grid.Row="0" Foreground="Black" Text="9" FontFamily="Arial" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            <Grid Grid.Column="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
 
-                                </Grid>
-                            </Border>
+                                <Border Grid.Column="0" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right"/>
+                                <Border Grid.Column="1" Grid.RowSpan="3" Width="1" Background="#D9D9D9" HorizontalAlignment="Right"/>
+                                <Border Grid.Row="0" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom"/>
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Height="1" Background="#D9D9D9" VerticalAlignment="Bottom"/>
+
+                                <!-- 1 -->
+                                <Border Grid.Column="0" Grid.Row="2" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex1Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageBIndex1Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsStageBIndex1Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="1"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 2 -->
+                                <Border Grid.Column="1" Grid.Row="2" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex2Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex2Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex2Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="2"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 3 -->
+                                <Border Grid.Column="2" Grid.Row="2" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex3Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex3Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex3Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="3"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 4 -->
+                                <Border Grid.Column="2" Grid.Row="1" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex4Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex4Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex4Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="4"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 5 -->
+                                <Border Grid.Column="1" Grid.Row="1" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex5Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex5Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex5Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="5"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 6 -->
+                                <Border Grid.Column="0" Grid.Row="1" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex6Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex6Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex6Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="6"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 7 -->
+                                <Border Grid.Column="0" Grid.Row="0" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex7Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex7Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex7Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="7"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 8 -->
+                                <Border Grid.Column="1" Grid.Row="0" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex8Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex8Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex8Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="8"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- 9 -->
+                                <Border Grid.Column="2" Grid.Row="0" Margin="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStageBIndex9Picked}" Value="True">
+                                                    <Setter Property="Background" Value="#D9D9D9"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex9Done}" Value="True">
+                                                    <Setter Property="Background" Value="#92D050"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsStageBIndex9Active}" Value="True">
+                                                    <Setter Property="Background" Value="#FFD966"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="9"
+                                               FontFamily="Arial"
+                                               FontSize="25"
+                                               Foreground="Black"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
                             <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                <CheckBox Content="Input Stop" FontFamily="Arial" 
-                                     FontSize="15" VerticalAlignment="Top"
-                                     RenderTransformOrigin="0,0.5"
-                                     Margin="0,0,0,20">
-                                    <CheckBox.RenderTransform>
-                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" ></ScaleTransform>
-                                    </CheckBox.RenderTransform>
-                                </CheckBox>
-                                <CheckBox Content="Out Traybox" FontFamily="Arial" FontSize="15" 
-                                     VerticalAlignment="Top"
-                                     RenderTransformOrigin="0,0.5">
-                                    <CheckBox.RenderTransform>
-                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" ></ScaleTransform>
-                                    </CheckBox.RenderTransform>
-                                </CheckBox>
-                            </StackPanel>
+                            <CheckBox Content="Input Stop"
+                                      FontFamily="Arial"
+                                      FontSize="15"
+                                      VerticalAlignment="Top"
+                                      RenderTransformOrigin="0,0.5"
+                                      Margin="0,0,0,20"
+                                      IsChecked="{Binding IsInputStopActive}">
+                                <CheckBox.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                                </CheckBox.RenderTransform>
+                            </CheckBox>
+                            <CheckBox Content="Out Traybox"
+                                      FontFamily="Arial"
+                                      FontSize="15"
+                                      VerticalAlignment="Top"
+                                      RenderTransformOrigin="0,0.5"
+                                      IsChecked="{Binding IsOutTrayBoxRequested}">
+                                <CheckBox.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                                </CheckBox.RenderTransform>
+                            </CheckBox>
+                        </StackPanel>
 
-                        </Grid>
+                        <StackPanel Grid.Column="3" Margin="0,30,0,0">
+                            <TextBlock Text="{Binding CurrentTrayOkCount, StringFormat=Tray Load: {0}}"
+                                       FontFamily="Arial"
+                                       FontSize="14"
+                                       Foreground="#333333"/>
+                            <TextBlock Text="{Binding AvailableEmptyTrayCount, StringFormat=Empty Trays: {0}}"
+                                       FontFamily="Arial"
+                                       FontSize="14"
+                                       Foreground="#333333"/>
+                            <TextBlock Text="{Binding ProducedFullTrayCount, StringFormat=Full Trays: {0}}"
+                                       FontFamily="Arial"
+                                       FontSize="14"
+                                       Foreground="#333333"/>
+                        </StackPanel>
+                    </Grid>
                         <!--Hinh minh hoa tin hieu sensor conveyor-->
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
@@ -783,7 +1397,7 @@
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Background" Value="#F3CACA"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsFeed1SensorOn}" Value="True">
+                                        <DataTrigger Binding="{Binding IsFeed3SensorOn}" Value="True">
                                             <Setter Property="Background" Value="#FF5A5A"/>
                                         </DataTrigger>
                                     </Style.Triggers>

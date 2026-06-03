@@ -31,7 +31,8 @@ public class MachineController
 
         Status.CameraConnected = await _cameraService.ConnectAsync(cancellationToken);
         Status.PlcConnected = await _plcService.ConnectAsync(cancellationToken);
-        Status.MesConnected = await _mesClient.ConnectAsync(cancellationToken);
+        await _mesClient.ConnectAsync();
+        Status.MesConnected = _mesClient.ConnectionState == MesConnectionState.Connected;
 
         Status.State = MachineState.Ready;
         _loggerService.Info("System ready.");
@@ -42,7 +43,7 @@ public class MachineController
         Status.State = MachineState.Running;
         _loggerService.Info("Machine started.");
 
-        await _mesClient.SendHeartbeatAsync(cancellationToken);
+        await _mesClient.SendAsync("Heartbeat", "MachineController heartbeat");
     }
 
     public Task StopAsync()

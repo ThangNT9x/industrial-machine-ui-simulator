@@ -1,8 +1,12 @@
-﻿namespace IndustrialMachineSimulator.Core.Interfaces;
+﻿using IndustrialMachineSimulator.Core.Entities;
+
+namespace IndustrialMachineSimulator.Core.Interfaces;
 
 public interface IMesClient
 {
-    Task<bool> ConnectAsync(CancellationToken cancellationToken = default);
-    Task SendHeartbeatAsync(CancellationToken cancellationToken = default);
+    MesConnectionState ConnectionState { get; }
+
+    Task ConnectAsync();
     Task DisconnectAsync();
+    Task SendAsync(string messageType, string payload);
 }

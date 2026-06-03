@@ -93,6 +93,10 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ClearMaterialAtFeed3Command { get; }
     public ICommand ClearMaterialAtOutConveyorCommand { get; }
 
+    public ICommand ConnectMesCommand { get; }
+    public ICommand DisconnectMesCommand { get; }
+    public ICommand ClearMesUiCommand { get; }
+
 
 
 
@@ -288,6 +292,67 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(CurrentCycleOkRateText));
         }
     }
+
+    private readonly IMesClient _mesClient;
+
+    public ObservableCollection<MesMessageRecord> MesItems { get; } = new();
+
+    private MesConnectionState _mesConnectionState = MesConnectionState.Disconnected;
+    public MesConnectionState MesConnectionState
+    {
+        get => _mesConnectionState;
+        set
+        {
+            _mesConnectionState = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(MesConnectionStatusText));
+            OnPropertyChanged(nameof(IsMesConnected));
+            OnPropertyChanged(nameof(MesStatusDotColor));
+        }
+    }
+
+    public string MesConnectionStatusText => MesConnectionState.ToString();
+    public bool IsMesConnected => MesConnectionState == MesConnectionState.Connected;
+
+    private bool _isMesAutoSendCycleResult = true;
+    public bool IsMesAutoSendCycleResult
+    {
+        get => _isMesAutoSendCycleResult;
+        set
+        {
+            _isMesAutoSendCycleResult = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<MesMessageRecord> HomeMesItems { get; } = new();
+
+    private string _lastMesTxText = "-";
+    public string LastMesTxText
+    {
+        get => _lastMesTxText;
+        set
+        {
+            _lastMesTxText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _lastMesRxText = "-";
+    public string LastMesRxText
+    {
+        get => _lastMesRxText;
+        set
+        {
+            _lastMesRxText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string MesStatusDotColor =>
+    MesConnectionState == MesConnectionState.Connected ? "#16A34A" :
+    MesConnectionState == MesConnectionState.Connecting ? "#EAB308" :
+    "#9CA3AF";
 
     private bool _isIoManualMode;
     public bool IsIoManualMode
@@ -509,6 +574,17 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    private int _pickerUnloadMs = 1500;
+    public int PickerUnloadMs
+    {
+        get => _pickerUnloadMs;
+        set
+        {
+            if (_pickerUnloadMs == value) return;
+            _pickerUnloadMs = value;
+            OnPropertyChanged();
+        }
+    }
     public bool IsInConveyorRunning
     {
         get => _sorterIo.IsInConveyorRunning;
@@ -622,11 +698,330 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    private bool _isInLiftRunning;
+    public bool IsInLiftRunning
+    {
+        get => _isInLiftRunning;
+        set
+        {
+            if (_isInLiftRunning == value) return;
+            _isInLiftRunning = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _isOutLiftRunning;
+    public bool IsOutLiftRunning
+    {
+        get => _isOutLiftRunning;
+        set
+        {
+            if (_isOutLiftRunning == value) return;
+            _isOutLiftRunning = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _isNgConveyorRunning;
+    public bool IsNgConveyorRunning
+    {
+        get => _isNgConveyorRunning;
+        set
+        {
+            if (_isNgConveyorRunning == value) return;
+            _isNgConveyorRunning = value;
+            OnPropertyChanged();
+        }
+    }
+    private int _currentTrayOkCount;
+    public int CurrentTrayOkCount
+    {
+        get => _currentTrayOkCount;
+        set
+        {
+            if (_currentTrayOkCount == value) return;
+            _currentTrayOkCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private int _trayCapacity = 20;
+    public int TrayCapacity
+    {
+        get => _trayCapacity;
+        set
+        {
+            if (_trayCapacity == value) return;
+            _trayCapacity = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private int _availableEmptyTrayCount = 100;
+    public int AvailableEmptyTrayCount
+    {
+        get => _availableEmptyTrayCount;
+        set
+        {
+            if (_availableEmptyTrayCount == value) return;
+            _availableEmptyTrayCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private int _producedFullTrayCount;
+    public int ProducedFullTrayCount
+    {
+        get => _producedFullTrayCount;
+        set
+        {
+            if (_producedFullTrayCount == value) return;
+            _producedFullTrayCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _hasEmptyTrayLoaded = true;
+    public bool HasEmptyTrayLoaded
+    {
+        get => _hasEmptyTrayLoaded;
+        set
+        {
+            if (_hasEmptyTrayLoaded == value) return;
+            _hasEmptyTrayLoaded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _isInputStopActive;
+    public bool IsInputStopActive
+    {
+        get => _isInputStopActive;
+        set
+        {
+            if (_isInputStopActive == value) return;
+            _isInputStopActive = value;
+            OnPropertyChanged();
+
+            _ = AddOperationLogAsync(
+                "Input",
+                value ? "Input stop activated." : "Input stop released.");
+        }
+    }
+
+    private bool _isOutTrayBoxRequested;
+    public bool IsOutTrayBoxRequested
+    {
+        get => _isOutTrayBoxRequested;
+        set
+        {
+            if (_isOutTrayBoxRequested == value) return;
+            _isOutTrayBoxRequested = value;
+            OnPropertyChanged();
+
+            if (value)
+            {
+                _ = ExecuteOutTrayBoxRequestAsync();
+            }
+        }
+    }
+
+    private bool _isOutTrayBoxProcessing;
+
+
+    private bool _isStageMaterialOkLampOn;
+    public bool IsStageMaterialOkLampOn
+    {
+        get => _isStageMaterialOkLampOn;
+        set
+        {
+            if (_isStageMaterialOkLampOn == value) return;
+            _isStageMaterialOkLampOn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _isStageMaterialNgLampOn;
+    public bool IsStageMaterialNgLampOn
+    {
+        get => _isStageMaterialNgLampOn;
+        set
+        {
+            if (_isStageMaterialNgLampOn == value) return;
+            _isStageMaterialNgLampOn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private readonly int[] _stageACutOrder = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private readonly int[] _stageBCutOrder = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    private int _activeCutNumberStageA;
+    public int ActiveCutNumberStageA
+    {
+        get => _activeCutNumberStageA;
+        set
+        {
+            if (_activeCutNumberStageA == value) return;
+            _activeCutNumberStageA = value;
+            OnPropertyChanged();
+            NotifyStageACutChanged();
+        }
+    }
+
+    private int _activeCutNumberStageB;
+    public int ActiveCutNumberStageB
+    {
+        get => _activeCutNumberStageB;
+        set
+        {
+            if (_activeCutNumberStageB == value) return;
+            _activeCutNumberStageB = value;
+            OnPropertyChanged();
+            NotifyStageBCutChanged();
+        }
+    }
+
+    private bool _isFeed1StopperUp = true;
+    public bool IsFeed1StopperUp
+    {
+        get => _isFeed1StopperUp;
+        set
+        {
+            if (_isFeed1StopperUp == value) return;
+            _isFeed1StopperUp = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsFeed1StopperDown));
+        }
+    }
+
+    public bool IsFeed1StopperDown => !IsFeed1StopperUp;
+
+    private bool _isStopRequested;
+    private bool _isCycleStopRequested;
+
+
+
+    private readonly HashSet<int> _stageACompletedCuts = new();
+    private readonly HashSet<int> _stageBCompletedCuts = new();
+    private readonly HashSet<int> _stageAPickedCuts = new();
+    private readonly HashSet<int> _stageBPickedCuts = new();
+
+    private bool _isStageAUnloadWaiting;
+    public bool IsStageAUnloadWaiting
+    {
+        get => _isStageAUnloadWaiting;
+        set
+        {
+            if (_isStageAUnloadWaiting == value) return;
+            _isStageAUnloadWaiting = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _isStageBUnloadWaiting;
+    public bool IsStageBUnloadWaiting
+    {
+        get => _isStageBUnloadWaiting;
+        set
+        {
+            if (_isStageBUnloadWaiting == value) return;
+            _isStageBUnloadWaiting = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    private SorterWorkpiece? _cutStageAWorkpiece;
+    private SorterWorkpiece? _cutStageBWorkpiece;
+
+    public bool HasCutStageAMaterial => _cutStageAWorkpiece != null;
+    public bool HasCutStageBMaterial => _cutStageBWorkpiece != null;
+
+    private CutStageState _stageAState = CutStageState.Empty;
+    private CutStageState _stageBState = CutStageState.Empty;
+
+    private bool _laserBusy;
+    private bool _pickerBusy;
+    private bool _feed3OutputBusy;
+
+    private CutStageSlot _lastLaserServed = CutStageSlot.None;
+    private CutStageSlot _lastPickerServed = CutStageSlot.None;
+    private CutStageSlot _lastOutputServed = CutStageSlot.None;
+
+
+    public bool IsStageAIndex1Picked => _stageAPickedCuts.Contains(1);
+    public bool IsStageAIndex2Picked => _stageAPickedCuts.Contains(2);
+    public bool IsStageAIndex3Picked => _stageAPickedCuts.Contains(3);
+    public bool IsStageAIndex4Picked => _stageAPickedCuts.Contains(4);
+    public bool IsStageAIndex5Picked => _stageAPickedCuts.Contains(5);
+    public bool IsStageAIndex6Picked => _stageAPickedCuts.Contains(6);
+    public bool IsStageAIndex7Picked => _stageAPickedCuts.Contains(7);
+    public bool IsStageAIndex8Picked => _stageAPickedCuts.Contains(8);
+    public bool IsStageAIndex9Picked => _stageAPickedCuts.Contains(9);
+
+    public bool IsStageBIndex1Picked => _stageBPickedCuts.Contains(1);
+    public bool IsStageBIndex2Picked => _stageBPickedCuts.Contains(2);
+    public bool IsStageBIndex3Picked => _stageBPickedCuts.Contains(3);
+    public bool IsStageBIndex4Picked => _stageBPickedCuts.Contains(4);
+    public bool IsStageBIndex5Picked => _stageBPickedCuts.Contains(5);
+    public bool IsStageBIndex6Picked => _stageBPickedCuts.Contains(6);
+    public bool IsStageBIndex7Picked => _stageBPickedCuts.Contains(7);
+    public bool IsStageBIndex8Picked => _stageBPickedCuts.Contains(8);
+    public bool IsStageBIndex9Picked => _stageBPickedCuts.Contains(9);
+
+    public bool IsStageAIndex1Done => _stageACompletedCuts.Contains(1);
+    public bool IsStageAIndex2Done => _stageACompletedCuts.Contains(2);
+    public bool IsStageAIndex3Done => _stageACompletedCuts.Contains(3);
+    public bool IsStageAIndex4Done => _stageACompletedCuts.Contains(4);
+    public bool IsStageAIndex5Done => _stageACompletedCuts.Contains(5);
+    public bool IsStageAIndex6Done => _stageACompletedCuts.Contains(6);
+    public bool IsStageAIndex7Done => _stageACompletedCuts.Contains(7);
+    public bool IsStageAIndex8Done => _stageACompletedCuts.Contains(8);
+    public bool IsStageAIndex9Done => _stageACompletedCuts.Contains(9);
+
+    public bool IsStageBIndex1Done => _stageBCompletedCuts.Contains(1);
+    public bool IsStageBIndex2Done => _stageBCompletedCuts.Contains(2);
+    public bool IsStageBIndex3Done => _stageBCompletedCuts.Contains(3);
+    public bool IsStageBIndex4Done => _stageBCompletedCuts.Contains(4);
+    public bool IsStageBIndex5Done => _stageBCompletedCuts.Contains(5);
+    public bool IsStageBIndex6Done => _stageBCompletedCuts.Contains(6);
+    public bool IsStageBIndex7Done => _stageBCompletedCuts.Contains(7);
+    public bool IsStageBIndex8Done => _stageBCompletedCuts.Contains(8);
+    public bool IsStageBIndex9Done => _stageBCompletedCuts.Contains(9);
+
+    public bool IsStageAIndex1Active => ActiveCutNumberStageA == 1;
+    public bool IsStageAIndex2Active => ActiveCutNumberStageA == 2;
+    public bool IsStageAIndex3Active => ActiveCutNumberStageA == 3;
+    public bool IsStageAIndex4Active => ActiveCutNumberStageA == 4;
+    public bool IsStageAIndex5Active => ActiveCutNumberStageA == 5;
+    public bool IsStageAIndex6Active => ActiveCutNumberStageA == 6;
+    public bool IsStageAIndex7Active => ActiveCutNumberStageA == 7;
+    public bool IsStageAIndex8Active => ActiveCutNumberStageA == 8;
+    public bool IsStageAIndex9Active => ActiveCutNumberStageA == 9;
+
+    public bool IsStageBIndex1Active => ActiveCutNumberStageB == 1;
+    public bool IsStageBIndex2Active => ActiveCutNumberStageB == 2;
+    public bool IsStageBIndex3Active => ActiveCutNumberStageB == 3;
+    public bool IsStageBIndex4Active => ActiveCutNumberStageB == 4;
+    public bool IsStageBIndex5Active => ActiveCutNumberStageB == 5;
+    public bool IsStageBIndex6Active => ActiveCutNumberStageB == 6;
+    public bool IsStageBIndex7Active => ActiveCutNumberStageB == 7;
+    public bool IsStageBIndex8Active => ActiveCutNumberStageB == 8;
+    public bool IsStageBIndex9Active => ActiveCutNumberStageB == 9;
+
+
+
     public bool IsMaterialAtInConveyor => _stage1Workpiece != null;
     public bool IsMaterialAtFeed1 => _stage2Workpiece != null;
     public bool IsMaterialAtFeed2 => _stage3Workpiece != null;
     public bool IsMaterialAtFeed3 => _stage4Workpiece != null;
     public bool IsMaterialAtOutConveyor => _stage5Workpiece != null;
+
+    private bool _isStageACutRunning;
+    private bool _isStageBCutRunning;
+
 
     private sealed class SorterWorkpiece
     {
@@ -640,6 +1035,23 @@ public class MainViewModel : INotifyPropertyChanged
     private SorterWorkpiece? _stage4Workpiece;
     private SorterWorkpiece? _stage5Workpiece;
 
+    private enum CutStageSlot
+    {
+        None,
+        A,
+        B
+    }
+
+    private enum CutStageState
+    {
+        Empty,
+        WaitingCut,
+        Cutting,
+        WaitingPick,
+        Picking,
+        ReadyToOutput,
+        Outputting
+    }
 
     private CancellationTokenSource? _sorterPipelineCts;
     private void StartSorterPipelineLoop()
@@ -675,11 +1087,13 @@ public class MainViewModel : INotifyPropertyChanged
 
 
     public bool HasAnyMaterialInSorter =>
-    IsMaterialAtInConveyor ||
-    IsMaterialAtFeed1 ||
-    IsMaterialAtFeed2 ||
-    IsMaterialAtFeed3 ||
-    IsMaterialAtOutConveyor;
+        IsMaterialAtInConveyor ||
+        IsMaterialAtFeed1 ||
+        IsMaterialAtFeed2 ||
+        IsMaterialAtFeed3 ||
+        IsMaterialAtOutConveyor ||
+        HasCutStageAMaterial ||
+        HasCutStageBMaterial;
 
     public bool IsSetupEditLocked => CurrentMachineState == MachineState.Running;
     public bool IsRecipeEditLocked => CurrentMachineState == MachineState.Running;
@@ -800,6 +1214,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
 
         await AddAlarmAsync(code, message);
+        await SendMesMessageAsync("AlarmRaised", $"Code={code};Message={message}");
 
         if (showPopup)
         {
@@ -844,6 +1259,9 @@ public class MainViewModel : INotifyPropertyChanged
             NavigateToHome();
             StartCycleLoop();
             await AddOperationLogAsync("Run", "Machine started running.");
+            await SendMesMessageAsync(
+                                        "StartJob",
+                                        $"Recipe={CurrentRecipeName};Model={CurrentProductModel}");
         }
   
     }
@@ -860,6 +1278,7 @@ public class MainViewModel : INotifyPropertyChanged
             _cycleStartTime = null;
             CurrentMachineState = MachineState.Stopped;
             await AddOperationLogAsync("Run", "Machine stopped.");
+            await SendMesMessageAsync("MachineStopped", $"State={CurrentMachineState}");
             StopSorterPipelineLoop();
             SetSorterRunningState(false);
             UpdateSorterSensors();
@@ -1117,7 +1536,8 @@ public class MainViewModel : INotifyPropertyChanged
         IAlarmFileLogger alarmFileLogger,
         IOperationLogRepository operationLogRepository,
         IOperationFileLogger operationFileLogger,
-        IConfigService configService)
+        IConfigService configService,
+        IMesClient mesClient)
     {
         _machineController = machineController;
         _alarmRepository = alarmRepository;
@@ -1125,6 +1545,7 @@ public class MainViewModel : INotifyPropertyChanged
         _operationLogRepository = operationLogRepository;
         _operationFileLogger=operationFileLogger;
         _configService = configService;
+        _mesClient = mesClient;
         _machineConfig = _configService.Load();
         AppTitle = _machineConfig.AppTitle;
         OsVersion = _machineConfig.OsVersion;
@@ -1320,6 +1741,33 @@ public class MainViewModel : INotifyPropertyChanged
             return Task.CompletedTask;
         });
 
+        ConnectMesCommand = new RelayCommand(async _ =>
+        {
+            if (MesConnectionState != MesConnectionState.Disconnected)
+                return;
+
+            MesConnectionState = MesConnectionState.Connecting;
+            AddMesMessage("SYS", "Connect", "Connecting to MES...");
+
+            await _mesClient.ConnectAsync();
+            MesConnectionState = _mesClient.ConnectionState;
+
+            AddMesMessage("RX", "ConnectAck", "MES connection established.");
+        });
+
+        DisconnectMesCommand = new RelayCommand(async _ =>
+        {
+            await _mesClient.DisconnectAsync();
+            MesConnectionState = _mesClient.ConnectionState;
+            AddMesMessage("SYS", "Disconnect", "MES disconnected.");
+        });
+
+        ClearMesUiCommand = new RelayCommand(_ =>
+        {
+            MesItems.Clear();
+            HomeMesItems.Clear();
+            return Task.CompletedTask;
+        });
         StartCommand = new RelayCommand(_ => TryStartMachine());
 
         StopCommand = new RelayCommand(_ => TryStopMachine());
@@ -2137,6 +2585,10 @@ public class MainViewModel : INotifyPropertyChanged
                     var cycleElapsed = DateTime.Now - _cycleStartTime.Value;
                     CycleTimeText = cycleElapsed.ToString(@"hh\:mm\:ss");
                 }
+                if (IsInputStopActive)
+                {
+                    continue;
+                }
 
                 bool isOk = !EnableNgSimulation || _random.NextDouble() < CycleOkRate;
 
@@ -2273,6 +2725,9 @@ public class MainViewModel : INotifyPropertyChanged
         await AddOperationLogAsync("Recipe",
             $"Recipe applied: {CurrentRecipeName} / {CurrentProductModel}");
         MessageBox.Show("Save Config Successed!");
+        await SendMesMessageAsync(
+            "RecipeLoaded",
+            $"Recipe={CurrentRecipeName};Model={CurrentProductModel}");
     }
     private void EnsureRecipeListInitialized()
     {
@@ -2441,6 +2896,7 @@ public class MainViewModel : INotifyPropertyChanged
         IsFeed3SensorOn = false;
         IsOutConveyorSensorOn = false;
 
+
         _stage1Workpiece = null;
         _stage2Workpiece = null;
         _stage3Workpiece = null;
@@ -2468,62 +2924,112 @@ public class MainViewModel : INotifyPropertyChanged
         IsFeed3Running = isRunning;
         IsOutConveyorRunning = isRunning;
     }
-    private void AdvanceSorterPipeline()
+    private async Task HandleFinishedWorkpieceAsync(bool isOk)
     {
-        // PCB ra khỏi máy ở stage 5
-        if (_stage5Workpiece != null)
+        if (isOk)
         {
-            if (_stage5Workpiece.IsOk)
-            {
-                PbaOkCount += 1;
-                _ = AddOperationLogAsync("Cycle",
-                    $"Cycle completed: OK | Recipe={CurrentRecipeName} | Model={CurrentProductModel}");
-            }
-            else
-            {
-                PbaNgCount += 1;
-                _ = AddOperationLogAsync("Cycle",
-                    $"Cycle completed: NG | Recipe={CurrentRecipeName} | Model={CurrentProductModel}");
-            }
+            PbaOkCount += 1;
+            CurrentTrayOkCount += 1;
 
-            OutCount = PbaOkCount + PbaNgCount;
-            _stage5Workpiece = null;
+            await AddOperationLogAsync(
+                "Cycle",
+                $"Cycle completed: OK | Recipe={CurrentRecipeName} | Model={CurrentProductModel}");
+
+            _ = FlashStageMaterialOkAsync();
+
+            if (CurrentTrayOkCount >= TrayCapacity)
+            {
+                await ProcessTrayOutputAsync(false);
+            }
+        }
+        else
+        {
+            PbaNgCount += 1;
+
+            await AddOperationLogAsync(
+                "Cycle",
+                $"Cycle completed: NG | Recipe={CurrentRecipeName} | Model={CurrentProductModel}");
+
+            _ = FlashStageMaterialNgAsync();
+            _ = RunNgConveyorAsync();
         }
 
-        // Dịch stage từ phải sang trái
+        OutCount = PbaOkCount + PbaNgCount;
+    }
+    private async Task ProcessFullTrayAsync()
+    {
+        await RunOutLiftAsync();
+        ProducedFullTrayCount += 1;
+        CurrentTrayOkCount = 0;
+        HasEmptyTrayLoaded = false;
+
+        await AddOperationLogAsync(
+            "Tray",
+            $"Full tray output completed. FullTrays={ProducedFullTrayCount}");
+
+        if (AvailableEmptyTrayCount > 0)
+        {
+            await RunInLiftAsync();
+            AvailableEmptyTrayCount -= 1;
+            HasEmptyTrayLoaded = true;
+
+            await AddOperationLogAsync(
+                "Tray",
+                $"Empty tray loaded. RemainingEmptyTrays={AvailableEmptyTrayCount}");
+        }
+        else
+        {
+            await AddOperationLogAsync(
+                "Tray",
+                "No empty tray available for in-lift loading.");
+        }
+    }
+    private void AdvanceSorterPipeline()
+    {
+        // Out conveyor ra khỏi máy
+        if (_stage5Workpiece != null)
+        {
+            bool finishedResult = _stage5Workpiece.IsOk;
+            _stage5Workpiece = null;
+
+            _ = HandleFinishedWorkpieceAsync(finishedResult);
+        }
+
+        // Feed 3 -> Out conveyor
         if (_stage5Workpiece == null && _stage4Workpiece != null)
         {
             _stage5Workpiece = _stage4Workpiece;
             _stage4Workpiece = null;
         }
 
-        if (_stage4Workpiece == null && _stage3Workpiece != null)
-        {
-            _stage4Workpiece = _stage3Workpiece;
-            _stage3Workpiece = null;
-        }
+        // Scheduler cho A/B
+        RunCutStageSchedulerTick();
 
+        // Feed 1 -> Feed 2 buffer
         if (_stage3Workpiece == null && _stage2Workpiece != null)
         {
             _stage3Workpiece = _stage2Workpiece;
             _stage2Workpiece = null;
         }
 
+        // In conveyor -> Feed 1
         if (_stage2Workpiece == null && _stage1Workpiece != null)
         {
             _stage2Workpiece = _stage1Workpiece;
             _stage1Workpiece = null;
         }
 
-        // Nạp PCB mới từ queue vào stage 1
-        if (_stage1Workpiece == null && _pendingWorkpieces.Count > 0)
+        // Queue -> In conveyor
+        if (_stage1Workpiece == null && _pendingWorkpieces.Count > 0 && !IsInputStopActive)
         {
             _stage1Workpiece = _pendingWorkpieces.Dequeue();
         }
 
         UpdateSorterSensors();
         NotifySorterMaterialChanged();
+        NotifyCutStageSlotsChanged();
     }
+
     private void UpdateSorterSensors()
     {
         if (IsIoManualMode)
@@ -2555,9 +3061,27 @@ public class MainViewModel : INotifyPropertyChanged
         _stage4Workpiece = null;
         _stage5Workpiece = null;
 
+        _cutStageAWorkpiece = null;
+        _cutStageBWorkpiece = null;
+
+        _stageAState = CutStageState.Empty;
+        _stageBState = CutStageState.Empty;
+
+        _laserBusy = false;
+        _pickerBusy = false;
+        _feed3OutputBusy = false;
+
+        _lastLaserServed = CutStageSlot.None;
+        _lastPickerServed = CutStageSlot.None;
+        _lastOutputServed = CutStageSlot.None;
+
+        ResetStageACutState();
+        ResetStageBCutState();
+
         _pendingWorkpieces.Clear();
 
         NotifySorterMaterialChanged();
+        NotifyCutStageSlotsChanged();
     }
     private void InjectMaterialAtInput()
     {
@@ -2672,6 +3196,557 @@ public class MainViewModel : INotifyPropertyChanged
         UpdateSorterSensors();
         NotifySorterMaterialChanged();
     }
+    private void AddMesMessage(string direction, string messageType, string payload)
+    {
+        MesItems.Insert(0, new MesMessageRecord
+        {
+            Timestamp = DateTime.Now,
+            Direction = direction,
+            MessageType = messageType,
+            Payload = payload
+        });
+        RefreshHomeMesItems();
+        if (direction == "TX")
+            LastMesTxText = $"{DateTime.Now:HH:mm:ss} | {messageType}";
+        else if (direction == "RX")
+            LastMesRxText = $"{DateTime.Now:HH:mm:ss} | {messageType}";
+    }
+    private async Task SendMesMessageAsync(string messageType, string payload)
+    {
+        if (!IsMesConnected)
+            return;
+
+        AddMesMessage("TX", messageType, payload);
+        await _mesClient.SendAsync(messageType, payload);
+    }
+
+    private void RefreshHomeMesItems()
+    {
+        HomeMesItems.Clear();
+
+        foreach (var item in MesItems.Take(6))
+        {
+            HomeMesItems.Add(item);
+        }
+    }
+    private void ResetLiftAndTrayRuntime()
+    {
+        IsInLiftRunning = false;
+        IsOutLiftRunning = false;
+        IsNgConveyorRunning = false;
+
+        IsStageMaterialOkLampOn = false;
+        IsStageMaterialNgLampOn = false;
+
+        CurrentTrayOkCount = 0;
+        ProducedFullTrayCount = 0;
+
+        TrayCapacity = 50;
+        AvailableEmptyTrayCount = 200;
+        HasEmptyTrayLoaded = true;
+    }
+    private async Task FlashStageMaterialOkAsync()
+    {
+        IsStageMaterialOkLampOn = true;
+        await Task.Delay(300);
+        IsStageMaterialOkLampOn = false;
+    }
+    private async Task FlashStageMaterialNgAsync()
+    {
+        IsStageMaterialNgLampOn = true;
+        await Task.Delay(300);
+        IsStageMaterialNgLampOn = false;
+    }
+    private async Task RunNgConveyorAsync()
+    {
+        IsNgConveyorRunning = true;
+        await Task.Delay(2000);
+        IsNgConveyorRunning = false;
+    }
+    private async Task RunOutLiftAsync()
+    {
+        IsOutLiftRunning = true;
+        await Task.Delay(3000);
+        IsOutLiftRunning = false;
+    }
+    private async Task RunInLiftAsync()
+    {
+        IsInLiftRunning = true;
+        await Task.Delay(5000);
+        IsInLiftRunning = false;
+    }
+    private async Task ProcessTrayOutputAsync(bool isForcedByOutTrayBox)
+    {
+        if (CurrentTrayOkCount <= 0)
+        {
+            await AddOperationLogAsync("Tray", "Tray output request ignored because current tray is empty.");
+            return;
+        }
+
+        await RunOutLiftAsync();
+
+        ProducedFullTrayCount += 1;
+
+        await AddOperationLogAsync(
+            "Tray",
+            isForcedByOutTrayBox
+                ? $"Tray manually output. TrayLoad={CurrentTrayOkCount}"
+                : $"Full tray output completed. TrayLoad={CurrentTrayOkCount}");
+
+        CurrentTrayOkCount = 0;
+        HasEmptyTrayLoaded = false;
+
+        if (AvailableEmptyTrayCount > 0)
+        {
+            await RunInLiftAsync();
+            AvailableEmptyTrayCount -= 1;
+            HasEmptyTrayLoaded = true;
+
+            await AddOperationLogAsync(
+                "Tray",
+                $"Empty tray loaded. RemainingEmptyTrays={AvailableEmptyTrayCount}");
+        }
+        else
+        {
+            await AddOperationLogAsync(
+                "Tray",
+                "No empty tray available for in-lift loading.");
+        }
+    }
+
+    private async Task ExecuteOutTrayBoxRequestAsync()
+    {
+        if (_isOutTrayBoxProcessing)
+            return;
+
+        _isOutTrayBoxProcessing = true;
+
+        try
+        {
+            await ProcessTrayOutputAsync(true);
+        }
+        finally
+        {
+            _isOutTrayBoxRequested = false;
+            OnPropertyChanged(nameof(IsOutTrayBoxRequested));
+            _isOutTrayBoxProcessing = false;
+        }
+    }
+    private void NotifyStageACutChanged()
+    {
+        OnPropertyChanged(nameof(IsStageAIndex1Active));
+        OnPropertyChanged(nameof(IsStageAIndex2Active));
+        OnPropertyChanged(nameof(IsStageAIndex3Active));
+        OnPropertyChanged(nameof(IsStageAIndex4Active));
+        OnPropertyChanged(nameof(IsStageAIndex5Active));
+        OnPropertyChanged(nameof(IsStageAIndex6Active));
+        OnPropertyChanged(nameof(IsStageAIndex7Active));
+        OnPropertyChanged(nameof(IsStageAIndex8Active));
+        OnPropertyChanged(nameof(IsStageAIndex9Active));
+    }
+
+    private void NotifyStageBCutChanged()
+    {
+        OnPropertyChanged(nameof(IsStageBIndex1Active));
+        OnPropertyChanged(nameof(IsStageBIndex2Active));
+        OnPropertyChanged(nameof(IsStageBIndex3Active));
+        OnPropertyChanged(nameof(IsStageBIndex4Active));
+        OnPropertyChanged(nameof(IsStageBIndex5Active));
+        OnPropertyChanged(nameof(IsStageBIndex6Active));
+        OnPropertyChanged(nameof(IsStageBIndex7Active));
+        OnPropertyChanged(nameof(IsStageBIndex8Active));
+        OnPropertyChanged(nameof(IsStageBIndex9Active));
+    }
+
+    private void NotifyStageADoneChanged()
+    {
+        OnPropertyChanged(nameof(IsStageAIndex1Done));
+        OnPropertyChanged(nameof(IsStageAIndex2Done));
+        OnPropertyChanged(nameof(IsStageAIndex3Done));
+        OnPropertyChanged(nameof(IsStageAIndex4Done));
+        OnPropertyChanged(nameof(IsStageAIndex5Done));
+        OnPropertyChanged(nameof(IsStageAIndex6Done));
+        OnPropertyChanged(nameof(IsStageAIndex7Done));
+        OnPropertyChanged(nameof(IsStageAIndex8Done));
+        OnPropertyChanged(nameof(IsStageAIndex9Done));
+    }
+
+    private void NotifyStageBDoneChanged()
+    {
+        OnPropertyChanged(nameof(IsStageBIndex1Done));
+        OnPropertyChanged(nameof(IsStageBIndex2Done));
+        OnPropertyChanged(nameof(IsStageBIndex3Done));
+        OnPropertyChanged(nameof(IsStageBIndex4Done));
+        OnPropertyChanged(nameof(IsStageBIndex5Done));
+        OnPropertyChanged(nameof(IsStageBIndex6Done));
+        OnPropertyChanged(nameof(IsStageBIndex7Done));
+        OnPropertyChanged(nameof(IsStageBIndex8Done));
+        OnPropertyChanged(nameof(IsStageBIndex9Done));
+    }
+
+    private void ResetStageACutState()
+    {
+        ActiveCutNumberStageA = 0;
+        _stageACompletedCuts.Clear();
+        _stageAPickedCuts.Clear();
+        NotifyStageADoneChanged();
+        NotifyStageAPickedChanged();
+        IsStageAUnloadWaiting = false;
+    }
+
+    private void ResetStageBCutState()
+    {
+        ActiveCutNumberStageB = 0;
+        _stageBCompletedCuts.Clear();
+        _stageBPickedCuts.Clear();
+        NotifyStageBDoneChanged();
+        NotifyStageBPickedChanged();
+        IsStageBUnloadWaiting = false;
+    }
+    private void ResetAllCutStageState()
+    {
+        ResetStageACutState();
+        ResetStageBCutState();
+    }
+    private void NotifyStageAPickedChanged()
+    {
+        OnPropertyChanged(nameof(IsStageAIndex1Picked));
+        OnPropertyChanged(nameof(IsStageAIndex2Picked));
+        OnPropertyChanged(nameof(IsStageAIndex3Picked));
+        OnPropertyChanged(nameof(IsStageAIndex4Picked));
+        OnPropertyChanged(nameof(IsStageAIndex5Picked));
+        OnPropertyChanged(nameof(IsStageAIndex6Picked));
+        OnPropertyChanged(nameof(IsStageAIndex7Picked));
+        OnPropertyChanged(nameof(IsStageAIndex8Picked));
+        OnPropertyChanged(nameof(IsStageAIndex9Picked));
+    }
+
+    private void NotifyStageBPickedChanged()
+    {
+        OnPropertyChanged(nameof(IsStageBIndex1Picked));
+        OnPropertyChanged(nameof(IsStageBIndex2Picked));
+        OnPropertyChanged(nameof(IsStageBIndex3Picked));
+        OnPropertyChanged(nameof(IsStageBIndex4Picked));
+        OnPropertyChanged(nameof(IsStageBIndex5Picked));
+        OnPropertyChanged(nameof(IsStageBIndex6Picked));
+        OnPropertyChanged(nameof(IsStageBIndex7Picked));
+        OnPropertyChanged(nameof(IsStageBIndex8Picked));
+        OnPropertyChanged(nameof(IsStageBIndex9Picked));
+    }
+
+    private void NotifyCutStageMaterialChanged()
+    {
+        OnPropertyChanged(nameof(HasCutStageAMaterial));
+        OnPropertyChanged(nameof(HasCutStageBMaterial));
+    }
+
+    private void StartStageAProcessing()
+    {
+        if (_stage3Workpiece == null) return;
+        if (_cutStageAWorkpiece != null) return;
 
 
+        _cutStageAWorkpiece = _stage3Workpiece;
+        _stage3Workpiece = null;
+
+
+        NotifySorterMaterialChanged();
+        NotifyCutStageMaterialChanged();
+
+    }
+
+
+    private void StartStageBProcessing()
+    {
+        if (_stage3Workpiece == null) return;
+        if (_cutStageBWorkpiece != null) return;
+
+
+        _cutStageBWorkpiece = _stage3Workpiece;
+        _stage3Workpiece = null;
+
+
+        NotifySorterMaterialChanged();
+        NotifyCutStageMaterialChanged();
+
+
+    }
+
+
+    private CutStageState GetStageState(CutStageSlot slot) =>
+    slot == CutStageSlot.A ? _stageAState :
+    slot == CutStageSlot.B ? _stageBState :
+    CutStageState.Empty;
+
+    private void SetStageState(CutStageSlot slot, CutStageState state)
+    {
+        if (slot == CutStageSlot.A)
+            _stageAState = state;
+        else if (slot == CutStageSlot.B)
+            _stageBState = state;
+    }
+
+    private SorterWorkpiece? GetCutStageWorkpiece(CutStageSlot slot) =>
+        slot == CutStageSlot.A ? _cutStageAWorkpiece :
+        slot == CutStageSlot.B ? _cutStageBWorkpiece :
+        null;
+
+    private void SetCutStageWorkpiece(CutStageSlot slot, SorterWorkpiece? workpiece)
+    {
+        if (slot == CutStageSlot.A)
+            _cutStageAWorkpiece = workpiece;
+        else if (slot == CutStageSlot.B)
+            _cutStageBWorkpiece = workpiece;
+    }
+
+    private bool IsStageEmpty(CutStageSlot slot) => GetCutStageWorkpiece(slot) == null;
+
+    private void SetStageUnloadWaiting(CutStageSlot slot, bool value)
+    {
+        if (slot == CutStageSlot.A)
+            IsStageAUnloadWaiting = value;
+        else if (slot == CutStageSlot.B)
+            IsStageBUnloadWaiting = value;
+    }
+
+    private void ResetStageVisual(CutStageSlot slot)
+    {
+        if (slot == CutStageSlot.A)
+        {
+            ActiveCutNumberStageA = 0;
+            _stageACompletedCuts.Clear();
+            _stageAPickedCuts.Clear();
+            NotifyStageADoneChanged();
+            NotifyStageAPickedChanged();
+            IsStageAUnloadWaiting = false;
+        }
+        else if (slot == CutStageSlot.B)
+        {
+            ActiveCutNumberStageB = 0;
+            _stageBCompletedCuts.Clear();
+            _stageBPickedCuts.Clear();
+            NotifyStageBDoneChanged();
+            NotifyStageBPickedChanged();
+            IsStageBUnloadWaiting = false;
+        }
+    }
+
+    private void MarkCutCompleted(CutStageSlot slot, int cutNumber)
+    {
+        if (slot == CutStageSlot.A)
+        {
+            _stageACompletedCuts.Add(cutNumber);
+            NotifyStageADoneChanged();
+        }
+        else if (slot == CutStageSlot.B)
+        {
+            _stageBCompletedCuts.Add(cutNumber);
+            NotifyStageBDoneChanged();
+        }
+    }
+
+    private void MarkAllPicked(CutStageSlot slot)
+    {
+        var order = slot == CutStageSlot.A ? _stageACutOrder : _stageBCutOrder;
+
+        if (slot == CutStageSlot.A)
+        {
+            _stageAPickedCuts.Clear();
+            foreach (var n in order) _stageAPickedCuts.Add(n);
+            _stageACompletedCuts.Clear();
+            NotifyStageAPickedChanged();
+            NotifyStageADoneChanged();
+        }
+        else if (slot == CutStageSlot.B)
+        {
+            _stageBPickedCuts.Clear();
+            foreach (var n in order) _stageBPickedCuts.Add(n);
+            _stageBCompletedCuts.Clear();
+            NotifyStageBPickedChanged();
+            NotifyStageBDoneChanged();
+        }
+    }
+
+    private void SetActiveCut(CutStageSlot slot, int cutNumber)
+    {
+        if (slot == CutStageSlot.A)
+            ActiveCutNumberStageA = cutNumber;
+        else if (slot == CutStageSlot.B)
+            ActiveCutNumberStageB = cutNumber;
+    }
+
+    private void NotifyCutStageSlotsChanged()
+    {
+        OnPropertyChanged(nameof(HasCutStageAMaterial));
+        OnPropertyChanged(nameof(HasCutStageBMaterial));
+    }
+    private CutStageSlot ChooseRoundRobin(bool aEligible, bool bEligible, CutStageSlot lastServed)
+    {
+        if (aEligible && bEligible)
+            return lastServed == CutStageSlot.A ? CutStageSlot.B : CutStageSlot.A;
+
+        if (aEligible) return CutStageSlot.A;
+        if (bEligible) return CutStageSlot.B;
+
+        return CutStageSlot.None;
+    }
+    private async Task RunLaserCutAsync(CutStageSlot slot)
+    {
+        var order = slot == CutStageSlot.A ? _stageACutOrder : _stageBCutOrder;
+
+        try
+        {
+            ResetStageVisual(slot);
+            SetStageState(slot, CutStageState.Cutting);
+
+            foreach (var cutNumber in order)
+            {
+                SetActiveCut(slot, cutNumber);
+                await Task.Delay(SorterStepIntervalMs);
+
+                MarkCutCompleted(slot, cutNumber);
+
+                SetActiveCut(slot, 0);
+                await Task.Delay(40);
+            }
+
+            SetStageState(slot, CutStageState.WaitingPick);
+        }
+        finally
+        {
+            SetActiveCut(slot, 0);
+            _laserBusy = false;
+        }
+    }
+    private async Task RunPickerUnloadAsync(CutStageSlot slot)
+    {
+        try
+        {
+            SetStageState(slot, CutStageState.Picking);
+            SetStageUnloadWaiting(slot, true);
+
+            await Task.Delay(PickerUnloadMs);
+
+            MarkAllPicked(slot);
+            SetStageUnloadWaiting(slot, false);
+
+            SetStageState(slot, CutStageState.ReadyToOutput);
+        }
+        finally
+        {
+            _pickerBusy = false;
+        }
+    }
+    private async Task RunOutputToFeed3Async(CutStageSlot slot)
+    {
+        try
+        {
+            SetStageState(slot, CutStageState.Outputting);
+
+            await Task.Delay(Math.Max(150, SorterStepIntervalMs / 2));
+
+            _stage4Workpiece = GetCutStageWorkpiece(slot);
+            SetCutStageWorkpiece(slot, null);
+
+            ResetStageVisual(slot);
+            SetStageState(slot, CutStageState.Empty);
+
+            NotifySorterMaterialChanged();
+            NotifyCutStageSlotsChanged();
+        }
+        finally
+        {
+            _feed3OutputBusy = false;
+        }
+    }
+
+    private void TryLoadFeed2BufferToCutStage()
+    {
+        if (_stage3Workpiece == null)
+            return;
+
+        if (IsStageEmpty(CutStageSlot.A) && GetStageState(CutStageSlot.A) == CutStageState.Empty)
+        {
+            SetCutStageWorkpiece(CutStageSlot.A, _stage3Workpiece);
+            _stage3Workpiece = null;
+            SetStageState(CutStageSlot.A, CutStageState.WaitingCut);
+            NotifySorterMaterialChanged();
+            NotifyCutStageSlotsChanged();
+            return;
+        }
+
+        if (IsStageEmpty(CutStageSlot.B) && GetStageState(CutStageSlot.B) == CutStageState.Empty)
+        {
+            SetCutStageWorkpiece(CutStageSlot.B, _stage3Workpiece);
+            _stage3Workpiece = null;
+            SetStageState(CutStageSlot.B, CutStageState.WaitingCut);
+            NotifySorterMaterialChanged();
+            NotifyCutStageSlotsChanged();
+        }
+    }
+
+    private void TryStartPickerScheduler()
+    {
+        if (_pickerBusy)
+            return;
+
+        var next = ChooseRoundRobin(
+            GetStageState(CutStageSlot.A) == CutStageState.WaitingPick,
+            GetStageState(CutStageSlot.B) == CutStageState.WaitingPick,
+            _lastPickerServed);
+
+        if (next == CutStageSlot.None)
+            return;
+
+        _pickerBusy = true;
+        _lastPickerServed = next;
+        _ = RunPickerUnloadAsync(next);
+    }
+
+
+    private void TryStartOutputScheduler()
+    {
+        if (_feed3OutputBusy)
+            return;
+
+        if (_stage4Workpiece != null)
+            return;
+
+        var next = ChooseRoundRobin(
+            GetStageState(CutStageSlot.A) == CutStageState.ReadyToOutput,
+            GetStageState(CutStageSlot.B) == CutStageState.ReadyToOutput,
+            _lastOutputServed);
+
+        if (next == CutStageSlot.None)
+            return;
+
+        _feed3OutputBusy = true;
+        _lastOutputServed = next;
+        _ = RunOutputToFeed3Async(next);
+    }
+
+    private void RunCutStageSchedulerTick()
+    {
+        TryLoadFeed2BufferToCutStage();
+        TryStartLaserScheduler();
+        TryStartPickerScheduler();
+        TryStartOutputScheduler();
+    }
+    private void TryStartLaserScheduler()
+    {
+        if (_laserBusy)
+            return;
+
+        var next = ChooseRoundRobin(
+            GetStageState(CutStageSlot.A) == CutStageState.WaitingCut,
+            GetStageState(CutStageSlot.B) == CutStageState.WaitingCut,
+            _lastLaserServed);
+
+        if (next == CutStageSlot.None)
+            return;
+
+        _laserBusy = true;
+        _lastLaserServed = next;
+        _ = RunLaserCutAsync(next);
+    }
 }
