@@ -13,5 +13,7 @@ public class MachineConfig
     public string CurrentProductModel { get; set; } = "MODEL-001";
     public bool EnableNgSimulation { get; set; } = true;
     public List<RecipeItem> Recipes { get; set; } = new();
+    public int SorterStepIntervalMs { get; set; } = 300;
+    public int InfeedSpacingMs { get; set; } = 1000;
 
 }

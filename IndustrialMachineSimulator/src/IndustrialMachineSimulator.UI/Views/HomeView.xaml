@@ -132,9 +132,9 @@
                         <Label Grid.Column="1" Grid.Row="2" Content="{Binding CurrentCycleIntervalText}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                         <Label Grid.Column="1" Grid.Row="3" Content="{Binding CurrentCycleOkRateText}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                         <Label Grid.Column="3" Grid.Row="0" Content="{Binding EnableNgSimulation}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="3" Grid.Row="1" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="3" Grid.Row="2" Content="00:00:00" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                            <Label Grid.Column="3" Grid.Row="3" Content="0" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            <Label Grid.Column="3" Grid.Row="1" Content="{Binding RunTimeText}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            <Label Grid.Column="3" Grid.Row="2" Content="{Binding CycleTimeText}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            <Label Grid.Column="3" Grid.Row="3" Content="{Binding OutCount}" FontFamily="Arial" FontSize="20" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
 
                         </Grid>
                     </Grid>
@@ -212,10 +212,57 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <Border Grid.Column="0" Grid.Row="0" Background="Green" Margin="5,0,0,5"></Border>
-                                <Border Grid.Column="0" Grid.Row="1" Background="Green" Margin="5,0,0,5"></Border>
-                                <Border Grid.Column="4" Grid.Row="0" Background="Green" Margin="0,0,5,5"></Border>
-                                <Border Grid.Column="4" Grid.Row="1" Background="Green" Margin="0,0,5,5"></Border>
+                                <Border Grid.Column="0" Grid.Row="0"  Margin="5,0,0,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInConveyorRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                </Border>
+                                <Border Grid.Column="0" Grid.Row="1" Margin="5,0,0,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutConveyorRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                            </Border>
+                                <Border Grid.Column="4" Grid.Row="0" Margin="0,0,5,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInConveyorRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                            </Border>
+                                <Border Grid.Column="4" Grid.Row="1" Margin="0,0,5,5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutConveyorRunning}" Value="True">
+                                                <Setter Property="Background" Value="Green"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                            </Border>
                                 <TextBlock Grid.Column="2" Grid.Row="0"
                                       Text="IN CV"
                                       FontFamily="Arial"
@@ -232,12 +279,72 @@
                                       FontWeight="Bold"
                                       HorizontalAlignment="Center"
                                       Margin="0,10,0,0"></TextBlock>
-                                <Label Grid.Column="1" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Top"></Label>
-                                <Label Grid.Column="1" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom"></Label>
-                                <Label Grid.Column="3" Grid.Row="0" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom" Margin="0,0,0,5"></Label>
+                                <TextBlock Grid.Column="1" Grid.Row="0" Height="15" VerticalAlignment="Top">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Background" Value="#F3CACA"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInConveyorSensorOn}" Value="True">
+                                                <Setter Property="Background" Value="#FF5A5A"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
 
-                                <Label Grid.Column="3" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Top" Margin="0,30,0,0"></Label>
-                                <Label Grid.Column="1" Grid.Row="1" Height="15" Background="#FFCCCC" VerticalAlignment="Bottom"></Label>
+                            </TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="0" Height="15" VerticalAlignment="Bottom">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Background" Value="#F3CACA"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInConveyorSensorOn}" Value="True">
+                                                <Setter Property="Background" Value="#FF5A5A"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
+                                <TextBlock Grid.Column="3" Grid.Row="0" Height="15" VerticalAlignment="Bottom" Margin="0,0,0,5">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Background" Value="#F3CACA"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInConveyorSensorOn}" Value="True">
+                                                <Setter Property="Background" Value="#FF5A5A"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
+
+                                <TextBlock Grid.Column="3" Grid.Row="1" Height="15"  VerticalAlignment="Top" Margin="0,30,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Background" Value="#F3CACA"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutConveyorSensorOn}" Value="True">
+                                                <Setter Property="Background" Value="#FF5A5A"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Height="15"  VerticalAlignment="Bottom">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Background" Value="#F3CACA"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutConveyorSensorOn}" Value="True">
+                                                <Setter Property="Background" Value="#FF5A5A"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
                             </Grid>
                             <!-- In/Out Lift-->
                             <Grid Grid.Column="2" >
@@ -419,45 +526,419 @@
                                 <RowDefinition Height="15"></RowDefinition>
                                 <RowDefinition Height="35"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Border Grid.Column="1" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                            <Border Grid.Column="2" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                            <Border Grid.Column="3" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                            <Border Grid.Column="4" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
-                            <Border Grid.Column="5" Grid.Row="0" Background="Green" Margin="2,5,2,0"></Border>
+                            <Border Grid.Column="1" Grid.Row="0" Margin="2,5,2,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInConveyorRunning}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
 
-                            <Border Grid.Column="1" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                            <Border Grid.Column="2" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                            <Border Grid.Column="3" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                            <Border Grid.Column="4" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
-                            <Border Grid.Column="5" Grid.Row="4" Background="Green" Margin="2,0,2,5"></Border>
+                        </Border>
+                            <Border Grid.Column="2" Grid.Row="0" Margin="2,5,2,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed1Running}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
 
-                            <TextBlock Grid.Column="1" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                            <TextBlock Grid.Column="1" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                            <TextBlock Grid.Column="1" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
+                        </Border>
+                        <Border Grid.Column="3" Grid.Row="0" Margin="2,5,2,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed2Running}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
 
-                            <TextBlock Grid.Column="2" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                            <TextBlock Grid.Column="2" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
+                        </Border>
+                            <Border Grid.Column="4" Grid.Row="0" Margin="2,5,2,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed3Running}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+                            <Border Grid.Column="5" Grid.Row="0" Margin="2,5,2,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOutConveyorRunning}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+
+                            <Border Grid.Column="1" Grid.Row="4"  Margin="2,0,2,5">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInConveyorRunning}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+                            <Border Grid.Column="2" Grid.Row="4" Margin="2,0,2,5">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed1Running}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+                            <Border Grid.Column="3" Grid.Row="4" Margin="2,0,2,5">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed2Running}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+                            <Border Grid.Column="4" Grid.Row="4" Margin="2,0,2,5">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed3Running}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+                            <Border Grid.Column="5" Grid.Row="4" Margin="2,0,2,5">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#7FBF7F"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOutConveyorRunning}" Value="True">
+                                            <Setter Property="Background" Value="Green"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                        </Border>
+
+                             <TextBlock Grid.Column="1" Grid.Row="3" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInConveyorSensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                                </TextBlock.Style>
+                             </TextBlock>
+                            <TextBlock Grid.Column="1" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInConveyorSensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="1" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInConveyorSensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+
+                            <TextBlock Grid.Column="2" Grid.Row="3"  Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed1SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="2" Grid.Row="3" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed1SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
                             <TextBlock Grid.Column="2" Grid.Row="3" Text="DOWN" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
                             <TextBlock Grid.Column="2" Grid.Row="2" Text="UP" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
 
-                            <TextBlock Grid.Column="3" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                            <TextBlock Grid.Column="3" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                            <TextBlock Grid.Column="3" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-                            <TextBlock Grid.Column="4" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                            <TextBlock Grid.Column="4" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
+                            <TextBlock Grid.Column="3" Grid.Row="3"  Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed2SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="3" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed2SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="3" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed2SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="4" Grid.Row="3"  Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed3SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="4" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFeed1SensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
                             <TextBlock Grid.Column="4" Grid.Row="3" Text="DOWN" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
                             <TextBlock Grid.Column="4" Grid.Row="2" Text="UP" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
 
-                            <TextBlock Grid.Column="5" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" ></TextBlock>
-                            <TextBlock Grid.Column="5" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" ></TextBlock>
-                            <TextBlock Grid.Column="5" Grid.Row="3" Background="#FFCCCC" Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
+                            <TextBlock Grid.Column="5" Grid.Row="3"  Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOutConveyorSensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="5" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,2,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOutConveyorSensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                            <TextBlock Grid.Column="5" Grid.Row="3"  Width="15" HorizontalAlignment="Right" Margin="0,0,30,0" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Background" Value="#F3CACA"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOutConveyorSensorOn}" Value="True">
+                                            <Setter Property="Background" Value="#FF5A5A"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
 
                             <TextBlock Grid.Column="1" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="In conveyor"></TextBlock>
+                            <Border Grid.Column="1"
+                                    Grid.Row="1"
+                                    Width="22"
+                                    Height="22"
+                                    Background="DodgerBlue"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMaterialAtInConveyor}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
                             <TextBlock Grid.Column="2" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feed 1"></TextBlock>
-                            <TextBlock Grid.Column="3" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feed 2"></TextBlock>
-                            <TextBlock Grid.Column="4" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="feed 3"></TextBlock>
-                            <TextBlock Grid.Column="5" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Out conveyor"></TextBlock>
-                        </Grid>
+                        <Border Grid.Column="2"
+                                    Grid.Row="1"
+                                    Width="22"
+                                    Height="22"
+                                    Background="DodgerBlue"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMaterialAtFeed1}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <TextBlock Grid.Column="3" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feed 2"></TextBlock>
+                        <Border Grid.Column="3"
+                                    Grid.Row="1"
+                                    Width="22"
+                                    Height="22"
+                                    Background="DodgerBlue"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMaterialAtFeed2}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <TextBlock Grid.Column="4" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feed 3"></TextBlock>
+                        <Border Grid.Column="4"
+                                    Grid.Row="1"
+                                    Width="22"
+                                    Height="22"
+                                    Background="DodgerBlue"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMaterialAtFeed3}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <TextBlock Grid.Column="5" Grid.Row="1" FontFamily="Arial" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Out conveyor"></TextBlock>
+                        <Border Grid.Column="5"
+                                    Grid.Row="1"
+                                    Width="22"
+                                    Height="22"
+                                    Background="DodgerBlue"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMaterialAtOutConveyor}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                    </Grid>
                     </Grid>
                 </Grid>
             </Border>

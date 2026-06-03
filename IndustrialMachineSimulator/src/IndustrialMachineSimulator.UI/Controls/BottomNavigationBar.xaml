@@ -113,12 +113,12 @@
 
             <!--Nut Error-->
             <controls:BottomNavItem
-             Label="Error"
+             Label="I/O"
              IconNormal="/Resources/Icons/BottomNav/error_black.png"
              IconActive="/Resources/Icons/BottomNav/error_blue.png"
-             Command="{Binding ShowErrorCommand}"
-             IsItemEnabled="{Binding CanError}"
-             IsActive="{Binding IsErrorPage}">
+             Command="{Binding ShowIoCommand}"
+             IsItemEnabled="{Binding CanIo}"
+             IsActive="{Binding IsIoPage}">
 
             </controls:BottomNavItem>
 

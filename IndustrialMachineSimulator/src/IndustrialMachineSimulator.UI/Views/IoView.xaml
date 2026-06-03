@@ -1,0 +1,345 @@
+﻿<UserControl x:Class="IndustrialMachineSimulator.UI.Views.IoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="700"
+             d:DesignWidth="1200">
+
+    <Grid Background="#F5F7FA" Margin="12">
+        <Grid.Resources>
+            <Style x:Key="SectionCardStyle" TargetType="Border">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="CornerRadius" Value="10"/>
+                <Setter Property="Padding" Value="20"/>
+                <Setter Property="Margin" Value="0,0,0,14"/>
+                <Setter Property="BorderBrush" Value="#D9D9D9"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="#222222"/>
+            </Style>
+
+            <Style x:Key="CheckStyle" TargetType="CheckBox">
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Margin" Value="0,10,0,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="120"/>
+                <Setter Property="Height" Value="38"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#1677FF"/>
+                <Setter Property="BorderBrush" Value="#1677FF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Margin" Value="0,0,10,0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style>
+
+            <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="110"/>
+                <Setter Property="Height" Value="36"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="#333333"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="#CFCFCF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Margin" Value="0,0,10,0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style>
+
+            <Style x:Key="IndicatorCheckStyle" TargetType="CheckBox">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="IsEnabled" Value="False"/>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="IO"
+                       FontFamily="Arial"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#222222"/>
+            <TextBlock Text="Sorter signal and material debug panel"
+                       FontFamily="Arial"
+                       FontSize="15"
+                       Foreground="#666666"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Mode -->
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Mode"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                            <CheckBox Style="{StaticResource CheckStyle}"
+                                      Content="Manual IO Mode"
+                                      IsChecked="{Binding IsIoManualMode}"
+                                      Margin="0"/>
+
+                            <TextBlock Text="{Binding IoModeText}"
+                                       FontFamily="Arial"
+                                       FontSize="15"
+                                       FontWeight="Bold"
+                                       Foreground="#444444"
+                                       Margin="16,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Auto mode follows recipe and pipeline logic. Manual mode allows direct IO testing."
+                                   FontFamily="Arial"
+                                   FontSize="12"
+                                   Foreground="#777777"
+                                   Margin="0,10,0,0"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Conveyor -->
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Conveyor"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="In Conveyor Running"
+                                  IsChecked="{Binding IsInConveyorRunning}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Feed 1 Running"
+                                  IsChecked="{Binding IsFeed1Running}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Feed 2 Running"
+                                  IsChecked="{Binding IsFeed2Running}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Feed 3 Running"
+                                  IsChecked="{Binding IsFeed3Running}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Out Conveyor Running"
+                                  IsChecked="{Binding IsOutConveyorRunning}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sensor -->
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Sensor"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="In Conveyor Sensor"
+                                  IsChecked="{Binding IsInConveyorSensorOn}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Feed 1 Sensor"
+                                  IsChecked="{Binding IsFeed1SensorOn}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Feed 2 Sensor"
+                                  IsChecked="{Binding IsFeed2SensorOn}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Feed 3 Sensor"
+                                  IsChecked="{Binding IsFeed3SensorOn}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+
+                        <CheckBox Style="{StaticResource CheckStyle}"
+                                  Content="Out Conveyor Sensor"
+                                  IsChecked="{Binding IsOutConveyorSensorOn}"
+                                  IsEnabled="{Binding IsIoManualMode}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Material -->
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Material"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <TextBlock Text="Use Inject and Clear to place or remove material at a specific stage."
+                                   FontFamily="Arial"
+                                   FontSize="12"
+                                   Foreground="#777777"
+                                   Margin="0,10,0,0"
+                                   TextWrapping="Wrap"/>
+
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- In Conveyor -->
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="In Conveyor"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Arial"
+                                       FontSize="15"/>
+                            <CheckBox Grid.Row="0" Grid.Column="1"
+                                      Style="{StaticResource IndicatorCheckStyle}"
+                                      IsChecked="{Binding IsMaterialAtInConveyor, Mode=OneWay}"/>
+                            <Button Grid.Row="0" Grid.Column="2"
+                                    Content="Inject"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding InjectMaterialAtInputCommand}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                            <Button Grid.Row="0" Grid.Column="3"
+                                    Content="Clear"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding ClearMaterialAtInputCommand}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+
+                            <!-- Feed 1 -->
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Feed 1"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Arial"
+                                       FontSize="15"/>
+                            <CheckBox Grid.Row="1" Grid.Column="1"
+                                      Style="{StaticResource IndicatorCheckStyle}"
+                                      IsChecked="{Binding IsMaterialAtFeed1, Mode=OneWay}"/>
+                            <Button Grid.Row="1" Grid.Column="2"
+                                    Content="Inject"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding InjectMaterialAtFeed1Command}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                            <Button Grid.Row="1" Grid.Column="3"
+                                    Content="Clear"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding ClearMaterialAtFeed1Command}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+
+                            <!-- Feed 2 -->
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Feed 2"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Arial"
+                                       FontSize="15"/>
+                            <CheckBox Grid.Row="2" Grid.Column="1"
+                                      Style="{StaticResource IndicatorCheckStyle}"
+                                      IsChecked="{Binding IsMaterialAtFeed2, Mode=OneWay}"/>
+                            <Button Grid.Row="2" Grid.Column="2"
+                                    Content="Inject"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding InjectMaterialAtFeed2Command}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                            <Button Grid.Row="2" Grid.Column="3"
+                                    Content="Clear"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding ClearMaterialAtFeed2Command}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+
+                            <!-- Feed 3 -->
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                       Text="Feed 3"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Arial"
+                                       FontSize="15"/>
+                            <CheckBox Grid.Row="3" Grid.Column="1"
+                                      Style="{StaticResource IndicatorCheckStyle}"
+                                      IsChecked="{Binding IsMaterialAtFeed3, Mode=OneWay}"/>
+                            <Button Grid.Row="3" Grid.Column="2"
+                                    Content="Inject"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding InjectMaterialAtFeed3Command}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                            <Button Grid.Row="3" Grid.Column="3"
+                                    Content="Clear"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding ClearMaterialAtFeed3Command}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+
+                            <!-- Out Conveyor -->
+                            <TextBlock Grid.Row="4" Grid.Column="0"
+                                       Text="Out Conveyor"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Arial"
+                                       FontSize="15"/>
+                            <CheckBox Grid.Row="4" Grid.Column="1"
+                                      Style="{StaticResource IndicatorCheckStyle}"
+                                      IsChecked="{Binding IsMaterialAtOutConveyor, Mode=OneWay}"/>
+                            <Button Grid.Row="4" Grid.Column="2"
+                                    Content="Inject"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding InjectMaterialAtOutConveyorCommand}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                            <Button Grid.Row="4" Grid.Column="3"
+                                    Content="Clear"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding ClearMaterialAtOutConveyorCommand}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Action -->
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Action"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                            <Button Content="Inject Input"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding InjectMaterialAtInputCommand}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+
+                            <Button Content="Clear All"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding ClearSorterIoCommand}"
+                                    IsEnabled="{Binding IsIoManualMode}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

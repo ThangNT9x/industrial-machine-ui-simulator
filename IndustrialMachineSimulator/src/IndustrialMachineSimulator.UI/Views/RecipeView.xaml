@@ -95,6 +95,27 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <Style x:Key="RecipeSorterStepIntervalInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource RecipeInputBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsRecipeSorterStepIntervalValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="RecipeInfeedSpacingInputStyle"
+                   TargetType="TextBox"
+                   BasedOn="{StaticResource RecipeInputBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsRecipeInfeedSpacingValid}" Value="False">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#D9534F"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
             <Style x:Key="SecondaryFooterButtonStyle" TargetType="Button">
                 <Setter Property="Width" Value="110"/>
@@ -173,8 +194,11 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="16"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="16"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="16"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-
                                 <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Recipe Name"
                                        Style="{StaticResource LabelTextStyle}"/>
@@ -209,6 +233,34 @@
                                 <CheckBox Grid.Row="8" Grid.Column="1"
                                       VerticalAlignment="Center"
                                       IsChecked="{Binding EditEnableNgSimulation}"/>
+
+                                <TextBlock Grid.Row="10" Grid.Column="0"
+                                           Text="Sorter Step Interval (ms)"
+                                           Style="{StaticResource LabelTextStyle}"/>
+                                <StackPanel Grid.Row="10" Grid.Column="1">
+                                    <TextBox Style="{StaticResource RecipeSorterStepIntervalInputStyle}"
+                                             Text="{Binding EditRecipeSorterStepIntervalMsText, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBlock Text="Time for material to move from one sorter stage to the next. Lower value = faster transport."
+                                               FontFamily="Arial"
+                                               FontSize="12"
+                                               Foreground="#777777"
+                                               Margin="0,4,0,0"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="12" Grid.Column="0"
+                                           Text="Infeed Spacing (ms)"
+                                           Style="{StaticResource LabelTextStyle}"/>
+                                <StackPanel Grid.Row="12" Grid.Column="1">
+                                    <TextBox Style="{StaticResource RecipeInfeedSpacingInputStyle}"
+                                             Text="{Binding EditRecipeInfeedSpacingMsText, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBlock Text="Delay between loading two new PCB units into the line. Lower value = higher input frequency."
+                                               FontFamily="Arial"
+                                               FontSize="12"
+                                               Foreground="#777777"
+                                               Margin="0,4,0,0"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
                             </Grid>
 
                             <TextBlock Text="Example: 3000 ms, OK Rate = 0.8"

@@ -7,4 +7,6 @@ public class RecipeItem
     public int CycleIntervalMs { get; set; }
     public double CycleOkRate { get; set; }
     public bool EnableNgSimulation { get; set; }
+    public int SorterStepIntervalMs { get; set; } = 300;
+    public int InfeedSpacingMs { get; set; } = 1000;
 }

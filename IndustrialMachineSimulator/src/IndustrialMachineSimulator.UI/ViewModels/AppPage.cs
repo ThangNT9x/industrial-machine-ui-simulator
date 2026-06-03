@@ -17,7 +17,7 @@ namespace IndustrialMachineSimulator.UI.ViewModels
         List,
         Quick,
         Vision,
-        Error,
+        Io,
         Mes,
         Power
     }

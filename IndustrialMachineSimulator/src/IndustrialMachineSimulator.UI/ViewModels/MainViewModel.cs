@@ -9,7 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Input;
 using System.Globalization;
-
+using System.Threading;
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
 public class MainViewModel : INotifyPropertyChanged
@@ -62,7 +62,7 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ShowListCommand { get; }
     public ICommand ShowQuickCommand { get; }
     public ICommand ShowVisionCommand { get; }
-    public ICommand ShowErrorCommand { get; }
+    public ICommand ShowIoCommand { get; }
     public ICommand ShowMESCommand { get; }
     public ICommand ShowPowerCommand { get; }
 
@@ -81,6 +81,20 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand LoadSelectedRecipeCommand { get; }
     public ICommand SaveRecipeCommand { get; }
     public ICommand DeleteRecipeCommand { get; }
+    public ICommand ClearSorterIoCommand { get; }
+    public ICommand InjectMaterialAtInputCommand { get; }
+    public ICommand InjectMaterialAtFeed1Command { get; }
+    public ICommand InjectMaterialAtFeed2Command { get; }
+    public ICommand InjectMaterialAtFeed3Command { get; }
+    public ICommand InjectMaterialAtOutConveyorCommand { get; }
+    public ICommand ClearMaterialAtInputCommand { get; }
+    public ICommand ClearMaterialAtFeed1Command { get; }
+    public ICommand ClearMaterialAtFeed2Command { get; }
+    public ICommand ClearMaterialAtFeed3Command { get; }
+    public ICommand ClearMaterialAtOutConveyorCommand { get; }
+
+
+
 
     public string CurrentRoleText => CurrentRole.ToString();
     private MachineState _currentMachineState = MachineState.Offline;
@@ -227,7 +241,15 @@ public class MainViewModel : INotifyPropertyChanged
             if(wasOn &&!value)
             {
                 StopCycleLoop();
-                if(CurrentMachineState==MachineState.Running||
+                StopRunTimeLoop();
+                StopSorterPipelineLoop();
+                SetSorterRunningState(false);
+                UpdateSorterSensors();
+                NotifySorterMaterialChanged();
+
+                _runStartTime = null;
+                _cycleStartTime = null;
+                if (CurrentMachineState==MachineState.Running||
                     CurrentMachineState==MachineState.Initializing)
                 {
                     _ = EnterAlarmAsync("POWER-001", "Power machine turned off during operation.");
@@ -266,6 +288,22 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(CurrentCycleOkRateText));
         }
     }
+
+    private bool _isIoManualMode;
+    public bool IsIoManualMode
+    {
+        get => _isIoManualMode;
+        set
+        {
+            if (_isIoManualMode == value) return;
+            _isIoManualMode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IoModeText));
+        }
+    }
+
+    public string IoModeText => IsIoManualMode ? "Manual IO Mode" : "Auto IO Mode";
+
     public string CurrentCycleIntervalText => $"{CycleIntervalMs} ms";
     public string CurrentCycleOkRateText => $"{CycleOkRate:P0}";
     private string _editCycleIntervalMsText = "3000";
@@ -277,6 +315,7 @@ public class MainViewModel : INotifyPropertyChanged
             _editCycleIntervalMsText = value;
             OnPropertyChanged();
             NotifySetupStateChanged();
+            OnPropertyChanged(nameof(CurrentCycleIntervalText));
         }
     }
 
@@ -289,6 +328,7 @@ public class MainViewModel : INotifyPropertyChanged
             _editCycleOkRateText = value;
             OnPropertyChanged();
             NotifySetupStateChanged();
+            OnPropertyChanged(nameof(CurrentCycleOkRateText));
         }
     }
     private string _currentRecipeName = "Default Recipe";
@@ -382,6 +422,265 @@ public class MainViewModel : INotifyPropertyChanged
             NotifyRecipeStateChanged();
         }
     }
+    private string _editRecipeSorterStepIntervalMsText = "300";
+    public string EditRecipeSorterStepIntervalMsText
+    {
+        get => _editRecipeSorterStepIntervalMsText;
+        set
+        {
+            _editRecipeSorterStepIntervalMsText = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
+
+    private string _editRecipeInfeedSpacingMsText = "1000";
+    public string EditRecipeInfeedSpacingMsText
+    {
+        get => _editRecipeInfeedSpacingMsText;
+        set
+        {
+            _editRecipeInfeedSpacingMsText = value;
+            OnPropertyChanged();
+            NotifyRecipeStateChanged();
+        }
+    }
+    public bool IsRecipeSorterStepIntervalValid =>
+    int.TryParse(EditRecipeSorterStepIntervalMsText, out var ms) && ms > 0;
+
+    public bool IsRecipeInfeedSpacingValid =>
+    int.TryParse(EditRecipeInfeedSpacingMsText, out var ms) && ms > 0;
+
+
+    private string _runTimeText = "00:00:00";
+    public string RunTimeText
+    {
+        get => _runTimeText;
+        set
+        {
+            _runTimeText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _cycleTimeText = "00:00:00";
+    public string CycleTimeText
+    {
+        get => _cycleTimeText;
+        set
+        {
+            _cycleTimeText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private int _outCount = 0;
+    public int OutCount
+    {
+        get => _outCount;
+        set
+        {
+            _outCount = value;
+            OnPropertyChanged();
+        }
+    }
+    private DateTime? _runStartTime;
+    private DateTime? _cycleStartTime;
+    private CancellationTokenSource? _runTimeCts;
+
+    private int _sorterStepIntervalMs = 300;
+    public int SorterStepIntervalMs
+    {
+        get => _sorterStepIntervalMs;
+        set
+        {
+            _sorterStepIntervalMs = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private int _infeedSpacingMs = 1000;
+    public int InfeedSpacingMs
+    {
+        get => _infeedSpacingMs;
+        set
+        {
+            _infeedSpacingMs = value;
+            OnPropertyChanged();
+        }
+    }
+    public bool IsInConveyorRunning
+    {
+        get => _sorterIo.IsInConveyorRunning;
+        set
+        {
+            if (_sorterIo.IsInConveyorRunning == value) return;
+            _sorterIo.IsInConveyorRunning = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public bool IsFeed1Running
+    {
+        get => _sorterIo.IsFeed1Running;
+        set
+        {
+            if(_sorterIo.IsFeed1Running == value) return;
+            _sorterIo.IsFeed1Running = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFeed2Running
+    {
+        get => _sorterIo.IsFeed2Running;
+        set
+        {
+            if(_sorterIo.IsFeed2Running == value) return;
+            _sorterIo.IsFeed2Running = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public bool IsFeed3Running
+    {
+        get => _sorterIo.IsFeed3Running;
+        set
+        {
+            if(_sorterIo.IsFeed3Running == value) return;
+            _sorterIo.IsFeed3Running = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public bool IsOutConveyorRunning
+    {
+        get => _sorterIo.IsOutConveyorRunning;
+        set
+        {
+            if (_sorterIo.IsOutConveyorRunning == value) return;
+            _sorterIo.IsOutConveyorRunning = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsInConveyorSensorOn
+    {
+        get => _sorterIo.IsInConveyorSensorOn;
+        set
+        {
+            if (_sorterIo.IsInConveyorSensorOn == value) return;
+            _sorterIo.IsInConveyorSensorOn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFeed1SensorOn
+    {
+        get => _sorterIo.IsFeed1SensorOn;
+        set
+        {
+            if (_sorterIo.IsFeed1SensorOn == value) return;
+            _sorterIo.IsFeed1SensorOn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFeed2SensorOn
+    {
+        get => _sorterIo.IsFeed2SensorOn;
+        set
+        {
+            if (_sorterIo.IsFeed2SensorOn == value) return;
+            _sorterIo.IsFeed2SensorOn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFeed3SensorOn
+    {
+        get => _sorterIo.IsFeed3SensorOn;
+        set
+        {
+            if (_sorterIo.IsFeed3SensorOn == value) return;
+            _sorterIo.IsFeed3SensorOn = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public bool IsOutConveyorSensorOn
+    {
+        get => _sorterIo.IsOutConveyorSensorOn;
+        set
+        {
+            if (_sorterIo.IsOutConveyorSensorOn == value) return;
+            _sorterIo.IsOutConveyorSensorOn = value;
+            OnPropertyChanged();
+        }
+    }
+    public bool IsMaterialAtInConveyor => _stage1Workpiece != null;
+    public bool IsMaterialAtFeed1 => _stage2Workpiece != null;
+    public bool IsMaterialAtFeed2 => _stage3Workpiece != null;
+    public bool IsMaterialAtFeed3 => _stage4Workpiece != null;
+    public bool IsMaterialAtOutConveyor => _stage5Workpiece != null;
+
+    private sealed class SorterWorkpiece
+    {
+        public bool IsOk { get; set; }
+    }
+    private readonly Queue<SorterWorkpiece> _pendingWorkpieces = new();
+
+    private SorterWorkpiece? _stage1Workpiece;
+    private SorterWorkpiece? _stage2Workpiece;
+    private SorterWorkpiece? _stage3Workpiece;
+    private SorterWorkpiece? _stage4Workpiece;
+    private SorterWorkpiece? _stage5Workpiece;
+
+
+    private CancellationTokenSource? _sorterPipelineCts;
+    private void StartSorterPipelineLoop()
+    {
+        if (_sorterPipelineCts != null)
+            return;
+
+        _sorterPipelineCts = new CancellationTokenSource();
+        _ = RunSorterPipelineAsync(_sorterPipelineCts.Token);
+    }
+
+    private void StopSorterPipelineLoop()
+    {
+        _sorterPipelineCts?.Cancel();
+        _sorterPipelineCts = null;
+    }
+    private async Task RunSorterPipelineAsync(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && CurrentMachineState == MachineState.Running)
+            {
+                AdvanceSorterPipeline();
+                await Task.Delay(SorterStepIntervalMs, token);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+    }
+
+    private readonly SorterIoState _sorterIo = new();
+
+
+    public bool HasAnyMaterialInSorter =>
+    IsMaterialAtInConveyor ||
+    IsMaterialAtFeed1 ||
+    IsMaterialAtFeed2 ||
+    IsMaterialAtFeed3 ||
+    IsMaterialAtOutConveyor;
+
     public bool IsSetupEditLocked => CurrentMachineState == MachineState.Running;
     public bool IsRecipeEditLocked => CurrentMachineState == MachineState.Running;
 
@@ -424,10 +723,12 @@ public class MainViewModel : INotifyPropertyChanged
         && rate >= 0 && rate <= 1;
 
     public bool IsRecipeInputValid =>
-        IsRecipeNameValid &&
-        IsProductModelValid &&
-        IsRecipeCycleIntervalValid &&
-        IsRecipeCycleOkRateValid;
+    IsRecipeNameValid &&
+    IsProductModelValid &&
+    IsRecipeCycleIntervalValid &&
+    IsRecipeCycleOkRateValid &&
+    IsRecipeSorterStepIntervalValid &&
+    IsRecipeInfeedSpacingValid;
 
     public bool CanApplyRecipe => !IsRecipeEditLocked && IsRecipeInputValid;
     public bool HasRecipeValidationError => !IsRecipeInputValid;
@@ -477,6 +778,14 @@ public class MainViewModel : INotifyPropertyChanged
     private async Task EnterAlarmAsync(string code, string message, bool showPopup = true)
     {
         StopCycleLoop();
+        StopRunTimeLoop();
+        StopSorterPipelineLoop();
+        SetSorterRunningState(false);
+        UpdateSorterSensors();
+        NotifySorterMaterialChanged();
+
+        _runStartTime = null;
+        _cycleStartTime = null;
         if (!_isAlarmOn)
         {
             _isAlarmOn = true;
@@ -527,6 +836,11 @@ public class MainViewModel : INotifyPropertyChanged
             CurrentMachineState == MachineState.Stopped)
         {
             CurrentMachineState = MachineState.Running;
+            _runStartTime = DateTime.Now;
+            _cycleStartTime = DateTime.Now;
+            StartRunTimeLoop();
+            SetSorterRunningState(true);
+            StartSorterPipelineLoop();
             NavigateToHome();
             StartCycleLoop();
             await AddOperationLogAsync("Run", "Machine started running.");
@@ -540,8 +854,16 @@ public class MainViewModel : INotifyPropertyChanged
         {
             NavigateToHome();
             StopCycleLoop();
+            StopRunTimeLoop();
+
+            _runStartTime = null;
+            _cycleStartTime = null;
             CurrentMachineState = MachineState.Stopped;
             await AddOperationLogAsync("Run", "Machine stopped.");
+            StopSorterPipelineLoop();
+            SetSorterRunningState(false);
+            UpdateSorterSensors();
+            NotifySorterMaterialChanged();
         }
     }
    
@@ -809,6 +1131,8 @@ public class MainViewModel : INotifyPropertyChanged
         LaserTimeText = _machineConfig.LaserTimeText;
         CycleIntervalMs = _machineConfig.CycleIntervalMs;
         CycleOkRate = _machineConfig.CycleOkRate;
+        SorterStepIntervalMs = _machineConfig.SorterStepIntervalMs;
+        InfeedSpacingMs = _machineConfig.InfeedSpacingMs;
         LoadEditorFromCurrentValues();
     
         CurrentRecipeName = _machineConfig.CurrentRecipeName;
@@ -836,6 +1160,11 @@ public class MainViewModel : INotifyPropertyChanged
             if (!IsFrontDoorClosed || !IsRearDoorClosed)
             {
                 await EnterAlarmAsync("DOOR-001", "Door is open. Cannot initialize.");
+                return;
+            }
+            if (HasAnyMaterialInSorter)
+            {
+                MessageBox.Show("Material still exists in machine. Cannot initialize.");
                 return;
             }
 
@@ -927,6 +1256,70 @@ public class MainViewModel : INotifyPropertyChanged
             DeleteSelectedRecipe();
             return Task.CompletedTask;
         });
+        ClearSorterIoCommand = new RelayCommand(_ =>
+        {
+            ClearSorterIo();
+            return Task.CompletedTask;
+        });
+
+        InjectMaterialAtInputCommand = new RelayCommand(_ =>
+        {
+            InjectMaterialAtInput();
+            return Task.CompletedTask;
+        });
+        InjectMaterialAtFeed1Command = new RelayCommand(_ =>
+        {
+            InjectMaterialAtFeed1();
+            return Task.CompletedTask;
+        });
+
+        InjectMaterialAtFeed2Command = new RelayCommand(_ =>
+        {
+            InjectMaterialAtFeed2();
+            return Task.CompletedTask;
+        });
+
+        InjectMaterialAtFeed3Command = new RelayCommand(_ =>
+        {
+            InjectMaterialAtFeed3();
+            return Task.CompletedTask;
+        });
+
+        InjectMaterialAtOutConveyorCommand = new RelayCommand(_ =>
+        {
+            InjectMaterialAtOutConveyor();
+            return Task.CompletedTask;
+        });
+        ClearMaterialAtInputCommand = new RelayCommand(_ =>
+        {
+            ClearMaterialAtStage(1);
+            return Task.CompletedTask;
+        });
+
+        ClearMaterialAtFeed1Command = new RelayCommand(_ =>
+        {
+            ClearMaterialAtStage(2);
+            return Task.CompletedTask;
+        });
+
+        ClearMaterialAtFeed2Command = new RelayCommand(_ =>
+        {
+            ClearMaterialAtStage(3);
+            return Task.CompletedTask;
+        });
+
+        ClearMaterialAtFeed3Command = new RelayCommand(_ =>
+        {
+            ClearMaterialAtStage(4);
+            return Task.CompletedTask;
+        });
+
+        ClearMaterialAtOutConveyorCommand = new RelayCommand(_ =>
+        {
+            ClearMaterialAtStage(5);
+            return Task.CompletedTask;
+        });
+
         StartCommand = new RelayCommand(_ => TryStartMachine());
 
         StopCommand = new RelayCommand(_ => TryStopMachine());
@@ -946,8 +1339,16 @@ public class MainViewModel : INotifyPropertyChanged
             {
                 NavigateToHome();
                 StopCycleLoop();
+                StopRunTimeLoop();
+
+                _runStartTime = null;
+                _cycleStartTime = null;
                 CurrentMachineState = MachineState.Stopped;
                 await AddOperationLogAsync("Run", "Machine cycle-stopped.");
+                StopSorterPipelineLoop();
+                SetSorterRunningState(false);
+                UpdateSorterSensors();
+                NotifySorterMaterialChanged();
             }
         });
         ResetCommand = new RelayCommand(async _ =>
@@ -1088,9 +1489,9 @@ public class MainViewModel : INotifyPropertyChanged
             return Task.CompletedTask;
         }
         );
-        ShowErrorCommand = new RelayCommand(_ =>
+        ShowIoCommand = new RelayCommand(_ =>
         {
-            CurrentPage = AppPage.Error;
+            CurrentPage = AppPage.Io;
             return Task.CompletedTask;
         }
         );
@@ -1350,13 +1751,13 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _canError = true;
-    public bool CanError
+    private bool _canIo = true;
+    public bool CanIo
     {
-        get => _canError;
+        get => _canIo;
         set
         {
-            _canError = value;
+            _canIo = value;
             OnPropertyChanged();
         }
     }
@@ -1410,7 +1811,7 @@ public class MainViewModel : INotifyPropertyChanged
                 CanList = false;
                 CanQuick = true;
                 CanVision = false;
-                CanError = true;
+                CanIo = true;
                 CanMes = false;
                 CanPower = false;
                 break;
@@ -1426,7 +1827,7 @@ public class MainViewModel : INotifyPropertyChanged
                 CanList = true;
                 CanQuick = true;
                 CanVision = true;
-                CanError = true;
+                CanIo = true;
                 CanMes = true;
                 CanPower = true;
                 break;
@@ -1443,7 +1844,7 @@ public class MainViewModel : INotifyPropertyChanged
                 CanList = true;
                 CanQuick = true;
                 CanVision = true;
-                CanError = true;
+                CanIo = true;
                 CanMes = true;
                 CanPower = true;
                 break;
@@ -1619,7 +2020,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsListPage));
             OnPropertyChanged(nameof(IsQuickPage));
             OnPropertyChanged(nameof(IsVisionPage));
-            OnPropertyChanged(nameof(IsErrorPage));
+            OnPropertyChanged(nameof(IsIoPage));
             OnPropertyChanged(nameof(IsMESPage));
             OnPropertyChanged(nameof(IsPowerPage));
 
@@ -1635,7 +2036,7 @@ public class MainViewModel : INotifyPropertyChanged
     public bool IsListPage => CurrentPage == AppPage.List;
     public bool IsQuickPage => CurrentPage == AppPage.Quick;
     public bool IsVisionPage => CurrentPage == AppPage.Vision;
-    public bool IsErrorPage => CurrentPage == AppPage.Error;
+    public bool IsIoPage => CurrentPage == AppPage.Io;
     public bool IsMESPage => CurrentPage == AppPage.Mes;
     public bool IsPowerPage => CurrentPage == AppPage.Power;
 
@@ -1724,26 +2125,27 @@ public class MainViewModel : INotifyPropertyChanged
         {
             while (!token.IsCancellationRequested && CurrentMachineState == MachineState.Running)
             {
-                await Task.Delay(CycleIntervalMs, token);
-                
+                _cycleStartTime = DateTime.Now;
+
+                await Task.Delay(InfeedSpacingMs, token);
 
                 if (token.IsCancellationRequested || CurrentMachineState != MachineState.Running)
                     break;
 
-                PcbOkCount += 1;
+                if (_cycleStartTime.HasValue)
+                {
+                    var cycleElapsed = DateTime.Now - _cycleStartTime.Value;
+                    CycleTimeText = cycleElapsed.ToString(@"hh\:mm\:ss");
+                }
 
                 bool isOk = !EnableNgSimulation || _random.NextDouble() < CycleOkRate;
 
-                if (isOk)
+                _pendingWorkpieces.Enqueue(new SorterWorkpiece
                 {
-                    PbaOkCount += 1;
-                    await AddOperationLogAsync("Cycle", "Cycle completed: OK");
-                }
-                else
-                {
-                    PbaNgCount += 1;
-                    await AddOperationLogAsync("Cycle", "Cycle completed: NG");
-                }
+                    IsOk = isOk
+                });
+
+                PcbOkCount += 1;
             }
         }
         catch (TaskCanceledException)
@@ -1817,6 +2219,8 @@ public class MainViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(CanSaveRecipe));
         OnPropertyChanged(nameof(CanDeleteRecipe));
         OnPropertyChanged(nameof(HasSelectedRecipe));
+        OnPropertyChanged(nameof(IsRecipeSorterStepIntervalValid));
+        OnPropertyChanged(nameof(IsRecipeInfeedSpacingValid));
     }
     private void LoadRecipeEditorFromCurrentValues()
     {
@@ -1824,6 +2228,8 @@ public class MainViewModel : INotifyPropertyChanged
         EditProductModel = CurrentProductModel;
         EditRecipeCycleIntervalMsText = CycleIntervalMs.ToString();
         EditRecipeCycleOkRateText = CycleOkRate.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        EditRecipeSorterStepIntervalMsText = SorterStepIntervalMs.ToString();
+        EditRecipeInfeedSpacingMsText = InfeedSpacingMs.ToString();
         EditEnableNgSimulation = EnableNgSimulation;
     }
     private async Task ApplyRecipeAsync()
@@ -1844,17 +2250,23 @@ public class MainViewModel : INotifyPropertyChanged
         var cycleOkRate = double.Parse(
             EditRecipeCycleOkRateText,
             System.Globalization.CultureInfo.InvariantCulture);
+        var sorterStepInterval = int.Parse(EditRecipeSorterStepIntervalMsText);
+        var infeedSpacing = int.Parse(EditRecipeInfeedSpacingMsText);
 
         CurrentRecipeName = EditRecipeName;
         CurrentProductModel = EditProductModel;
         CycleIntervalMs = cycleInterval;
         CycleOkRate = cycleOkRate;
         EnableNgSimulation = EditEnableNgSimulation;
+        SorterStepIntervalMs = sorterStepInterval;
+        InfeedSpacingMs = infeedSpacing;
         _machineConfig.CurrentRecipeName = CurrentRecipeName;
         _machineConfig.CurrentProductModel = CurrentProductModel;
         _machineConfig.CycleIntervalMs = CycleIntervalMs;
         _machineConfig.CycleOkRate = CycleOkRate;
         _machineConfig.EnableNgSimulation = EnableNgSimulation;
+        _machineConfig.SorterStepIntervalMs = SorterStepIntervalMs;
+        _machineConfig.InfeedSpacingMs = InfeedSpacingMs;
 
         _configService.Save(_machineConfig);
 
@@ -1877,6 +2289,8 @@ public class MainViewModel : INotifyPropertyChanged
                 ProductModel = CurrentProductModel,
                 CycleIntervalMs = CycleIntervalMs,
                 CycleOkRate = CycleOkRate,
+                SorterStepIntervalMs = SorterStepIntervalMs,
+                InfeedSpacingMs = InfeedSpacingMs,
                 EnableNgSimulation = EnableNgSimulation
             });
 
@@ -1901,6 +2315,8 @@ public class MainViewModel : INotifyPropertyChanged
         EditProductModel = SelectedRecipeItem.ProductModel;
         EditRecipeCycleIntervalMsText = SelectedRecipeItem.CycleIntervalMs.ToString();
         EditRecipeCycleOkRateText = SelectedRecipeItem.CycleOkRate.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        EditRecipeSorterStepIntervalMsText = SelectedRecipeItem.SorterStepIntervalMs.ToString();
+        EditRecipeInfeedSpacingMsText = SelectedRecipeItem.InfeedSpacingMs.ToString();
         EditEnableNgSimulation = SelectedRecipeItem.EnableNgSimulation;
     }
     private void SaveRecipeToList()
@@ -1919,6 +2335,8 @@ public class MainViewModel : INotifyPropertyChanged
 
         int cycleInterval = int.Parse(EditRecipeCycleIntervalMsText);
         double cycleOkRate = double.Parse(EditRecipeCycleOkRateText, CultureInfo.InvariantCulture);
+        int sorterStepInterval = int.Parse(EditRecipeSorterStepIntervalMsText);
+        int infeedSpacing = int.Parse(EditRecipeInfeedSpacingMsText);
 
         var existing = _machineConfig.Recipes
             .FirstOrDefault(x => x.RecipeName.Equals(EditRecipeName, StringComparison.OrdinalIgnoreCase));
@@ -1931,6 +2349,8 @@ public class MainViewModel : INotifyPropertyChanged
                 ProductModel = EditProductModel,
                 CycleIntervalMs = cycleInterval,
                 CycleOkRate = cycleOkRate,
+                SorterStepIntervalMs = sorterStepInterval,
+                InfeedSpacingMs = infeedSpacing,
                 EnableNgSimulation = EditEnableNgSimulation
             });
         }
@@ -1939,6 +2359,8 @@ public class MainViewModel : INotifyPropertyChanged
             existing.ProductModel = EditProductModel;
             existing.CycleIntervalMs = cycleInterval;
             existing.CycleOkRate = cycleOkRate;
+            existing.SorterStepIntervalMs = sorterStepInterval;
+            existing.InfeedSpacingMs = infeedSpacing;
             existing.EnableNgSimulation = EditEnableNgSimulation;
         }
 
@@ -1978,4 +2400,278 @@ public class MainViewModel : INotifyPropertyChanged
 
         MessageBox.Show("Recipe deleted.");
     }
+    private void StartRunTimeLoop()
+    {
+        _runTimeCts = new CancellationTokenSource();
+        _ = UpdateRunTimeAsync(_runTimeCts.Token);
+    }
+
+    private void StopRunTimeLoop()
+    {
+        _runTimeCts?.Cancel();
+        _runTimeCts = null;
+    }
+
+    private async Task UpdateRunTimeAsync(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && _runStartTime.HasValue)
+            {
+                var elapsed = DateTime.Now - _runStartTime.Value;
+                RunTimeText = elapsed.ToString(@"hh\:mm\:ss");
+                await Task.Delay(500, token);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+    }
+    private void ResetSorterSimulation()
+    {
+        IsInConveyorRunning = false;
+        IsFeed1Running = false;
+        IsFeed2Running = false;
+        IsFeed3Running = false;
+        IsOutConveyorRunning = false;
+
+        IsInConveyorSensorOn = false;
+        IsFeed1SensorOn = false;
+        IsFeed2SensorOn = false;
+        IsFeed3SensorOn = false;
+        IsOutConveyorSensorOn = false;
+
+        _stage1Workpiece = null;
+        _stage2Workpiece = null;
+        _stage3Workpiece = null;
+        _stage4Workpiece = null;
+        _stage5Workpiece = null;
+
+        _pendingWorkpieces.Clear();
+
+        NotifySorterMaterialChanged();
+    }
+    
+    private void NotifySorterMaterialChanged()
+    {
+        OnPropertyChanged(nameof(IsMaterialAtInConveyor));
+        OnPropertyChanged(nameof(IsMaterialAtFeed1));
+        OnPropertyChanged(nameof(IsMaterialAtFeed2));
+        OnPropertyChanged(nameof(IsMaterialAtFeed3));
+        OnPropertyChanged(nameof(IsMaterialAtOutConveyor));
+    }
+    private void SetSorterRunningState(bool isRunning)
+    {
+        IsInConveyorRunning = isRunning;
+        IsFeed1Running = isRunning;
+        IsFeed2Running = isRunning;
+        IsFeed3Running = isRunning;
+        IsOutConveyorRunning = isRunning;
+    }
+    private void AdvanceSorterPipeline()
+    {
+        // PCB ra khỏi máy ở stage 5
+        if (_stage5Workpiece != null)
+        {
+            if (_stage5Workpiece.IsOk)
+            {
+                PbaOkCount += 1;
+                _ = AddOperationLogAsync("Cycle",
+                    $"Cycle completed: OK | Recipe={CurrentRecipeName} | Model={CurrentProductModel}");
+            }
+            else
+            {
+                PbaNgCount += 1;
+                _ = AddOperationLogAsync("Cycle",
+                    $"Cycle completed: NG | Recipe={CurrentRecipeName} | Model={CurrentProductModel}");
+            }
+
+            OutCount = PbaOkCount + PbaNgCount;
+            _stage5Workpiece = null;
+        }
+
+        // Dịch stage từ phải sang trái
+        if (_stage5Workpiece == null && _stage4Workpiece != null)
+        {
+            _stage5Workpiece = _stage4Workpiece;
+            _stage4Workpiece = null;
+        }
+
+        if (_stage4Workpiece == null && _stage3Workpiece != null)
+        {
+            _stage4Workpiece = _stage3Workpiece;
+            _stage3Workpiece = null;
+        }
+
+        if (_stage3Workpiece == null && _stage2Workpiece != null)
+        {
+            _stage3Workpiece = _stage2Workpiece;
+            _stage2Workpiece = null;
+        }
+
+        if (_stage2Workpiece == null && _stage1Workpiece != null)
+        {
+            _stage2Workpiece = _stage1Workpiece;
+            _stage1Workpiece = null;
+        }
+
+        // Nạp PCB mới từ queue vào stage 1
+        if (_stage1Workpiece == null && _pendingWorkpieces.Count > 0)
+        {
+            _stage1Workpiece = _pendingWorkpieces.Dequeue();
+        }
+
+        UpdateSorterSensors();
+        NotifySorterMaterialChanged();
+    }
+    private void UpdateSorterSensors()
+    {
+        if (IsIoManualMode)
+            return;
+
+        IsInConveyorSensorOn = _stage1Workpiece != null;
+        IsFeed1SensorOn = _stage2Workpiece != null;
+        IsFeed2SensorOn = _stage3Workpiece != null;
+        IsFeed3SensorOn = _stage4Workpiece != null;
+        IsOutConveyorSensorOn = _stage5Workpiece != null;
+    }
+    private void ClearSorterIo()
+    {
+        IsInConveyorRunning = false;
+        IsFeed1Running = false;
+        IsFeed2Running = false;
+        IsFeed3Running = false;
+        IsOutConveyorRunning = false;
+
+        IsInConveyorSensorOn = false;
+        IsFeed1SensorOn = false;
+        IsFeed2SensorOn = false;
+        IsFeed3SensorOn = false;
+        IsOutConveyorSensorOn = false;
+
+        _stage1Workpiece = null;
+        _stage2Workpiece = null;
+        _stage3Workpiece = null;
+        _stage4Workpiece = null;
+        _stage5Workpiece = null;
+
+        _pendingWorkpieces.Clear();
+
+        NotifySorterMaterialChanged();
+    }
+    private void InjectMaterialAtInput()
+    {
+        if (_stage1Workpiece != null)
+        {
+            MessageBox.Show("Input stage already has material.");
+            return;
+        }
+
+        _stage1Workpiece = new SorterWorkpiece
+        {
+            IsOk = !EnableNgSimulation || _random.NextDouble() < CycleOkRate
+        };
+
+        UpdateSorterSensors();
+        NotifySorterMaterialChanged();
+    }
+    private void SetMaterialAtStage(int stage, bool isOk = true)
+    {
+        var workpiece = new SorterWorkpiece { IsOk = isOk };
+
+        switch (stage)
+        {
+            case 1:
+                _stage1Workpiece = workpiece;
+                break;
+            case 2:
+                _stage2Workpiece = workpiece;
+                break;
+            case 3:
+                _stage3Workpiece = workpiece;
+                break;
+            case 4:
+                _stage4Workpiece = workpiece;
+                break;
+            case 5:
+                _stage5Workpiece = workpiece;
+                break;
+            default:
+                return;
+        }
+
+        UpdateSorterSensors();
+        NotifySorterMaterialChanged();
+    }
+    private void InjectMaterialAtFeed1()
+    {
+        if (_stage2Workpiece != null)
+        {
+            MessageBox.Show("Feed 1 already has material.");
+            return;
+        }
+
+        SetMaterialAtStage(2);
+    }
+
+    private void InjectMaterialAtFeed2()
+    {
+        if (_stage3Workpiece != null)
+        {
+            MessageBox.Show("Feed 2 already has material.");
+            return;
+        }
+
+        SetMaterialAtStage(3);
+    }
+
+    private void InjectMaterialAtFeed3()
+    {
+        if (_stage4Workpiece != null)
+        {
+            MessageBox.Show("Feed 3 already has material.");
+            return;
+        }
+
+        SetMaterialAtStage(4);
+    }
+
+    private void InjectMaterialAtOutConveyor()
+    {
+        if (_stage5Workpiece != null)
+        {
+            MessageBox.Show("Out conveyor already has material.");
+            return;
+        }
+
+        SetMaterialAtStage(5);
+    }
+    private void ClearMaterialAtStage(int stage)
+    {
+        switch (stage)
+        {
+            case 1:
+                _stage1Workpiece = null;
+                break;
+            case 2:
+                _stage2Workpiece = null;
+                break;
+            case 3:
+                _stage3Workpiece = null;
+                break;
+            case 4:
+                _stage4Workpiece = null;
+                break;
+            case 5:
+                _stage5Workpiece = null;
+                break;
+            default:
+                return;
+        }
+
+        UpdateSorterSensors();
+        NotifySorterMaterialChanged();
+    }
+
+
 }

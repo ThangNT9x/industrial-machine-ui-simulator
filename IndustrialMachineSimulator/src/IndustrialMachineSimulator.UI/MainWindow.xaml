@@ -70,8 +70,8 @@
                     <views:VisionView></views:VisionView>
                 </Grid>
                 <Grid Grid.Row="2"
-                      Visibility="{Binding IsErrorPage,Converter={StaticResource BoolToVisibilityConverter}}">
-                    <views:ErrorView></views:ErrorView>
+                      Visibility="{Binding IsIoPage,Converter={StaticResource BoolToVisibilityConverter}}">
+                    <views:IoView></views:IoView>
                 </Grid>
                 <Grid Grid.Row="2"
                       Visibility="{Binding IsMESPage,Converter={StaticResource BoolToVisibilityConverter}}">
