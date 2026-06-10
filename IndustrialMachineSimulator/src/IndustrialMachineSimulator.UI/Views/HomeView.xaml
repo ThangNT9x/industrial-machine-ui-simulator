@@ -1107,20 +1107,51 @@
                             </CheckBox>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="3" Margin="0,30,0,0">
+                        <StackPanel Grid.Column="3" Margin="0,5,0,0">
                             <TextBlock Text="{Binding CurrentTrayOkCount, StringFormat=Tray Load: {0}}"
                                        FontFamily="Arial"
-                                       FontSize="14"
+                                       FontSize="10"
                                        Foreground="#333333"/>
                             <TextBlock Text="{Binding AvailableEmptyTrayCount, StringFormat=Empty Trays: {0}}"
                                        FontFamily="Arial"
-                                       FontSize="14"
+                                       FontSize="10"
                                        Foreground="#333333"/>
                             <TextBlock Text="{Binding ProducedFullTrayCount, StringFormat=Full Trays: {0}}"
                                        FontFamily="Arial"
-                                       FontSize="14"
+                                       FontSize="10"
                                        Foreground="#333333"/>
+                            <StackPanel >
+                                <TextBlock Text="{Binding StopModeText}" FontSize="10"/>
+                                <TextBlock Text="{Binding LaserBusyText}" FontSize="10"/>
+                                <TextBlock Text="{Binding PickerBusyText}" FontSize="10"/>
+                                <TextBlock Text="{Binding OutputBusyText}" FontSize="10"/>
+                                <TextBlock Text="{Binding StageAStateText, StringFormat=Stage A: {0}}" FontSize="10"/>
+                                <TextBlock Text="{Binding StageBStateText, StringFormat=Stage B: {0}}" FontSize="10"/>
+                                <TextBlock Text="{Binding Feed1StopperText, StringFormat=Stopper: {0}}" FontSize="10"/>
+                            </StackPanel>
+                            <Border Padding="6"
+                                    CornerRadius="4"
+                                    Margin="0,4,0,0">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasPendingStopCommand}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Setter Property="Background" Value="#FFF3CD"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <TextBlock Text="{Binding PendingStopCommandText}"
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           Foreground="#B45309"/>
+                            </Border>
                         </StackPanel>
+                            
                     </Grid>
                         <!--Hinh minh hoa tin hieu sensor conveyor-->
                         <Grid Grid.Row="1">
@@ -1337,8 +1368,35 @@
                             </TextBlock.Style>
 
                         </TextBlock>
-                            <TextBlock Grid.Column="2" Grid.Row="3" Text="DOWN" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
-                            <TextBlock Grid.Column="2" Grid.Row="2" Text="UP" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" ></TextBlock>
+                            <TextBlock Grid.Column="2" Grid.Row="3" Text="DOWN" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" >
+
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Opacity" Value="0.35"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsFeed1StopperDown}" Value="True">
+                                                <Setter Property="Opacity" Value="1"/>
+                                                <Setter Property="Foreground" Value="#B00000"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Grid.Column="2" Grid.Row="2" Text="UP" FontFamily="Arial" FontSize="10" Background="#FFCCCC" Width="auto" TextAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" >
+
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Opacity" Value="0.35"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsFeed1StopperUp}" Value="True">
+                                                <Setter Property="Opacity" Value="1"/>
+                                                <Setter Property="Foreground" Value="#B00000"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
 
                             <TextBlock Grid.Column="3" Grid.Row="3"  Width="15" HorizontalAlignment="Left" Margin="2,0,0,0" >
                             <TextBlock.Style>

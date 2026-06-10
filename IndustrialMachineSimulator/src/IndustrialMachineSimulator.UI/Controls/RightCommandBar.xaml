@@ -1,123 +1,263 @@
 ﻿<UserControl x:Class="IndustrialMachineSimulator.UI.Controls.RightCommandBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:IndustrialMachineSimulator.UI.Controls"
-             mc:Ignorable="d" 
-             d:DesignHeight="740" d:DesignWidth="150">
-    <Grid>
+             mc:Ignorable="d"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType"
+             d:DesignHeight="740"
+             d:DesignWidth="150">
+
+    <Grid RenderOptions.ClearTypeHint="Enabled">
         <Grid.Resources>
-            <!--Set style cho nut menu ben phai-->
+
             <Style x:Key="CircleButtonStyle" TargetType="Button">
-                <Setter Property="Width" Value="80"></Setter>
-                <Setter Property="Height" Value="80"></Setter>
-                <Setter Property="Background" Value="White"></Setter>
-                <Setter Property="BorderBrush" Value="#D9D9D9"></Setter>
-                <Setter Property="Foreground" Value="DodgerBlue"></Setter>
-                <Setter Property="Cursor" Value="Hand"></Setter>
-                <Setter Property="Template" >
+                <Setter Property="Width" Value="80"/>
+                <Setter Property="Height" Value="80"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="#D9D9D9"/>
+                <Setter Property="Foreground" Value="DodgerBlue"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Grid x:Name="Root">
+                            <Grid x:Name="Root" SnapsToDevicePixels="True">
                                 <Ellipse x:Name="circle"
                                          Fill="{TemplateBinding Background}"
                                          Stroke="{TemplateBinding BorderBrush}"
-                                         StrokeThickness="1">
-
-                                </Ellipse>
+                                         StrokeThickness="1"/>
                                 <ContentPresenter x:Name="contentPresenter"
-                                            HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"></ContentPresenter>
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="circle"
-                                            Property="Stroke"
-                                            Value="#3399FF"></Setter>
+                                    <Setter TargetName="circle" Property="Stroke" Value="#3399FF"/>
                                 </Trigger>
+
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Root"
-                                            Property="RenderTransform"
-                                            >
+                                    <Setter TargetName="Root" Property="RenderTransform">
                                         <Setter.Value>
-                                            <ScaleTransform ScaleX="0.96" ScaleY="0.96"></ScaleTransform>
+                                            <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
                                         </Setter.Value>
                                     </Setter>
-                                    <Setter TargetName="circle" Property="Opacity" Value="0.85">
-                                        
-                                    </Setter>
+                                    <Setter TargetName="circle" Property="Opacity" Value="0.85"/>
                                 </Trigger>
+
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="Root" Property="Opacity" Value="0.35"></Setter>
+                                    <Setter TargetName="Root" Property="Opacity" Value="0.35"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-
             </Style>
+
+            <Style x:Key="CommandCaptionStyle" TargetType="TextBlock">
+                <Setter Property="Width" Value="110"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="23"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,0,15"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+                <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+            </Style>
+
+            <Style x:Key="PendingBannerStyle" TargetType="Border">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="6"/>
+                <Setter Property="CornerRadius" Value="6"/>
+                <Setter Property="Margin" Value="0,0,0,12"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding HasPendingStopCommand}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Setter Property="Background" Value="#FFF3CD"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
         </Grid.Resources>
-        <!-- set border bao quanh thanh menu -->
-        <Border  Padding="10" Background="White" BorderBrush="#D9D9D9" BorderThickness="1" Margin="10,10,0,10">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" >
-                <!--Nut Start-->
-                <Button Style="{StaticResource CircleButtonStyle}" 
+
+        <Border Padding="10"
+                Background="White"
+                BorderBrush="#D9D9D9"
+                BorderThickness="1"
+                Margin="10,10,0,10"
+                SnapsToDevicePixels="True">
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        RenderOptions.ClearTypeHint="Enabled">
+
+                <!-- Start -->
+                <Button Style="{StaticResource CircleButtonStyle}"
                         IsEnabled="{Binding CanStart}"
                         Command="{Binding StartCommand}">
                     <TextBlock FontFamily="Segoe MDL2 Assets"
-                        Text="&#xF745;"
-                        FontSize="30"
-                        FontWeight="Bold"
-                        Foreground="DodgerBlue"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        >
-                    </TextBlock>
+                               Text="&#xF745;"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="DodgerBlue"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
                 </Button>
-                <Label Content="Start" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15"></Label>
 
-                <!--Nut Stop-->
-                <Button Style="{StaticResource CircleButtonStyle}" 
-                        IsEnabled="{Binding CanStop}"
+                <TextBlock Text="Start"
+                           Style="{StaticResource CommandCaptionStyle}"/>
+
+                <!-- Banner pending -->
+                <Border Style="{StaticResource PendingBannerStyle}">
+                    <TextBlock Text="{Binding PendingStopCommandText}"
+                               FontFamily="Segoe UI"
+                               FontSize="8"
+                               FontWeight="Bold"
+                               Foreground="#B45309"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               SnapsToDevicePixels="True"
+                               TextOptions.TextFormattingMode="Display"
+                               TextOptions.TextRenderingMode="ClearType"/>
+                </Border>
+
+                <!-- Stop -->
+                <Button IsEnabled="{Binding CanStop}"
                         Command="{Binding StopCommand}">
-                    <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xF12A;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource CircleButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStopRequestedActive}" Value="True">
+                                    <Setter Property="Background" Value="#FDE68A"/>
+                                    <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                               Text="&#xF12A;"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="DodgerBlue"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsStopRequestedActive}" Value="True">
+                                        <Setter Property="Foreground" Value="#B45309"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
                     </TextBlock>
                 </Button>
-                <Label Content="Stop" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
-                </Label>
 
-                <!--Nut Cycle Stop-->
-                <Button Style="{StaticResource CircleButtonStyle}" 
-                        IsEnabled="{Binding CanCycleStop}"
+                <TextBlock>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource CommandCaptionStyle}">
+                            <Setter Property="Text" Value="Stop"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStopRequestedActive}" Value="True">
+                                    <Setter Property="Text" Value="Stop Req"/>
+                                    <Setter Property="Foreground" Value="#B45309"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- Cycle Stop -->
+                <Button IsEnabled="{Binding CanCycleStop}"
                         Command="{Binding CycleStopCommand}">
-                    <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xEDAB;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource CircleButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCycleStopRequestedActive}" Value="True">
+                                    <Setter Property="Background" Value="#FDE68A"/>
+                                    <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                               Text="&#xEDAB;"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="DodgerBlue"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCycleStopRequestedActive}" Value="True">
+                                        <Setter Property="Foreground" Value="#B45309"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
                     </TextBlock>
                 </Button>
-                <Label Content="CycleStop" FontFamily="Arial" FontSize="24" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
-                </Label>
 
-                <!--Nut Initalitation-->
-                <Button Style="{StaticResource CircleButtonStyle}" 
+                <TextBlock>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource CommandCaptionStyle}">
+                            <Setter Property="Text" Value="CycleStop"/>
+                            <Setter Property="FontSize" Value="22"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCycleStopRequestedActive}" Value="True">
+                                    <Setter Property="Text" Value="Cycle Req"/>
+                                    <Setter Property="Foreground" Value="#B45309"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- Init -->
+                <Button Style="{StaticResource CircleButtonStyle}"
                         IsEnabled="{Binding CanInit}"
                         Command="{Binding InitializeCommand}">
-                    <TextBlock  FontFamily="Segoe MDL2 Assets" Text="&#xE819;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    </TextBlock>
+                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                               Text="&#xE819;"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               Foreground="DodgerBlue"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
                 </Button>
-                <Label Content="Init" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
-                </Label>
 
-                <!--Nut Reset-->
-                <Button Style="{StaticResource CircleButtonStyle}" 
+                <TextBlock Text="Init"
+                           Style="{StaticResource CommandCaptionStyle}"/>
+
+                <!-- Reset -->
+                <Button Style="{StaticResource CircleButtonStyle}"
                         IsEnabled="{Binding CanReset}"
                         Command="{Binding ResetCommand}">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="40" FontWeight="Bold" Foreground="DodgerBlue" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    </TextBlock>
+                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                               Text="&#xE72C;"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               Foreground="DodgerBlue"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
                 </Button>
-                <Label Content="Reset" FontFamily="Arial" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,15">
-                </Label>
+
+                <TextBlock Text="Reset"
+                           Style="{StaticResource CommandCaptionStyle}"/>
+
             </StackPanel>
         </Border>
-
     </Grid>
 </UserControl>

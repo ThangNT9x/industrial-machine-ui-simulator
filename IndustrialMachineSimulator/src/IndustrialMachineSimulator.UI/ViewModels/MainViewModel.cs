@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Threading;
 namespace IndustrialMachineSimulator.UI.ViewModels;
 
-public class MainViewModel : INotifyPropertyChanged
+public partial class MainViewModel : INotifyPropertyChanged
 {
     private readonly MachineController _machineController;
     private string _statusText = "Offline";
@@ -585,6 +585,9 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+
+
     public bool IsInConveyorRunning
     {
         get => _sorterIo.IsInConveyorRunning;
@@ -595,6 +598,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
 
 
     public bool IsFeed1Running
@@ -699,7 +703,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isInLiftRunning;
+    
     public bool IsInLiftRunning
     {
         get => _isInLiftRunning;
@@ -711,7 +715,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isOutLiftRunning;
+   
     public bool IsOutLiftRunning
     {
         get => _isOutLiftRunning;
@@ -723,7 +727,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isNgConveyorRunning;
+   
     public bool IsNgConveyorRunning
     {
         get => _isNgConveyorRunning;
@@ -734,7 +738,7 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    private int _currentTrayOkCount;
+   
     public int CurrentTrayOkCount
     {
         get => _currentTrayOkCount;
@@ -746,7 +750,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _trayCapacity = 20;
+    
     public int TrayCapacity
     {
         get => _trayCapacity;
@@ -758,7 +762,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _availableEmptyTrayCount = 100;
+   
     public int AvailableEmptyTrayCount
     {
         get => _availableEmptyTrayCount;
@@ -770,7 +774,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _producedFullTrayCount;
+    
     public int ProducedFullTrayCount
     {
         get => _producedFullTrayCount;
@@ -782,7 +786,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _hasEmptyTrayLoaded = true;
+   
     public bool HasEmptyTrayLoaded
     {
         get => _hasEmptyTrayLoaded;
@@ -794,7 +798,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isInputStopActive;
+   
     public bool IsInputStopActive
     {
         get => _isInputStopActive;
@@ -810,7 +814,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isOutTrayBoxRequested;
+   
     public bool IsOutTrayBoxRequested
     {
         get => _isOutTrayBoxRequested;
@@ -827,10 +831,10 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isOutTrayBoxProcessing;
+   
 
 
-    private bool _isStageMaterialOkLampOn;
+   
     public bool IsStageMaterialOkLampOn
     {
         get => _isStageMaterialOkLampOn;
@@ -842,7 +846,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isStageMaterialNgLampOn;
+    
     public bool IsStageMaterialNgLampOn
     {
         get => _isStageMaterialNgLampOn;
@@ -854,10 +858,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private readonly int[] _stageACutOrder = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    private readonly int[] _stageBCutOrder = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-    private int _activeCutNumberStageA;
     public int ActiveCutNumberStageA
     {
         get => _activeCutNumberStageA;
@@ -870,7 +871,6 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _activeCutNumberStageB;
     public int ActiveCutNumberStageB
     {
         get => _activeCutNumberStageB;
@@ -898,17 +898,10 @@ public class MainViewModel : INotifyPropertyChanged
 
     public bool IsFeed1StopperDown => !IsFeed1StopperUp;
 
-    private bool _isStopRequested;
-    private bool _isCycleStopRequested;
 
 
 
-    private readonly HashSet<int> _stageACompletedCuts = new();
-    private readonly HashSet<int> _stageBCompletedCuts = new();
-    private readonly HashSet<int> _stageAPickedCuts = new();
-    private readonly HashSet<int> _stageBPickedCuts = new();
 
-    private bool _isStageAUnloadWaiting;
     public bool IsStageAUnloadWaiting
     {
         get => _isStageAUnloadWaiting;
@@ -920,7 +913,6 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isStageBUnloadWaiting;
     public bool IsStageBUnloadWaiting
     {
         get => _isStageBUnloadWaiting;
@@ -933,22 +925,9 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
 
-    private SorterWorkpiece? _cutStageAWorkpiece;
-    private SorterWorkpiece? _cutStageBWorkpiece;
-
     public bool HasCutStageAMaterial => _cutStageAWorkpiece != null;
     public bool HasCutStageBMaterial => _cutStageBWorkpiece != null;
 
-    private CutStageState _stageAState = CutStageState.Empty;
-    private CutStageState _stageBState = CutStageState.Empty;
-
-    private bool _laserBusy;
-    private bool _pickerBusy;
-    private bool _feed3OutputBusy;
-
-    private CutStageSlot _lastLaserServed = CutStageSlot.None;
-    private CutStageSlot _lastPickerServed = CutStageSlot.None;
-    private CutStageSlot _lastOutputServed = CutStageSlot.None;
 
 
     public bool IsStageAIndex1Picked => _stageAPickedCuts.Contains(1);
@@ -1023,37 +1002,8 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _isStageBCutRunning;
 
 
-    private sealed class SorterWorkpiece
-    {
-        public bool IsOk { get; set; }
-    }
-    private readonly Queue<SorterWorkpiece> _pendingWorkpieces = new();
 
-    private SorterWorkpiece? _stage1Workpiece;
-    private SorterWorkpiece? _stage2Workpiece;
-    private SorterWorkpiece? _stage3Workpiece;
-    private SorterWorkpiece? _stage4Workpiece;
-    private SorterWorkpiece? _stage5Workpiece;
 
-    private enum CutStageSlot
-    {
-        None,
-        A,
-        B
-    }
-
-    private enum CutStageState
-    {
-        Empty,
-        WaitingCut,
-        Cutting,
-        WaitingPick,
-        Picking,
-        ReadyToOutput,
-        Outputting
-    }
-
-    private CancellationTokenSource? _sorterPipelineCts;
     private void StartSorterPipelineLoop()
     {
         if (_sorterPipelineCts != null)
@@ -1083,7 +1033,6 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private readonly SorterIoState _sorterIo = new();
 
 
     public bool HasAnyMaterialInSorter =>
@@ -1094,6 +1043,34 @@ public class MainViewModel : INotifyPropertyChanged
         IsMaterialAtOutConveyor ||
         HasCutStageAMaterial ||
         HasCutStageBMaterial;
+
+    public string LaserBusyText =>
+    _laserBusy ? $"Laser Busy ({_lastLaserServed})" : "Laser Idle";
+
+    public string PickerBusyText =>
+        _pickerBusy ? $"Picker Busy ({_lastPickerServed})" : "Picker Idle";
+
+    public string OutputBusyText =>
+        _feed3OutputBusy ? $"Feed3 Output Busy ({_lastOutputServed})" : "Feed3 Output Idle";
+
+    public string StopModeText =>
+        _isStopRequested ? "STOP REQUEST" :
+        _isCycleStopRequested ? "CYCLE STOP REQUEST" :
+        "RUN";
+
+    public bool IsStopRequestedActive => _isStopRequested;
+    public bool IsCycleStopRequestedActive => _isCycleStopRequested;
+    public bool HasPendingStopCommand => _isStopRequested || _isCycleStopRequested;
+
+    public string PendingStopCommandText =>
+        _isStopRequested ? "STOP REQUESTED" :
+        _isCycleStopRequested ? "CYCLE STOP REQUESTED" :
+        string.Empty;
+
+    public string StageAStateText => _stageAState.ToString();
+    public string StageBStateText => _stageBState.ToString();
+
+    public string Feed1StopperText => IsFeed1StopperUp ? "UP" : "DOWN";
 
     public bool IsSetupEditLocked => CurrentMachineState == MachineState.Running;
     public bool IsRecipeEditLocked => CurrentMachineState == MachineState.Running;
@@ -1253,6 +1230,10 @@ public class MainViewModel : INotifyPropertyChanged
             CurrentMachineState = MachineState.Running;
             _runStartTime = DateTime.Now;
             _cycleStartTime = DateTime.Now;
+            _isStopRequested = false;
+            _isCycleStopRequested = false;
+            NotifyStopRequestUiChanged();
+            NotifySchedulerDebugChanged();
             StartRunTimeLoop();
             SetSorterRunningState(true);
             StartSorterPipelineLoop();
@@ -1268,24 +1249,24 @@ public class MainViewModel : INotifyPropertyChanged
 
     private async Task TryStopMachine()
     {
-        if (CurrentMachineState == MachineState.Running)
-        {
-            NavigateToHome();
-            StopCycleLoop();
-            StopRunTimeLoop();
+        if (CurrentMachineState != MachineState.Running)
+            return;
 
-            _runStartTime = null;
-            _cycleStartTime = null;
-            CurrentMachineState = MachineState.Stopped;
-            await AddOperationLogAsync("Run", "Machine stopped.");
-            await SendMesMessageAsync("MachineStopped", $"State={CurrentMachineState}");
-            StopSorterPipelineLoop();
-            SetSorterRunningState(false);
-            UpdateSorterSensors();
-            NotifySorterMaterialChanged();
-        }
+        if (_isStopRequested)
+            return;
+
+        NavigateToHome();
+        StopCycleLoop();
+
+        _isStopRequested = true;
+        _isCycleStopRequested = false;
+
+        NotifyStopRequestUiChanged();
+        NotifySchedulerDebugChanged();
+
+        await AddOperationLogAsync("Run", "Stop requested.");
     }
-   
+
     private string _hostStatusText = "Disconnected";
     public string HostStatusText
     {
@@ -1770,35 +1751,71 @@ public class MainViewModel : INotifyPropertyChanged
         });
         StartCommand = new RelayCommand(_ => TryStartMachine());
 
-        StopCommand = new RelayCommand(_ => TryStopMachine());
-
-        RunStatusBarCommand = new RelayCommand(_ =>
+        StopCommand = new RelayCommand(async _ =>
         {
-            if (CurrentMachineState == MachineState.Running)
-            {
-                return TryStopMachine();
-            }
+            if (CurrentMachineState != MachineState.Running)
+                return;
 
-            return TryStartMachine();
+            if (_isStopRequested)
+                return;
+
+            NavigateToHome();
+
+            StopCycleLoop();
+
+            _isStopRequested = true;
+            _isCycleStopRequested = false;
+
+            NotifyStopRequestUiChanged();
+            NotifySchedulerDebugChanged();
+
+            await AddOperationLogAsync("Run", "Stop requested.");
         });
-        CycleStopCommand = new RelayCommand(async _ =>
+
+        RunStatusBarCommand = new RelayCommand(async _ =>
         {
             if (CurrentMachineState == MachineState.Running)
             {
+                if (_isStopRequested)
+                    return;
+
                 NavigateToHome();
                 StopCycleLoop();
-                StopRunTimeLoop();
 
-                _runStartTime = null;
-                _cycleStartTime = null;
-                CurrentMachineState = MachineState.Stopped;
-                await AddOperationLogAsync("Run", "Machine cycle-stopped.");
-                StopSorterPipelineLoop();
-                SetSorterRunningState(false);
-                UpdateSorterSensors();
-                NotifySorterMaterialChanged();
+                _isStopRequested = true;
+                _isCycleStopRequested = false;
+
+                NotifyStopRequestUiChanged();
+                NotifySchedulerDebugChanged();
+
+                await AddOperationLogAsync("Run", "Stop requested from status bar.");
+                return;
             }
+
+            await TryStartMachine();
         });
+
+        CycleStopCommand = new RelayCommand(async _ =>
+        {
+            if (CurrentMachineState != MachineState.Running)
+                return;
+
+            if (_isCycleStopRequested)
+                return;
+
+            NavigateToHome();
+
+            StopCycleLoop();
+
+            _isCycleStopRequested = true;
+            _isStopRequested = false;
+
+            NotifyStopRequestUiChanged();
+            NotifySchedulerDebugChanged();
+
+            await AddOperationLogAsync("Run", "Cycle stop requested.");
+        });
+
         ResetCommand = new RelayCommand(async _ =>
         {
             if (!IsPowerMachineOn)
@@ -3006,8 +3023,10 @@ public class MainViewModel : INotifyPropertyChanged
         RunCutStageSchedulerTick();
 
         // Feed 1 -> Feed 2 buffer
-        if (_stage3Workpiece == null && _stage2Workpiece != null)
+        if (CanFeed1MoveToFeed2Buffer())
         {
+            PulseFeed1StopperDown();
+
             _stage3Workpiece = _stage2Workpiece;
             _stage2Workpiece = null;
         }
@@ -3020,14 +3039,20 @@ public class MainViewModel : INotifyPropertyChanged
         }
 
         // Queue -> In conveyor
-        if (_stage1Workpiece == null && _pendingWorkpieces.Count > 0 && !IsInputStopActive)
+        if (_stage1Workpiece == null &&
+           _pendingWorkpieces.Count > 0 &&
+           !IsInputStopActive &&
+           !_isStopRequested &&
+           !_isCycleStopRequested)
         {
             _stage1Workpiece = _pendingWorkpieces.Dequeue();
         }
 
+        UpdateFeed1StopperState();
         UpdateSorterSensors();
         NotifySorterMaterialChanged();
         NotifyCutStageSlotsChanged();
+        TryFinalizeRequestedStop();
     }
 
     private void UpdateSorterSensors()
@@ -3484,6 +3509,7 @@ public class MainViewModel : INotifyPropertyChanged
             _stageAState = state;
         else if (slot == CutStageSlot.B)
             _stageBState = state;
+        NotifySchedulerDebugChanged();
     }
 
     private SorterWorkpiece? GetCutStageWorkpiece(CutStageSlot slot) =>
@@ -3616,7 +3642,9 @@ public class MainViewModel : INotifyPropertyChanged
         {
             SetActiveCut(slot, 0);
             _laserBusy = false;
+            NotifySchedulerDebugChanged();
         }
+
     }
     private async Task RunPickerUnloadAsync(CutStageSlot slot)
     {
@@ -3635,6 +3663,7 @@ public class MainViewModel : INotifyPropertyChanged
         finally
         {
             _pickerBusy = false;
+            NotifySchedulerDebugChanged();
         }
     }
     private async Task RunOutputToFeed3Async(CutStageSlot slot)
@@ -3657,11 +3686,14 @@ public class MainViewModel : INotifyPropertyChanged
         finally
         {
             _feed3OutputBusy = false;
+            NotifySchedulerDebugChanged();
         }
     }
 
     private void TryLoadFeed2BufferToCutStage()
     {
+        if (_isStopRequested)
+            return;
         if (_stage3Workpiece == null)
             return;
 
@@ -3687,6 +3719,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void TryStartPickerScheduler()
     {
+        if (_isStopRequested)
+            return;
         if (_pickerBusy)
             return;
 
@@ -3701,6 +3735,7 @@ public class MainViewModel : INotifyPropertyChanged
         _pickerBusy = true;
         _lastPickerServed = next;
         _ = RunPickerUnloadAsync(next);
+        NotifySchedulerDebugChanged();
     }
 
 
@@ -3723,6 +3758,7 @@ public class MainViewModel : INotifyPropertyChanged
         _feed3OutputBusy = true;
         _lastOutputServed = next;
         _ = RunOutputToFeed3Async(next);
+        NotifySchedulerDebugChanged();
     }
 
     private void RunCutStageSchedulerTick()
@@ -3748,5 +3784,144 @@ public class MainViewModel : INotifyPropertyChanged
         _laserBusy = true;
         _lastLaserServed = next;
         _ = RunLaserCutAsync(next);
+        NotifySchedulerDebugChanged();
+    }
+    private bool CanFeed1MoveToFeed2Buffer()
+    {
+        if (_stage2Workpiece == null) return false;
+        if (_stage3Workpiece != null) return false;
+
+        // Stop thật thì giữ line ở trước Feed2
+        if (_isStopRequested) return false;
+
+        return true;
+    }
+
+    private void PulseFeed1StopperDown()
+    {
+        _feed1StopperDownPulseTicks = 1;
+    }
+
+    private void UpdateFeed1StopperState()
+    {
+        if (_feed1StopperDownPulseTicks > 0)
+        {
+            IsFeed1StopperUp = false;
+            _feed1StopperDownPulseTicks--;
+            return;
+        }
+
+        IsFeed1StopperUp = true;
+        NotifySchedulerDebugChanged();
+    }
+
+    private bool HasActiveSorterProcess()
+    {
+        return _laserBusy ||
+               _pickerBusy ||
+               _feed3OutputBusy ||
+               _stageAState == CutStageState.Cutting ||
+               _stageAState == CutStageState.Picking ||
+               _stageAState == CutStageState.Outputting ||
+               _stageBState == CutStageState.Cutting ||
+               _stageBState == CutStageState.Picking ||
+               _stageBState == CutStageState.Outputting;
+    }
+
+    private bool IsSorterFullyDrained()
+    {
+        return _pendingWorkpieces.Count == 0 &&
+               _stage1Workpiece == null &&
+               _stage2Workpiece == null &&
+               _stage3Workpiece == null &&
+               _stage4Workpiece == null &&
+               _stage5Workpiece == null &&
+               !HasCutStageAMaterial &&
+               !HasCutStageBMaterial;
+    }
+
+    private async Task FinalizeStopAsync(string message)
+    {
+        if (_isStopFinalizing || CurrentMachineState != MachineState.Running)
+            return;
+
+        _isStopFinalizing = true;
+
+        try
+        {
+            StopCycleLoop();
+            StopRunTimeLoop();
+            StopSorterPipelineLoop();
+
+            _runStartTime = null;
+            _cycleStartTime = null;
+
+            SetSorterRunningState(false);
+            CurrentMachineState = MachineState.Stopped;
+
+            _isStopRequested = false;
+            _isCycleStopRequested = false;
+            NotifyStopRequestUiChanged();
+            NotifySchedulerDebugChanged();
+
+            await AddOperationLogAsync("Run", message);
+
+            UpdateSorterSensors();
+            NotifySorterMaterialChanged();
+            NotifyCutStageSlotsChanged();
+
+        }
+        finally
+        {
+            _isStopFinalizing = false;
+        }
+    }
+
+    private void TryFinalizeRequestedStop()
+    {
+        if (_isStopRequested)
+        {
+            bool canFinalize =
+                !HasActiveSorterProcess() &&
+                _stage4Workpiece == null &&
+                _stage5Workpiece == null;
+
+            if (canFinalize)
+            {
+                _ = FinalizeStopAsync("Machine stopped.");
+            }
+
+            return;
+        }
+
+        if (_isCycleStopRequested)
+        {
+            bool canFinalize =
+                !HasActiveSorterProcess() &&
+                IsSorterFullyDrained();
+
+            if (canFinalize)
+            {
+                _ = FinalizeStopAsync("Machine cycle-stopped.");
+            }
+        }
+    }
+
+    private void NotifySchedulerDebugChanged()
+    {
+        OnPropertyChanged(nameof(LaserBusyText));
+        OnPropertyChanged(nameof(PickerBusyText));
+        OnPropertyChanged(nameof(OutputBusyText));
+        OnPropertyChanged(nameof(StopModeText));
+        OnPropertyChanged(nameof(StageAStateText));
+        OnPropertyChanged(nameof(StageBStateText));
+        OnPropertyChanged(nameof(Feed1StopperText));
+    }
+    private void NotifyStopRequestUiChanged()
+    {
+        OnPropertyChanged(nameof(IsStopRequestedActive));
+        OnPropertyChanged(nameof(IsCycleStopRequestedActive));
+        OnPropertyChanged(nameof(HasPendingStopCommand));
+        OnPropertyChanged(nameof(PendingStopCommandText));
     }
 }
