@@ -207,6 +207,13 @@ This helps demonstrate how a machine UI can interact with a factory-level system
 
 ---
 
+## Demo Video
+
+A short demo video is available in the GitHub Releases section:
+
+[Watch/download demo video](https://github.com/ThangNT9x/industrial-machine-ui-simulator/releases/tag/v1.0.0-demo)
+
+
 ## Demo Flow
 
 A typical demo flow:
