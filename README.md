@@ -32,13 +32,21 @@ This project is inspired by real industrial machine software and focuses on:
 - [ ] Demo GIF / portfolio screenshots cleanup
 
 ## Screenshots
-### Main Dashboard
-<img width="1906" height="1038" alt="dashboard-running" src="https://github.com/user-attachments/assets/2818e2b9-4745-4595-93e9-3b0135095f2f" />
 
+### Home - Running State
+![Home Running](docs/screenshots/01_home_running.png)
 
+### Recipe Management
+![Recipe Management](docs/screenshots/02_recipe_management.png)
 
-### Running / Alarm State
-<img width="1906" height="1038" alt="dashboard-alarm" src="https://github.com/user-attachments/assets/9367acca-1617-43cb-811d-434498daccfa" />
+### IO Simulation
+![IO Simulation](docs/screenshots/03_io_simulation.png)
+
+### MES Monitor
+![MES Monitor](docs/screenshots/04_mes_monitor.png)
+
+### Alarm State
+![Alarm State](docs/screenshots/05_alarm_state.png)
 
 
 ### Simulator Control Window
