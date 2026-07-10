@@ -45,9 +45,7 @@ The application focuses on realistic machine UI logic, including:
 
 The application simulates a full machine lifecycle:
 
-```text
 Offline → Standby → Initializing → Ready → Running → Stopped / Alarm
-```
 
 Supported commands:
 
@@ -77,9 +75,7 @@ The machine includes a simulated initialization process with:
 
 The sorter engine simulates material movement through multiple machine areas:
 
-```text
 Input Conveyor → Feed 1 → Feed 2 → Laser Stage A/B → Feed 3 → Output Conveyor
-```
 
 It includes:
 
@@ -213,27 +209,28 @@ A short demo video is available in the GitHub Releases section:
 
 [Watch/download demo video](https://github.com/ThangNT9x/industrial-machine-ui-simulator/releases/tag/v1.0.0-demo)
 
+---
 
 ## Demo Flow
 
 A typical demo flow:
 
-```text
-1. Power On
-2. Initialize machine
-3. Apply recipe
-4. Start machine
-5. Material moves through sorter/conveyor
-6. Laser stage simulation runs
-7. OK / NG count increases
-8. MES messages are generated
-9. Stop or Cycle Stop
-10. Trigger alarm
-11. Reset machine
-12. Run again
-```
+1. Login as Engineer or Developer
+2. Open the Power page and turn on Power Machine
+3. Run Initialization
+4. Apply recipe
+5. Start machine
+6. Material moves through sorter/conveyor
+7. Laser stage simulation runs
+8. OK / NG count increases
+9. MES messages are generated
+10. Stop or Cycle Stop
+11. Trigger alarm
+12. Reset machine
+13. Run again
 
 ---
+
 ## Demo Login Credentials
 
 The application starts in the Operator role by default.
@@ -247,12 +244,14 @@ To access the Power page and turn on the machine power, please login as Engineer
 
 After login:
 
-```text
 1. Open the Power page
 2. Turn on Power Machine
 3. Run Initialization
 4. Start the machine simulation
+
 Without Engineer or Developer login, the Power page and machine power controls are not available.
+
+---
 
 ## Portable Build
 
@@ -262,29 +261,28 @@ A Windows portable build is available in the GitHub Releases section:
 
 To run the portable version:
 
-```text
-1. Download IndustrialMachineSimulator_Win64_Portable.zip
+1. Download `IndustrialMachineSimulator_Win64_Portable.zip`
 2. Extract the zip file
-3. Run IndustrialMachineSimulator.UI.exe
-4. Login as Engineer with password e123 or Developer with password d123
-5. Open Power page and turn on Power Machine
+3. Run `IndustrialMachineSimulator.UI.exe`
+4. Login as Engineer with password `e123` or Developer with password `d123`
+5. Open the Power page and turn on Power Machine
 6. Run Initialization and start the machine simulation
+
+---
 
 ## Project Structure
 
-```text
-industrial-machine-ui-simulator
-├── IndustrialMachineSimulator
-│   ├── src
-│   │   ├── IndustrialMachineSimulator.Core
-│   │   ├── IndustrialMachineSimulator.Infrastructure
-│   │   └── IndustrialMachineSimulator.UI
-│   └── IndustrialMachineSimulator.sln
-├── docs
-│   └── screenshots
-├── README.md
+industrial-machine-ui-simulator  
+├── IndustrialMachineSimulator  
+│   ├── src  
+│   │   ├── IndustrialMachineSimulator.Core  
+│   │   ├── IndustrialMachineSimulator.Infrastructure  
+│   │   └── IndustrialMachineSimulator.UI  
+│   └── IndustrialMachineSimulator.sln  
+├── docs  
+│   └── screenshots  
+├── README.md  
 └── .gitignore
-```
 
 ---
 
