@@ -227,10 +227,31 @@ A typical demo flow:
 ```
 
 ---
+## Demo Login Credentials
+
+The application starts in the Operator role by default.
+
+To access the Power page and turn on the machine power, please login as Engineer or Developer:
+
+| Role | Password |
+|---|---|
+| Engineer | `e123` |
+| Developer | `d123` |
+
+After login:
+
+```text
+1. Open the Power page
+2. Turn on Power Machine
+3. Run Initialization
+4. Start the machine simulation
+Without Engineer or Developer login, the Power page and machine power controls are not available.
 
 ## Portable Build
 
-A Windows portable build is available in the GitHub Releases section.
+A Windows portable build is available in the GitHub Releases section:
+
+[Download demo build v1.0.0](https://github.com/ThangNT9x/industrial-machine-ui-simulator/releases/tag/v1.0.0-demo)
 
 To run the portable version:
 
@@ -238,9 +259,9 @@ To run the portable version:
 1. Download IndustrialMachineSimulator_Win64_Portable.zip
 2. Extract the zip file
 3. Run IndustrialMachineSimulator.UI.exe
-```
-
----
+4. Login as Engineer with password e123 or Developer with password d123
+5. Open Power page and turn on Power Machine
+6. Run Initialization and start the machine simulation
 
 ## Project Structure
 
