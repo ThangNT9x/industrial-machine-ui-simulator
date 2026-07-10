@@ -11,6 +11,8 @@
         Height="1050"
         Width="1920" WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
+        <Border  BorderBrush="{Binding AlarmFrameBrush}"
+        BorderThickness="{Binding AlarmFrameThickness}">
         <Grid>
             <Grid.Resources>
                 <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"></BooleanToVisibilityConverter>
@@ -92,7 +94,7 @@
             
             <controls:BottomNavigationBar Grid.Row="3"> </controls:BottomNavigationBar>
             <!-- Overlay power off -->
-            <Border Grid.Row="1" Grid.RowSpan="2"  Panel.ZIndex="999" Background="#AA000000">
+            <Border Grid.Row="1" Grid.RowSpan="2"  Panel.ZIndex="900" Background="#AA000000">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -120,14 +122,88 @@
                                HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
+                <Border Grid.Row="0"
+                        Grid.RowSpan="4"
+                        Background="#DC2626"
+                        Height="44"
+                        VerticalAlignment="Top"
+                        Panel.ZIndex="1100"
+                        Visibility="{Binding AlarmBannerVisibility}"
+                        IsHitTestVisible="False">
+                    <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                        <TextBlock Text="⚠"
+                           Foreground="White"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Margin="0,0,12,0"/>
+
+                        <TextBlock Text="{Binding AlarmBannerText}"
+                           Foreground="White"
+                           FontSize="18"
+                           FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Grid Grid.Row="0"
+                      Grid.RowSpan="4"
+                      Visibility="{Binding IsInitializationOverlayVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                      Background="#99000000"
+                      Panel.ZIndex="1000">
+
+                    <Border Width="540"
+                            Height="260"
+                            Background="White"
+                            CornerRadius="12"
+                            BorderBrush="#2563EB"
+                            BorderThickness="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="28">
+
+                        <StackPanel>
+                            <TextBlock Text="INITIALIZATION"
+                                       FontSize="28"
+                                       FontWeight="Bold"
+                                       Foreground="#1D4ED8"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,12"/>
+
+                            <TextBlock Text="{Binding InitProgressText}"
+                                       FontSize="22"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,20"/>
+
+                            <ProgressBar Minimum="0"
+                                         Maximum="100"
+                                         Value="{Binding InitProgressPercent}"
+                                         Height="26"
+                                         Margin="0,0,0,18"/>
+
+                            <TextBlock Text="Checking Host / Laser / Diode / Pulsing / Door Safety..."
+                                       FontSize="14"
+                                       Foreground="#4B5563"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,24"/>
+
+                            <Button Content="Cancel"
+                                    Command="{Binding CancelInitializeCommand}"
+                                    Width="150"
+                                    Height="42"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+            </Grid>
 
 
-        </Grid>
 
 
 
-
-
-
+        </Border>
     </Grid>
 </Window>
