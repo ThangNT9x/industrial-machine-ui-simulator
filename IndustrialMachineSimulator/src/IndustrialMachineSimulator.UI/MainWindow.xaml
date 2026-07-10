@@ -152,7 +152,7 @@
                       Panel.ZIndex="1000">
 
                     <Border Width="540"
-                            Height="260"
+                            Height="290"
                             Background="White"
                             CornerRadius="12"
                             BorderBrush="#2563EB"

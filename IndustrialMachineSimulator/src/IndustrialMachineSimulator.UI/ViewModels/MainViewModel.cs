@@ -57,6 +57,8 @@ public partial class MainViewModel : INotifyPropertyChanged
     public ICommand CycleStopCommand { get; }
     public ICommand ResetCommand { get; }
     public ICommand RunStatusBarCommand { get; }
+
+    public ICommand ExitCommand { get; }
     public bool IsRunButtonInStopMode=>CurrentMachineState==MachineState.Running;
     public ICommand LoginCommand { get; }
     public ICommand ShowHomeCommand { get;  }
@@ -870,6 +872,42 @@ public partial class MainViewModel : INotifyPropertyChanged
         await AddOperationLogAsync("Run", "Stop requested.");
     }
 
+    private async Task TryExitApplicationAsync()
+    {
+        var result = MessageBox.Show(
+            "Do you want to exit Industrial Machine Simulator?",
+            "Exit Application",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (result != MessageBoxResult.Yes)
+            return;
+
+        try
+        {
+            await AddOperationLogAsync("System", "Application exit requested.");
+
+            StopCycleLoop();
+            StopRunTimeLoop();
+            StopSorterPipelineLoop();
+            SetSorterRunningState(false);
+            ClearStopRequests();
+
+            _initCts?.Cancel();
+
+            if (_simulatorWindow != null && _simulatorWindow.IsLoaded)
+            {
+                _simulatorWindow.Close();
+            }
+
+            Application.Current.Shutdown();
+        }
+        catch
+        {
+            Application.Current.Shutdown();
+        }
+    }
+
     private async Task RunInitializeAsync()
     {
         await AddOperationLogAsync("Init", "Initialization started.");
@@ -1326,6 +1364,11 @@ public partial class MainViewModel : INotifyPropertyChanged
         {
             CancelInitialization();
             return Task.CompletedTask;
+        });
+
+        ExitCommand = new RelayCommand(async _ =>
+        {
+            await TryExitApplicationAsync();
         });
 
         OpenSimulatorWindowCommand = new RelayCommand(_ =>

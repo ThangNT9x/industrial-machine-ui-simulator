@@ -75,7 +75,8 @@
                 </Button>
             </StackPanel>
             <!-- Nut Exit-->
-            <Button Grid.Column="2" Width="50" Height="35" Background="#0066FF">
+            <Button Grid.Column="2" Width="50" Height="35" Background="#0066FF"
+                    Command="{Binding ExitCommand}">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7E8;" 
                      FontSize="25"
                      Foreground="White">
